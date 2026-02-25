@@ -1,105 +1,95 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const navLinks = [
     { href: "#services", label: "Services" },
     { href: "#about", label: "About" },
+    { href: "/calculator", label: "Calculator" },
+    { href: "/blog", label: "Blog" },
     { href: "#contact", label: "Contact" },
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xs">DL</span>
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        scrolled ? "py-3" : "py-5"
+      }`}
+    >
+      <div
+        className={`absolute inset-0 transition-all duration-500 ${
+          scrolled || isOpen
+            ? "bg-[var(--color-base)]/95 backdrop-blur-xl border-b-[3px] border-[var(--card-border)] shadow-[0_4px_0_rgba(0,0,0,0.06)]"
+            : "bg-transparent"
+        }`}
+      />
+
+      <div className="relative z-10 max-w-6xl mx-auto px-6 lg:px-8">
+        <div className="flex justify-between items-center">
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="relative w-10 h-10">
+              <div className="absolute inset-0 bg-[var(--accent-green)] rounded-xl border-[3px] border-[var(--card-border)] shadow-[2px_3px_0_rgba(0,0,0,0.15)]" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-white font-black text-sm">H&L</span>
+              </div>
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
-              Derivative Labs
+            <span className="text-lg font-extrabold text-[var(--text-primary)] hidden sm:block uppercase tracking-tight">
+              honey&lemon
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center gap-10">
+            {navLinks.map((link) => (
+              <a key={link.href} href={link.href} className="link-glow text-sm font-bold uppercase tracking-wide">
+                {link.label}
+              </a>
+            ))}
+            <a href="#contact" className="btn-primary py-3 px-6 text-sm">
+              Get started
+            </a>
+          </div>
+
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="md:hidden w-10 h-10 flex items-center justify-center rounded-xl border-[3px] border-[var(--card-border)] bg-white hover:bg-[var(--accent-yellow)] transition-colors shadow-[2px_3px_0_rgba(0,0,0,0.1)]"
+            aria-label="Toggle menu"
+          >
+            <div className="w-5 h-4 flex flex-col justify-between">
+              <span className={`block h-0.5 bg-[var(--text-primary)] rounded-full transition-all duration-300 ${isOpen ? "rotate-45 translate-y-[7px]" : ""}`} />
+              <span className={`block h-0.5 bg-[var(--text-primary)] rounded-full transition-all duration-300 ${isOpen ? "opacity-0 scale-0" : ""}`} />
+              <span className={`block h-0.5 bg-[var(--text-primary)] rounded-full transition-all duration-300 ${isOpen ? "-rotate-45 -translate-y-[7px]" : ""}`} />
+            </div>
+          </button>
+        </div>
+
+        <div className={`md:hidden overflow-hidden transition-all duration-500 ${isOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"}`}>
+          <div className="pt-6 pb-4 space-y-2">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className="text-gray-600 hover:text-violet-600 transition-colors font-medium"
+                onClick={() => setIsOpen(false)}
+                className="block py-3 px-4 rounded-xl text-[var(--text-body)] font-bold uppercase hover:text-[var(--accent-green)] hover:bg-white/60 transition-all"
               >
                 {link.label}
               </a>
             ))}
-            <a
-              href="#contact"
-              className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 py-2 rounded-full font-medium hover:shadow-lg hover:shadow-violet-500/25 transition-all"
-            >
-              Get Started
+            <a href="#contact" onClick={() => setIsOpen(false)} className="block mt-4 btn-primary text-center">
+              Get started
             </a>
           </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            aria-label="Toggle menu"
-          >
-            <svg
-              className="w-6 h-6 text-gray-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              {isOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              )}
-            </svg>
-          </button>
         </div>
-
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <div className="md:hidden py-4 border-t border-gray-100">
-            <div className="flex flex-col space-y-4">
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setIsOpen(false)}
-                  className="text-gray-600 hover:text-violet-600 transition-colors font-medium"
-                >
-                  {link.label}
-                </a>
-              ))}
-              <a
-                href="#contact"
-                onClick={() => setIsOpen(false)}
-                className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 py-2 rounded-full font-medium text-center hover:shadow-lg hover:shadow-violet-500/25 transition-all"
-              >
-                Get Started
-              </a>
-            </div>
-          </div>
-        )}
       </div>
     </nav>
   );

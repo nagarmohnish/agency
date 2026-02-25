@@ -1,139 +1,98 @@
+"use client";
+
+function Sparkle({ className, size = 16 }: { className?: string; size?: number }) {
+  return (
+    <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 0L14.59 8.41L24 12L14.59 15.59L12 24L9.41 15.59L0 12L9.41 8.41L12 0Z" />
+    </svg>
+  );
+}
+
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-gray-50 via-white to-violet-50">
-      {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-violet-200 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000" />
-        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000" />
-      </div>
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <div className="absolute inset-0 bg-[var(--color-base)]" />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
-        <div className="text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-violet-100 text-violet-700 text-sm font-medium mb-8">
-            <span className="relative flex h-2 w-2 mr-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500" />
-            </span>
-            Marketing + Technology Under One Roof
-          </div>
+      {/* Diagonal deco lines */}
+      <div className="absolute top-[20%] left-0 w-full h-[2px] bg-[var(--accent-green)] opacity-[0.06] -rotate-3 pointer-events-none" />
+      <div className="absolute top-[50%] left-0 w-full h-[1px] bg-[var(--accent-orange)] opacity-[0.05] rotate-2 pointer-events-none" />
+      <div className="absolute bottom-[25%] left-0 w-full h-[1px] bg-[var(--accent-blue)] opacity-[0.04] -rotate-1 pointer-events-none" />
 
-          {/* Main heading */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-            Growth Through
-            <br />
-            <span className="bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Marketing & Intelligence
-            </span>
-          </h1>
+      {/* Sparkles */}
+      <Sparkle className="absolute top-28 right-[18%] text-[var(--accent-yellow)] sparkle opacity-70" size={18} />
+      <Sparkle className="absolute top-44 left-[10%] text-[var(--accent-green)] sparkle opacity-50" size={12} />
+      <Sparkle className="absolute bottom-[28%] right-[12%] text-[var(--accent-pink)] sparkle opacity-60 hidden md:block" size={14} />
 
-          {/* Subheading */}
-          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto mb-12 leading-relaxed">
-            Derivative Labs operates at the intersection of performance marketing and intelligent technology.
-            We acquire customers and build the systems that scale your business.
-          </p>
+      <div className="relative z-10 w-full max-w-6xl mx-auto px-6 lg:px-8 pt-32 pb-32">
+        <div className="text-center lg:text-left lg:grid lg:grid-cols-2 lg:gap-16 lg:items-center">
+          <div>
+            <div className="mb-8">
+              <span className="badge">
+                <span className="dot" />
+                Performance Marketing
+              </span>
+            </div>
 
-          {/* Two Verticals */}
-          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-12">
-            {/* Marketing Vertical */}
-            <div className="group p-8 rounded-2xl bg-white border border-gray-100 hover:border-violet-200 hover:shadow-xl hover:shadow-violet-500/10 transition-all text-left">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+            <div className="mb-6 flex justify-center lg:justify-start">
+              <div className="ribbon-badge bg-[var(--accent-yellow)] text-[var(--text-primary)]" style={{ "--ribbon-rotate": "-3deg" } as React.CSSProperties}>
+                <Sparkle size={10} className="text-[var(--accent-orange)]" />
+                Growth Trajectory
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <h1 className="text-display"><span className="text-[var(--accent-green)]">ROAS</span> looks good on paper.</h1>
+              <h1 className="text-display mt-3"><span className="text-[var(--accent-green)]">ROI</span> looks good <span className="text-[var(--accent-orange)]">in your bank.</span></h1>
+            </div>
+
+            <p className="text-subhead text-[var(--text-body)] max-w-xl mx-auto lg:mx-0 mb-4">
+              That&apos;s why we focus on <span className="text-[var(--accent-green)] font-extrabold">ROI</span> — not ROAS.
+            </p>
+            <p className="text-body-lg text-[var(--text-secondary)] max-w-lg mx-auto lg:mx-0 mb-10">
+              We&apos;re a paid media agency that cares about what actually matters — real revenue growth, not vanity metrics.
+            </p>
+
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-5 mb-14">
+              <a href="#contact" className="btn-primary">
+                Get your free audit
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Marketing Services</h3>
-              <p className="text-gray-600 mb-4">
-                Performance-driven campaigns across paid ads, social media, SEO, and content that deliver measurable ROI.
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {["Paid Ads", "Social Media", "SEO", "Content"].map((tag) => (
-                  <span key={tag} className="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-sm">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Tech Vertical */}
-            <div className="group p-8 rounded-2xl bg-white border border-gray-100 hover:border-violet-200 hover:shadow-xl hover:shadow-violet-500/10 transition-all text-left">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Tech Services</h3>
-              <p className="text-gray-600 mb-4">
-                Intelligent systems powered by AI automation, data processing, and custom solutions that scale operations.
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {["AI Automation", "Data Processing", "Custom AI", "Analytics"].map((tag) => (
-                  <span key={tag} className="px-3 py-1 bg-violet-50 text-violet-700 rounded-full text-sm">
-                    {tag}
-                  </span>
-                ))}
-              </div>
+              </a>
+              <a href="#services" className="btn-glass">Explore services</a>
             </div>
           </div>
 
-          {/* CTA buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a
-              href="#contact"
-              className="w-full sm:w-auto bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:shadow-xl hover:shadow-violet-500/25 transition-all hover:-translate-y-0.5"
-            >
-              Start Your Project
-            </a>
-            <a
-              href="#services"
-              className="w-full sm:w-auto bg-white text-gray-700 px-8 py-4 rounded-full font-semibold text-lg border border-gray-200 hover:border-violet-300 hover:text-violet-600 transition-all"
-            >
-              Explore Services
-            </a>
-          </div>
-        </div>
-
-        {/* Stats */}
-        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-          {[
-            { value: "$10M+", label: "Ad Spend Managed" },
-            { value: "50+", label: "Clients Served" },
-            { value: "3x", label: "Avg. ROAS" },
-            { value: "100+", label: "Automations Built" },
-          ].map((stat) => (
-            <div key={stat.label} className="text-center">
-              <div className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">
-                {stat.value}
+          <div className="grid grid-cols-2 gap-5 max-w-md mx-auto lg:mx-0">
+            {[
+              { value: "$8M+", label: "Budget handled", color: "text-[var(--accent-green)]", bg: "bg-[var(--accent-green)]" },
+              { value: "4.2x", label: "Avg. ROI", color: "text-[var(--accent-orange)]", bg: "bg-[var(--accent-orange)]" },
+              { value: "45+", label: "Brands", color: "text-[var(--accent-blue)]", bg: "bg-[var(--accent-blue)]" },
+              { value: "$34M", label: "Revenue", color: "text-[var(--accent-purple)]", bg: "bg-[var(--accent-purple)]" },
+            ].map((stat) => (
+              <div key={stat.label} className="glass-card p-5 pt-8 text-center relative">
+                <div className={`w-9 h-9 ${stat.bg} rounded-full border-[3px] border-[var(--card-border)] mx-auto absolute -top-4 left-1/2 -translate-x-1/2 flex items-center justify-center shadow-[2px_3px_0_rgba(0,0,0,0.1)]`}>
+                  <Sparkle size={10} className="text-white" />
+                </div>
+                <p className={`stat-number ${stat.color} mb-1`}>{stat.value}</p>
+                <p className="text-xs text-[var(--text-muted)] uppercase font-bold tracking-wider">{stat.label}</p>
               </div>
-              <div className="text-gray-500 text-sm">{stat.label}</div>
+            ))}
+            <div className="col-span-2 flex justify-center mt-1">
+              <span className="pill-badge-green border-2 border-[var(--accent-green)] rounded-full px-4 py-1.5 shadow-[2px_3px_0_rgba(0,0,0,0.06)] flex items-center gap-2 font-bold">
+                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                Performance is stable!
+              </span>
             </div>
-          ))}
+          </div>
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-        <a
-          href="#services"
-          className="flex flex-col items-center text-gray-400 hover:text-violet-600 transition-colors"
-        >
-          <span className="text-sm mb-2">Scroll to explore</span>
-          <svg
-            className="w-6 h-6 animate-bounce"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 14l-7 7m0 0l-7-7m7 7V3"
-            />
-          </svg>
-        </a>
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-10">
+        <span className="text-micro text-[var(--text-muted)]">Scroll to explore</span>
+        <div className="w-7 h-11 border-[3px] border-[var(--card-border)] rounded-full flex justify-center p-2 bg-white shadow-[2px_3px_0_rgba(0,0,0,0.08)]">
+          <div className="w-1.5 h-2.5 bg-[var(--accent-green)] rounded-full animate-bounce" />
+        </div>
       </div>
     </section>
   );

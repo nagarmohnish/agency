@@ -1,12 +1,21 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins, DM_Sans } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import LeadPopup from "@/components/LeadPopup";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
+  weight: ["500", "600", "700", "800", "900"],
+});
+
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const geistMono = Geist_Mono({
@@ -15,10 +24,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Derivative Labs | Marketing & Tech Services",
+  title: "Honey & Lemon | Performance Marketing Agency",
   description:
-    "Derivative Labs combines performance marketing with intelligent technology. Paid ads, SEO, AI automation, and data processing—all under one roof.",
-  keywords: ["marketing agency", "AI automation", "paid advertising", "data processing", "tech services", "performance marketing"],
+    "We focus on ROI, not ROAS. Honey & Lemon is a paid media agency managing millions in ad spend across Meta, Google, Snapchat & LinkedIn — driving real revenue growth.",
+  keywords: ["paid ads", "Meta ads", "Google ads", "Snapchat ads", "creative agency", "ad creatives", "social media marketing", "performance marketing", "ROI"],
 };
 
 export default function RootLayout({
@@ -29,11 +38,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${poppins.variable} ${dmSans.variable} ${geistMono.variable} antialiased`}
       >
         <Navbar />
         <main>{children}</main>
         <Footer />
+        <LeadPopup />
       </body>
     </html>
   );
