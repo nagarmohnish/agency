@@ -29,14 +29,14 @@ export default function Footer() {
             <h4 className="text-micro text-[var(--accent-green)] mb-6">Services</h4>
             <ul className="space-y-4">
               {["Meta Ads", "Google Ads", "Snapchat Ads", "LinkedIn Ads", "Media Buying"].map((item) => (
-                <li key={item}><a href="#services" className="text-small text-white/50 hover:text-[var(--accent-yellow)] transition-colors font-medium">{item}</a></li>
+                <li key={item}><a href="/#services" className="text-small text-white/50 hover:text-[var(--accent-yellow)] transition-colors font-medium">{item}</a></li>
               ))}
             </ul>
           </div>
           <div>
             <h4 className="text-micro text-[var(--accent-orange)] mb-6">Company</h4>
             <ul className="space-y-4">
-              {[{ label: "About", href: "#about" }, { label: "Services", href: "#services" }, { label: "Contact", href: "#contact" }].map((item) => (
+              {[{ label: "About", href: "/about" }, { label: "Blog", href: "/blog" }, { label: "Calculator", href: "/calculator" }, { label: "Contact", href: "/#contact" }].map((item) => (
                 <li key={item.label}><a href={item.href} className="text-small text-white/50 hover:text-[var(--accent-yellow)] transition-colors font-medium">{item.label}</a></li>
               ))}
             </ul>

@@ -14,11 +14,11 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { href: "#services", label: "Services" },
-    { href: "#about", label: "About" },
+    { href: "/#services", label: "Services" },
+    { href: "/about", label: "About" },
     { href: "/calculator", label: "Calculator" },
     { href: "/blog", label: "Blog" },
-    { href: "#contact", label: "Contact" },
+    { href: "/#contact", label: "Contact" },
   ];
 
   return (
@@ -55,7 +55,7 @@ export default function Navbar() {
                 {link.label}
               </a>
             ))}
-            <a href="#contact" className="btn-primary py-3 px-6 text-sm">
+            <a href="/#contact" className="btn-primary py-3 px-6 text-sm">
               Get started
             </a>
           </div>
@@ -85,7 +85,7 @@ export default function Navbar() {
                 {link.label}
               </a>
             ))}
-            <a href="#contact" onClick={() => setIsOpen(false)} className="block mt-4 btn-primary text-center">
+            <a href="/#contact" onClick={() => setIsOpen(false)} className="block mt-4 btn-primary text-center">
               Get started
             </a>
           </div>
