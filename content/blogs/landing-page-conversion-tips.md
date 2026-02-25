@@ -2,7 +2,7 @@
 title: "7 Landing Page Mistakes Killing Your Ad Conversions"
 excerpt: "Your ads might be great, but if your landing page leaks, you're pouring money down the drain. Here are the 7 most common mistakes we fix."
 date: "2025-10-05"
-author: "Honey & Lemon Team"
+author: "ROIlabs Team"
 category: "Conversion"
 readTime: "8 min read"
 coverImage: ""

@@ -1,11 +1,11 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "About Us | Honey & Lemon",
+  title: "About Us | ROIlabs",
   description:
     "We're a boutique performance marketing agency specializing in paid social advertising. Meet the team behind $8M+ in managed ad spend and $34M in revenue generated.",
   keywords: [
-    "about honey and lemon",
+    "about roilabs",
     "performance marketing agency",
     "paid social agency",
     "advertising team",
@@ -117,7 +117,7 @@ export default function AboutPage() {
               </div>
               <div className="space-y-5 text-body-lg">
                 <p className="text-[var(--text-secondary)]">
-                  Honey &amp; Lemon was born from a simple frustration: most agencies report ROAS
+                  ROIlabs was born from a simple frustration: most agencies report ROAS
                   because it always looks impressive — even when their clients are losing money.
                 </p>
                 <p className="text-[var(--text-secondary)]">

@@ -41,11 +41,11 @@ export default function Navbar() {
             <div className="relative w-10 h-10">
               <div className="absolute inset-0 bg-[var(--accent-green)] rounded-xl border-[3px] border-[var(--card-border)] shadow-[2px_3px_0_rgba(0,0,0,0.15)]" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-white font-black text-sm">H&L</span>
+                <span className="text-white font-black text-sm">RL</span>
               </div>
             </div>
             <span className="text-lg font-extrabold text-[var(--text-primary)] hidden sm:block uppercase tracking-tight">
-              honey&lemon
+              ROIlabs
             </span>
           </Link>
 

@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!post) return { title: "Post Not Found" };
 
   return {
-    title: `${post.title} | Honey & Lemon Blog`,
+    title: `${post.title} | ROIlabs Blog`,
     description: post.excerpt,
   };
 }
@@ -65,7 +65,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
                   <span className="text-micro text-[var(--accent-green)] block mb-2">{post.category}</span>
-                  <span className="text-6xl font-black text-gradient opacity-20">H&L</span>
+                  <span className="text-6xl font-black text-gradient opacity-20">RL</span>
                 </div>
               </div>
             </>
@@ -84,7 +84,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           <p className="text-body-lg text-[var(--text-secondary)] mb-8">{post.excerpt}</p>
           <div className="flex items-center gap-4 pb-8 border-b-2 border-[var(--border-subtle)]">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--accent-green)] to-[var(--accent-blue)] flex items-center justify-center text-white font-bold text-sm">
-              H&L
+              RL
             </div>
             <div>
               <p className="text-small font-semibold text-[var(--text-primary)]">{post.author}</p>

@@ -24,9 +24,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Honey & Lemon | Performance Marketing Agency",
+  title: "ROIlabs | Performance Marketing Agency",
   description:
-    "We focus on ROI, not ROAS. Honey & Lemon is a paid media agency managing millions in ad spend across Meta, Google, Snapchat & LinkedIn — driving real revenue growth.",
+    "We focus on ROI, not ROAS. ROIlabs is a paid media agency managing millions in ad spend across Meta, Google, Snapchat & LinkedIn — driving real revenue growth.",
   keywords: ["paid ads", "Meta ads", "Google ads", "Snapchat ads", "creative agency", "ad creatives", "social media marketing", "performance marketing", "ROI"],
 };
 

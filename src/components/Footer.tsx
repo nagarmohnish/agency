@@ -12,18 +12,22 @@ export default function Footer() {
               <div className="relative w-10 h-10">
                 <div className="absolute inset-0 bg-[var(--accent-green)] rounded-xl border-2 border-white/20 shadow-[2px_3px_0_rgba(0,0,0,0.3)]" />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-white font-black text-sm">H&L</span>
+                  <span className="text-white font-black text-sm">RL</span>
                 </div>
               </div>
-              <span className="text-xl font-extrabold text-white uppercase tracking-tight">honey&lemon</span>
+              <span className="text-xl font-extrabold text-white uppercase tracking-tight">ROIlabs</span>
             </Link>
             <p className="text-body text-white/60 max-w-sm mb-6">
               Performance marketing agency specializing in paid social advertising across Meta, Google, LinkedIn, and Snapchat.
             </p>
-            <a href="mailto:hello@honeyandlemon.co" className="inline-flex items-center gap-2 text-[var(--accent-yellow)] font-bold hover:text-white transition-colors">
+            <a href="mailto:support@roilabs.in" className="inline-flex items-center gap-2 text-[var(--accent-yellow)] font-bold hover:text-white transition-colors mb-6">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-              hello@honeyandlemon.co
+              support@roilabs.in
             </a>
+            <div className="flex items-start gap-2 text-small text-white/40">
+              <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+              <span>3rd Floor, Garuda BHIVE Workspace, BTM Layout Campus, BMTC Complex, Outer Ring Rd, BTM Layout, Bengaluru, Karnataka 560076</span>
+            </div>
           </div>
           <div>
             <h4 className="text-micro text-[var(--accent-green)] mb-6">Services</h4>
@@ -44,7 +48,7 @@ export default function Footer() {
         </div>
         <div className="h-[2px] mb-8 opacity-20" style={{ background: "repeating-linear-gradient(90deg, white 0px, white 6px, transparent 6px, transparent 12px)" }} />
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-small text-white/40">&copy; {currentYear} honey&lemon. All rights reserved.</p>
+          <p className="text-small text-white/40">&copy; {currentYear} ROIlabs. All rights reserved.</p>
           <div className="flex items-center gap-8">
             <a href="#" className="text-small text-white/40 hover:text-[var(--accent-yellow)] transition-colors">Privacy Policy</a>
             <a href="#" className="text-small text-white/40 hover:text-[var(--accent-yellow)] transition-colors">Terms of Service</a>

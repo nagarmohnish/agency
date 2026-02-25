@@ -2,7 +2,7 @@
 title: "ROI vs ROAS: Why the Metric You Track Changes Everything"
 excerpt: "Most agencies report ROAS. We report ROI. Here's why the distinction matters more than you think, and how it changes your growth strategy."
 date: "2025-09-18"
-author: "Honey & Lemon Team"
+author: "ROIlabs Team"
 category: "Strategy"
 readTime: "6 min read"
 coverImage: ""
@@ -83,7 +83,7 @@ When you optimize for ROI instead of ROAS, your strategy changes:
 
 We report both metrics to our clients. But when we make optimization decisions, we optimize for what actually matters: **putting more money in your bank account** than you spend on advertising.
 
-That's the honey & lemon difference.
+That's the ROIlabs difference.
 
 ---
 

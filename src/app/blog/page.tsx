@@ -3,8 +3,8 @@ import Link from "next/link";
 import BlogThumbnail from "@/components/BlogThumbnail";
 
 export const metadata = {
-  title: "Blog | Honey & Lemon",
-  description: "Insights on paid advertising, creative strategy, and performance marketing from the Honey & Lemon team.",
+  title: "Blog | ROIlabs",
+  description: "Insights on paid advertising, creative strategy, and performance marketing from the ROIlabs team.",
 };
 
 function formatDate(dateString: string) {

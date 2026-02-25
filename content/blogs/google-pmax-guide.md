@@ -2,7 +2,7 @@
 title: "Google Performance Max: The Complete Guide for 2025"
 excerpt: "Performance Max campaigns can be a goldmine or a money pit. Here's how to set them up properly and avoid the common pitfalls."
 date: "2025-11-28"
-author: "Honey & Lemon Team"
+author: "ROIlabs Team"
 category: "Google Ads"
 readTime: "9 min read"
 coverImage: ""

@@ -2,7 +2,7 @@
 title: "Why Smart Brands Are Shifting Budget to Snapchat Ads"
 excerpt: "Snapchat CPMs are 40-60% lower than Meta, and Gen Z engagement is through the roof. Here's why it deserves a spot in your media mix."
 date: "2025-10-22"
-author: "Honey & Lemon Team"
+author: "ROIlabs Team"
 category: "Snapchat Ads"
 readTime: "5 min read"
 coverImage: ""

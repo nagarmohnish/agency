@@ -2,7 +2,7 @@
 title: "Our Ad Creative Testing Framework That Finds Winners Fast"
 excerpt: "Stop guessing which ads will work. Here's the systematic testing framework we use to identify winning creatives in under 7 days."
 date: "2025-11-10"
-author: "Honey & Lemon Team"
+author: "ROIlabs Team"
 category: "Creative"
 readTime: "6 min read"
 coverImage: ""

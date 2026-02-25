@@ -2,7 +2,7 @@ import Calculator from "@/components/Calculator";
 import Link from "next/link";
 
 export const metadata = {
-  title: "ROAS vs ROI Calculator | Honey & Lemon",
+  title: "ROAS vs ROI Calculator | ROIlabs",
   description:
     "Free ROAS vs ROI calculator. Enter your ad spend, revenue, and costs to discover whether your campaigns are actually profitable. Multi-currency support included.",
   keywords: [
@@ -104,7 +104,7 @@ export default function CalculatorPage() {
                 realize you&apos;re actually losing money.
               </p>
               <p>
-                At Honey &amp; Lemon, we optimize for ROI because that&apos;s what actually hits your
+                At ROIlabs, we optimize for ROI because that&apos;s what actually hits your
                 bank account. Our clients know exactly how much profit their ad spend generates.
               </p>
             </div>

@@ -2,7 +2,7 @@
 title: "How to Run Profitable Meta Ads After iOS Privacy Changes"
 excerpt: "iOS privacy updates shook the ad world. Here's how we've adapted our strategies to keep delivering 4x+ ROAS for our clients on Meta."
 date: "2025-12-15"
-author: "Honey & Lemon Team"
+author: "ROIlabs Team"
 category: "Meta Ads"
 readTime: "7 min read"
 coverImage: ""
