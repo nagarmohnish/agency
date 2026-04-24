@@ -1,6 +1,9 @@
 import Hero from "@/components/Hero";
-import BrandMarquee from "@/components/BrandMarquee";
+import Numbers from "@/components/Numbers";
+import WhyUs from "@/components/WhyUs";
 import Services from "@/components/Services";
+import Testimonials from "@/components/Testimonials";
+import WhichPath from "@/components/WhichPath";
 import Calculator from "@/components/Calculator";
 import Contact from "@/components/Contact";
 
@@ -8,13 +11,12 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <div className="section-gradient-divider" />
-      <BrandMarquee />
-      <div className="section-gradient-divider" />
+      <Numbers />
+      <WhyUs />
       <Services />
-      <div className="section-gradient-divider" />
+      <Testimonials />
+      <WhichPath />
       <Calculator />
-      <div className="section-gradient-divider" />
       <Contact />
     </>
   );

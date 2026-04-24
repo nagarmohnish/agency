@@ -4,7 +4,6 @@ import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import LeadPopup from "@/components/LeadPopup";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -24,10 +23,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ROIlabs | Performance Marketing Agency",
+  title: "ROI Labs | Performance Marketing + AI Automation",
   description:
-    "We focus on ROI, not ROAS. ROIlabs is a paid media agency managing millions in ad spend across Meta, Google, Snapchat & LinkedIn — driving real revenue growth.",
-  keywords: ["paid ads", "Meta ads", "Google ads", "Snapchat ads", "creative agency", "ad creatives", "social media marketing", "performance marketing", "ROI"],
+    "Performance marketing and custom AI automation for ambitious brands. ROI Labs builds revenue-focused paid media programs and bespoke AI systems — measured in real revenue, not vanity metrics.",
+  keywords: ["paid ads", "Meta ads", "Google ads", "performance marketing", "AI automation", "custom AI", "ROI"],
 };
 
 export default function RootLayout({
@@ -43,7 +42,6 @@ export default function RootLayout({
         <Navbar />
         <main>{children}</main>
         <Footer />
-        <LeadPopup />
       </body>
     </html>
   );
