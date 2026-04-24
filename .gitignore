@@ -40,4 +40,13 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.vercel
+# editor / agent caches (local-only)
+.agents/
+.claude/
+.vscode/
+.idea/
+
+# stray artifacts
+nul
+skills-lock.json
+images (*).jpg
