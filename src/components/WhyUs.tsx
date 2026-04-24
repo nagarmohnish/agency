@@ -40,7 +40,7 @@ export default function WhyUs() {
     <section className="relative py-24 md:py-28 border-t border-b border-[var(--border-subtle)]">
       <div className="max-w-6xl mx-auto px-6 lg:px-8">
         <div className="text-center mb-16">
-          <p className="text-sm text-[var(--accent-green)] font-medium mb-4">
+          <p className="text-xs md:text-sm font-mono tracking-[0.18em] uppercase text-[var(--accent-yellow)] mb-5">
             Why ROI Labs
           </p>
           <h2 className="text-headline text-white">
@@ -51,7 +51,7 @@ export default function WhyUs() {
         <div className="grid md:grid-cols-3 gap-10 md:gap-14 max-w-5xl mx-auto">
           {reasons.map((r) => (
             <div key={r.title}>
-              <div className="flex items-center gap-3 text-[var(--accent-green)] mb-4">
+              <div className="flex items-center gap-3 text-[var(--accent-yellow)] mb-4">
                 {r.icon}
                 <h3 className="text-lg font-semibold text-white m-0">
                   {r.title}

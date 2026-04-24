@@ -6,14 +6,9 @@ export default function Footer() {
     <footer className="py-10 md:py-12 border-t border-[var(--border-subtle)]">
       <div className="max-w-6xl mx-auto px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
-          <div className="flex items-center gap-3">
-            <Link href="/" aria-label="ROI Labs" className="text-white">
-              <Logo size={28} />
-            </Link>
-            <span className="inline-flex items-center px-2 py-0.5 border border-[var(--border-subtle)] rounded-sm text-[10px] font-medium tracking-[0.14em] uppercase text-[var(--text-muted)]">
-              Agency
-            </span>
-          </div>
+          <Link href="/" aria-label="ROI Labs" className="text-white inline-flex">
+            <Logo size={52} />
+          </Link>
 
           <nav className="flex flex-wrap items-center gap-x-7 gap-y-3 text-sm">
             {[

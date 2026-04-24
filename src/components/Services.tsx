@@ -68,26 +68,33 @@ const aiCards = [
 export default function Services() {
   return (
     <>
-      {/* PERFORMANCE MARKETING */}
+      {/* === CHAPTER 01: PERFORMANCE === */}
       <ProductSection
         id="performance"
-        pre={<span><span className="text-white">ROI Labs</span> Performance</span>}
+        index="01"
+        chapter="ROI Labs / Performance"
         title="Paid media that pays back."
         description="Revenue-focused paid media across Meta, Google, LinkedIn, and Snap — executed by the same team that writes the creative brief and reads the P&L. No handoffs, no theater."
         cards={performanceCards}
+        iconStyle="filled"
         ctaHref="/#contact"
         ctaLabel="Explore Performance"
       />
 
-      {/* AI AUTOMATION */}
+      {/* === YELLOW TRANSITION BAND === */}
+      <TransitionBand />
+
+      {/* === CHAPTER 02: AI === */}
       <ProductSection
         id="ai"
-        pre={<span><span className="text-white">ROI Labs</span> AI</span>}
+        index="02"
+        chapter="ROI Labs / AI"
         title="Custom AI, built for your workflow."
         description="Bespoke AI systems for brands that need more than a chatbot. We scope, build, and deploy custom automation that sits inside your stack — not next to it."
         cards={aiCards}
+        iconStyle="outlined"
         ctaHref="/#contact"
-        ctaLabel="Explore AI Automation"
+        ctaLabel="Explore AI"
       />
     </>
   );
@@ -95,30 +102,50 @@ export default function Services() {
 
 function ProductSection({
   id,
-  pre,
+  index,
+  chapter,
   title,
   description,
   cards,
+  iconStyle,
   ctaHref,
   ctaLabel,
 }: {
   id: string;
-  pre: React.ReactNode;
+  index: string;
+  chapter: string;
   title: string;
   description: string;
   cards: { title: string; desc: string; icon: React.ReactNode }[];
+  iconStyle: "filled" | "outlined";
   ctaHref: string;
   ctaLabel: string;
 }) {
   return (
-    <section id={id} className="py-24 md:py-32 border-b border-[var(--border-subtle)]">
-      <div className="max-w-6xl mx-auto px-6 lg:px-8">
-        <div className="text-center mb-14 max-w-3xl mx-auto">
-          <p className="text-sm text-[var(--accent-green)] font-medium mb-4">
-            {pre}
+    <section
+      id={id}
+      className="relative py-24 md:py-32 overflow-hidden"
+    >
+      {/* Massive background chapter number */}
+      <span
+        aria-hidden
+        className="pointer-events-none select-none absolute -top-6 md:-top-10 right-[-20px] md:right-[-10px] text-[14rem] md:text-[22rem] leading-none font-bold"
+        style={{
+          color: "transparent",
+          WebkitTextStroke: "1px rgba(250,204,21,0.12)",
+        }}
+      >
+        {index}
+      </span>
+
+      <div className="relative z-10 max-w-6xl mx-auto px-6 lg:px-8">
+        <div className="max-w-3xl mb-14">
+          <p className="text-xs md:text-sm font-mono tracking-[0.18em] uppercase text-[var(--accent-yellow)] mb-6">
+            <span className="text-white/40 mr-2">{index}</span>
+            / {chapter}
           </p>
           <h2 className="text-headline text-white mb-6">{title}</h2>
-          <p className="text-[var(--text-secondary)] text-base leading-relaxed">
+          <p className="text-[var(--text-secondary)] text-base md:text-lg leading-relaxed">
             {description}
           </p>
         </div>
@@ -129,9 +156,7 @@ function ProductSection({
               key={c.title}
               className="glass-card p-7 flex flex-col gap-4"
             >
-              <div className="w-10 h-10 rounded-md bg-[var(--color-elevated)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--accent-green)]">
-                {c.icon}
-              </div>
+              <IconTile icon={c.icon} variant={iconStyle} />
               <h3 className="text-lg font-semibold text-white m-0">{c.title}</h3>
               <p className="text-[var(--text-secondary)] text-sm leading-relaxed m-0">
                 {c.desc}
@@ -140,12 +165,57 @@ function ProductSection({
           ))}
         </div>
 
-        <div className="text-center">
-          <a href={ctaHref} className="btn-primary">
-            {ctaLabel}
-          </a>
-        </div>
+        <a href={ctaHref} className="btn-primary">
+          {ctaLabel}
+        </a>
       </div>
     </section>
+  );
+}
+
+function IconTile({
+  icon,
+  variant,
+}: {
+  icon: React.ReactNode;
+  variant: "filled" | "outlined";
+}) {
+  if (variant === "filled") {
+    // Performance style — solid yellow tile with black icon
+    return (
+      <div
+        className="w-11 h-11 rounded-md flex items-center justify-center text-black"
+        style={{ background: "var(--accent-yellow)" }}
+      >
+        {icon}
+      </div>
+    );
+  }
+  // AI style — outlined tile with yellow icon
+  return (
+    <div
+      className="w-11 h-11 rounded-md flex items-center justify-center text-[var(--accent-yellow)]"
+      style={{
+        background: "transparent",
+        border: "1px solid rgba(250,204,21,0.45)",
+      }}
+    >
+      {icon}
+    </div>
+  );
+}
+
+function TransitionBand() {
+  return (
+    <div className="relative overflow-hidden" style={{ background: "var(--accent-yellow)" }}>
+      <div className="max-w-6xl mx-auto px-6 lg:px-8 py-14 md:py-16 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <p className="text-xs md:text-sm font-mono tracking-[0.18em] uppercase text-black/70 m-0">
+          01 → 02
+        </p>
+        <h3 className="text-3xl md:text-5xl font-bold text-black tracking-tight m-0 md:text-right leading-tight">
+          We also build <span className="italic font-serif">custom AI</span> systems.
+        </h3>
+      </div>
+    </div>
   );
 }

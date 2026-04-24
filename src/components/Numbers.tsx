@@ -49,7 +49,7 @@ export default function Numbers() {
     <section className="relative py-24 md:py-28">
       <div className="max-w-6xl mx-auto px-6 lg:px-8">
         <div className="text-center mb-14">
-          <p className="text-sm text-[var(--accent-green)] font-medium mb-4">
+          <p className="text-xs md:text-sm font-mono tracking-[0.18em] uppercase text-[var(--accent-yellow)] mb-5">
             ROI Labs in Numbers
           </p>
           <h2 className="text-headline text-white mb-0">
@@ -67,7 +67,7 @@ export default function Numbers() {
               key={s.label}
               className="card-gridded p-6 md:p-7 flex flex-col items-start gap-4"
             >
-              <div className="w-10 h-10 rounded-md bg-[var(--color-elevated)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--text-secondary)]">
+              <div className="w-10 h-10 rounded-md bg-[var(--color-elevated)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--accent-yellow)]">
                 {s.icon}
               </div>
               <div>

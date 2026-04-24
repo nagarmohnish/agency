@@ -16,7 +16,7 @@ export default function Hero() {
         }}
       />
 
-      {/* Soft green-tinted wash behind the headline */}
+      {/* Warm yellow wash behind the headline */}
       <div
         aria-hidden
         className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
@@ -24,7 +24,7 @@ export default function Hero() {
           width: "min(900px, 90vw)",
           height: 500,
           background:
-            "radial-gradient(ellipse at center, rgba(34,197,94,0.12), rgba(34,197,94,0.04) 40%, transparent 70%)",
+            "radial-gradient(ellipse at center, rgba(250,204,21,0.14), rgba(250,204,21,0.04) 40%, transparent 70%)",
           filter: "blur(40px)",
         }}
       />
@@ -32,7 +32,7 @@ export default function Hero() {
       <div className="relative z-10 max-w-5xl mx-auto px-6 lg:px-8 pt-36 pb-28 lg:pt-44 lg:pb-36 text-center">
         <h1 className="text-display text-white mb-8 max-w-4xl mx-auto">
           Performance marketing and AI automation for{" "}
-          <span className="text-[var(--accent-green)]">ambitious brands</span>
+          <span className="text-[var(--accent-yellow)]">ambitious brands</span>
         </h1>
 
         <p className="text-body-lg text-[var(--text-secondary)] max-w-xl mx-auto mb-14">
@@ -42,14 +42,14 @@ export default function Hero() {
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-x-3 gap-y-6">
           <div className="flex flex-col items-center gap-2">
-            <a href="/#performance" className="btn-dark">
-              Performance Marketing
+            <a href="/#performance" className="btn-glass">
+              ROI Labs Performance
             </a>
-            <span className="text-xs text-[var(--text-muted)]">Grow with paid media</span>
+            <span className="text-xs text-[var(--text-muted)]">Paid media, measured</span>
           </div>
           <div className="flex flex-col items-center gap-2">
             <a href="/#ai" className="btn-primary">
-              AI Automation
+              ROI Labs AI
             </a>
             <span className="text-xs text-[var(--text-muted)]">Custom AI systems</span>
           </div>
