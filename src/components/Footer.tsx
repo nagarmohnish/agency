@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
           <Link href="/" aria-label="ROI Labs" className="text-white inline-flex">
-            <Logo size={52} />
+            <Logo size={34} />
           </Link>
 
           <nav className="flex flex-wrap items-center gap-x-7 gap-y-3 text-sm">
