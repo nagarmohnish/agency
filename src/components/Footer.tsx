@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Logo from "@/components/Logo";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -8,14 +9,8 @@ export default function Footer() {
       <div className="relative z-10 max-w-6xl mx-auto px-6 lg:px-8">
         <div className="grid md:grid-cols-4 gap-12 md:gap-8 mb-16">
           <div className="md:col-span-2">
-            <Link href="/" className="inline-flex items-center mb-6" aria-label="ROI Labs">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/roi-logo.png"
-                alt="ROI Labs"
-                className="h-12 w-auto"
-                style={{ filter: "invert(1) brightness(1.05)" }}
-              />
+            <Link href="/" className="inline-flex items-center mb-6 text-white" aria-label="ROI Labs">
+              <Logo size={44} />
             </Link>
             <p className="text-body text-white/60 max-w-sm mb-6">
               Performance marketing agency specializing in paid social advertising across Meta, Google, LinkedIn, and Snapchat.

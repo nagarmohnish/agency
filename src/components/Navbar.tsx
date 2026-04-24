@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Logo from "@/components/Logo";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,14 +37,8 @@ export default function Navbar() {
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 lg:px-8">
         <div className="flex justify-between items-center">
-          <Link href="/" className="flex items-center group" aria-label="ROI Labs">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/roi-logo.png"
-              alt="ROI Labs"
-              className="h-11 w-auto"
-              style={{ mixBlendMode: "multiply" }}
-            />
+          <Link href="/" className="flex items-center group text-[var(--text-primary)]" aria-label="ROI Labs">
+            <Logo size={40} />
           </Link>
 
           <div className="hidden md:flex items-center gap-10">
