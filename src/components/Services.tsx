@@ -65,6 +65,70 @@ const creative = [
   { name: "Brand Identity", description: "Logo and visual systems" },
 ];
 
+const aiSolutions = [
+  {
+    name: "AI Agents & Workflows",
+    icon: (
+      <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="11" width="18" height="10" rx="2" />
+        <circle cx="12" cy="5" r="2" />
+        <path d="M12 7v4" />
+        <line x1="8" y1="16" x2="8" y2="16" />
+        <line x1="16" y1="16" x2="16" y2="16" />
+      </svg>
+    ),
+    description: "Autonomous agents that handle multi-step tasks across your tools — research, outreach, ops.",
+    capabilities: ["Sales agents", "Research automation", "Internal ops", "Multi-tool orchestration"],
+    gradient: "from-violet-500 to-purple-500",
+  },
+  {
+    name: "Custom Chatbots",
+    icon: (
+      <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+      </svg>
+    ),
+    description: "Branded LLM assistants trained on your knowledge base — for support, onboarding, or sales.",
+    capabilities: ["RAG systems", "Fine-tuned models", "Website widgets", "WhatsApp integration"],
+    gradient: "from-teal-500 to-emerald-500",
+  },
+  {
+    name: "Marketing Automation",
+    icon: (
+      <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+      </svg>
+    ),
+    description: "AI-generated ad copy, creative testing, and campaign optimization at scale.",
+    capabilities: ["Ad copy generation", "Creative iteration", "Audience scoring", "A/B test analysis"],
+    gradient: "from-orange-500 to-amber-500",
+  },
+  {
+    name: "Data & Reporting",
+    icon: (
+      <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="18" y1="20" x2="18" y2="10" />
+        <line x1="12" y1="20" x2="12" y2="4" />
+        <line x1="6" y1="20" x2="6" y2="14" />
+      </svg>
+    ),
+    description: "Automated data pipelines, real-time dashboards, and attribution modeling.",
+    capabilities: ["ETL pipelines", "Custom dashboards", "MMM & attribution", "Anomaly alerts"],
+    gradient: "from-cyan-500 to-blue-500",
+  },
+  {
+    name: "Custom AI Tooling",
+    icon: (
+      <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+      </svg>
+    ),
+    description: "Bespoke AI solutions built around your specific workflow and business problems.",
+    capabilities: ["Custom integrations", "Internal tools", "API orchestration", "Model fine-tuning"],
+    gradient: "from-rose-500 to-pink-500",
+  },
+];
+
 export default function Services() {
   return (
     <section id="services" className="section relative bg-[var(--color-base)]">
@@ -76,13 +140,23 @@ export default function Services() {
             Services
           </span>
           <h2 className="text-headline mb-6">
-            Full-funnel{" "}
-            <span className="text-gradient">advertising</span>
+            Two things,{" "}
+            <span className="text-gradient">done well.</span>
           </h2>
           <p className="text-body-lg text-[var(--text-secondary)]">
-            From awareness to conversion, we build campaigns that drive measurable
-            growth across all major platforms.
+            Performance marketing and custom AI automation — both built around
+            what actually moves your business forward.
           </p>
+        </div>
+
+        {/* ===== Offering 1: Performance Marketing ===== */}
+        <div className="mb-10 flex items-center gap-4">
+          <span className="pill-badge-green border-2 border-[var(--accent-green)] rounded-full px-4 py-1.5 flex items-center gap-2 font-bold">
+            01
+          </span>
+          <h3 className="text-subhead text-[var(--text-primary)]">
+            Performance Marketing
+          </h3>
         </div>
 
         {/* Platform expertise label */}
@@ -127,7 +201,7 @@ export default function Services() {
           <span className="text-micro text-[var(--text-muted)]">Creative Studio</span>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-20">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-24">
           {creative.map((service, index) => (
             <div key={service.name} className="glass-card p-6 group shine-on-hover">
               <span className="text-5xl font-black text-[var(--accent-orange)] opacity-50 group-hover:opacity-80 transition-opacity">
@@ -141,6 +215,49 @@ export default function Services() {
           ))}
         </div>
 
+        {/* ===== Offering 2: AI Automation ===== */}
+        <div className="mb-10 flex items-center gap-4">
+          <span className="pill-badge-purple border-2 border-[var(--accent-purple)] rounded-full px-4 py-1.5 flex items-center gap-2 font-bold">
+            02
+          </span>
+          <h3 className="text-subhead text-[var(--text-primary)]">
+            AI Automation
+          </h3>
+        </div>
+
+        {/* AI solutions bento */}
+        <div className="flex items-center gap-4 mb-10">
+          <div className="w-12 h-[2px] bg-gradient-to-r from-[var(--accent-purple)] to-transparent" />
+          <span className="text-micro text-[var(--text-muted)]">Custom AI Solutions</span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-5 mb-20">
+          {aiSolutions.map((sol, index) => (
+            <div
+              key={sol.name}
+              className={`glass-card-glow p-8 ${
+                index < 3 ? "lg:col-span-2" : "lg:col-span-3"
+              }`}
+            >
+              <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${sol.gradient} flex items-center justify-center mb-6 text-white shadow-[3px_4px_0_rgba(0,0,0,0.12)]`}>
+                {sol.icon}
+              </div>
+
+              <h3 className="text-subhead text-[var(--text-primary)] mb-3">{sol.name}</h3>
+              <p className="text-body text-[var(--text-secondary)] mb-6">{sol.description}</p>
+
+              <ul className="space-y-2">
+                {sol.capabilities.map((cap) => (
+                  <li key={cap} className="flex items-center gap-3 text-small">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-purple)]" />
+                    <span className="text-[var(--text-muted)]">{cap}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
         {/* CTA Card */}
         <div className="glass-card-glow p-10 md:p-14 relative">
           <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
@@ -149,11 +266,11 @@ export default function Services() {
                 Ready to <span className="text-gradient">scale</span>?
               </h3>
               <p className="text-body-lg text-[var(--text-secondary)]">
-                Get a free audit of your current campaigns.
+                Get a free audit of your campaigns or a free scoping call on your AI use case.
               </p>
             </div>
             <a href="#contact" className="btn-primary whitespace-nowrap">
-              Get free audit
+              Get in touch
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>

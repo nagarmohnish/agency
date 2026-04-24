@@ -49,7 +49,8 @@ export default function Hero() {
               That&apos;s why we focus on <span className="text-[var(--accent-green)] font-extrabold">ROI</span> — not ROAS.
             </p>
             <p className="text-body-lg text-[var(--text-secondary)] max-w-lg mx-auto lg:mx-0 mb-10">
-              We&apos;re a paid media agency that cares about what actually matters — real revenue growth, not vanity metrics.
+              Performance marketing and custom AI automation — built around
+              what actually moves your business forward.
             </p>
 
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-5 mb-14">

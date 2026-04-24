@@ -8,14 +8,14 @@ export default function Footer() {
       <div className="relative z-10 max-w-6xl mx-auto px-6 lg:px-8">
         <div className="grid md:grid-cols-4 gap-12 md:gap-8 mb-16">
           <div className="md:col-span-2">
-            <Link href="/" className="inline-flex items-center gap-3 mb-6">
-              <div className="relative w-10 h-10">
-                <div className="absolute inset-0 bg-[var(--accent-green)] rounded-xl border-2 border-white/20 shadow-[2px_3px_0_rgba(0,0,0,0.3)]" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-white font-black text-sm">RL</span>
-                </div>
-              </div>
-              <span className="text-xl font-extrabold text-white uppercase tracking-tight">ROIlabs</span>
+            <Link href="/" className="inline-flex items-center mb-6" aria-label="ROI Labs">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/roi-logo.png"
+                alt="ROI Labs"
+                className="h-12 w-auto"
+                style={{ filter: "invert(1) brightness(1.05)" }}
+              />
             </Link>
             <p className="text-body text-white/60 max-w-sm mb-6">
               Performance marketing agency specializing in paid social advertising across Meta, Google, LinkedIn, and Snapchat.
@@ -40,7 +40,7 @@ export default function Footer() {
           <div>
             <h4 className="text-micro text-[var(--accent-orange)] mb-6">Company</h4>
             <ul className="space-y-4">
-              {[{ label: "About", href: "/about" }, { label: "Blog", href: "/blog" }, { label: "Calculator", href: "/calculator" }, { label: "Contact", href: "/#contact" }].map((item) => (
+              {[{ label: "About", href: "/about" }, { label: "Calculator", href: "/calculator" }, { label: "Contact", href: "/#contact" }].map((item) => (
                 <li key={item.label}><a href={item.href} className="text-small text-white/50 hover:text-[var(--accent-yellow)] transition-colors font-medium">{item.label}</a></li>
               ))}
             </ul>

@@ -1,7 +1,6 @@
 import Hero from "@/components/Hero";
 import BrandMarquee from "@/components/BrandMarquee";
 import Services from "@/components/Services";
-import BlogSection from "@/components/BlogSection";
 import Calculator from "@/components/Calculator";
 import Contact from "@/components/Contact";
 
@@ -13,8 +12,6 @@ export default function Home() {
       <BrandMarquee />
       <div className="section-gradient-divider" />
       <Services />
-      <div className="section-gradient-divider" />
-      <BlogSection />
       <div className="section-gradient-divider" />
       <Calculator />
       <div className="section-gradient-divider" />

@@ -17,7 +17,6 @@ export default function Navbar() {
     { href: "/#services", label: "Services" },
     { href: "/about", label: "About" },
     { href: "/calculator", label: "Calculator" },
-    { href: "/blog", label: "Blog" },
     { href: "/#contact", label: "Contact" },
   ];
 
@@ -37,16 +36,14 @@ export default function Navbar() {
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 lg:px-8">
         <div className="flex justify-between items-center">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative w-10 h-10">
-              <div className="absolute inset-0 bg-[var(--accent-green)] rounded-xl border-[3px] border-[var(--card-border)] shadow-[2px_3px_0_rgba(0,0,0,0.15)]" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-white font-black text-sm">RL</span>
-              </div>
-            </div>
-            <span className="text-lg font-extrabold text-[var(--text-primary)] hidden sm:block uppercase tracking-tight">
-              ROIlabs
-            </span>
+          <Link href="/" className="flex items-center group" aria-label="ROI Labs">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/roi-logo.png"
+              alt="ROI Labs"
+              className="h-11 w-auto"
+              style={{ mixBlendMode: "multiply" }}
+            />
           </Link>
 
           <div className="hidden md:flex items-center gap-10">
