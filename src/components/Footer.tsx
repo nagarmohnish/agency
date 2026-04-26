@@ -19,7 +19,6 @@ export default function Footer() {
             {[
               { label: "Home", href: "/" },
               { label: "Platforms", href: "/#platforms" },
-              { label: "Process", href: "/#process" },
               { label: "About", href: "/about" },
               { label: "Contact", href: "/#contact" },
             ].map((item) => (

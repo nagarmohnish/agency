@@ -26,7 +26,6 @@ const ACCENT_TEXT = "#000";
 const channels = [
   { id: "overview", label: "overview" },
   { id: "platforms", label: "platforms" },
-  { id: "process", label: "process" },
   { id: "contact", label: "contact" },
 ];
 
@@ -245,7 +244,6 @@ export default function DiscordPage() {
         >
           {active === "overview" && <OverviewSection />}
           {active === "platforms" && <PlatformsSection />}
-          {active === "process" && <ProcessSection />}
           {active === "contact" && <ContactSection />}
         </section>
 
@@ -286,7 +284,6 @@ function topicFor(id: string): string {
   switch (id) {
     case "overview": return "Performance marketing for revenue, not vanity metrics.";
     case "platforms": return "Meta + Google primary. Add-ons added when they earn it.";
-    case "process": return "Audit → Build → Scale. The first 60 days.";
     case "contact": return "Send your last 90 days. We'll come back with a clear read.";
     default: return "";
   }
@@ -418,7 +415,7 @@ function OverviewSection() {
         body={
           <p style={{ margin: 0 }}>
             Pick a channel on the left to dive in: <ChannelChip>#platforms</ChannelChip>{" "}
-            <ChannelChip>#process</ChannelChip> <ChannelChip>#contact</ChannelChip>.
+            <ChannelChip>#contact</ChannelChip>.
           </p>
         }
       />
@@ -464,36 +461,6 @@ function PlatformsSection() {
                   <li key={it}>{it}</li>
                 ))}
               </ul>
-            </>
-          }
-        />
-      ))}
-    </div>
-  );
-}
-
-function ProcessSection() {
-  const steps = [
-    { n: "01", title: "Audit", label: "Week 1", desc: "We pull your last 90 days from Meta and Google, map spend to actual revenue, and identify the highest-leverage fixes." },
-    { n: "02", title: "Build", label: "Weeks 2-4", desc: "Restructure campaigns around what's working. Ship fresh creative the same week. Stand up proper measurement." },
-    { n: "03", title: "Scale", label: "Month 2 onward", desc: "Weekly creative iteration. Holdout-tested incrementality. P&L-anchored reporting." },
-  ];
-  return (
-    <div style={{ maxWidth: 720 }}>
-      <SystemMessage>How the first 60 days run.</SystemMessage>
-      {steps.map((s) => (
-        <Message
-          key={s.n}
-          author="ROI Labs"
-          time="Today at 09:21"
-          body={
-            <>
-              <p style={{ margin: "0 0 6px", color: TEXT }}>
-                <span style={{ color: ACCENT, fontWeight: 700, marginRight: 8 }}>{s.n}</span>
-                <strong style={{ fontWeight: 600 }}>{s.title}</strong>
-                <span style={{ color: TEXT_DIM, marginLeft: 10, fontSize: 12 }}>· {s.label}</span>
-              </p>
-              <p style={{ margin: 0, color: TEXT_MUTED, fontSize: 14 }}>{s.desc}</p>
             </>
           }
         />
