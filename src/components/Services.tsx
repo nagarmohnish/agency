@@ -140,7 +140,7 @@ function ProductSection({
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 lg:px-8">
         <div className="max-w-3xl mb-14">
-          <p className="text-xs md:text-sm font-mono tracking-[0.18em] uppercase text-[var(--accent-yellow)] mb-6">
+          <p className="text-xs md:text-sm font-serif tracking-[0.18em] uppercase text-[var(--accent-yellow)] mb-6">
             <span className="text-white/40 mr-2">{index}</span>
             / {chapter}
           </p>
@@ -209,7 +209,7 @@ function TransitionBand() {
   return (
     <div className="relative overflow-hidden" style={{ background: "var(--accent-yellow)" }}>
       <div className="max-w-6xl mx-auto px-6 lg:px-8 py-14 md:py-16 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-        <p className="text-xs md:text-sm font-mono tracking-[0.18em] uppercase text-black/70 m-0">
+        <p className="text-xs md:text-sm font-serif tracking-[0.18em] uppercase text-black/70 m-0">
           01 → 02
         </p>
         <h3

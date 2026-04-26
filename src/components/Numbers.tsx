@@ -49,7 +49,7 @@ export default function Numbers() {
     <section className="relative py-24 md:py-28">
       <div className="max-w-6xl mx-auto px-6 lg:px-8">
         <div className="text-center mb-14">
-          <p className="text-xs md:text-sm font-mono tracking-[0.18em] uppercase text-[var(--accent-yellow)] mb-5">
+          <p className="text-xs md:text-sm font-serif tracking-[0.18em] uppercase text-[var(--accent-yellow)] mb-5">
             ROI Labs in Numbers
           </p>
           <h2 className="text-headline text-white mb-0">
