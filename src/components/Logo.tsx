@@ -9,7 +9,7 @@ type Props = {
   size?: number;
 };
 
-const ASPECT = 144 / 142; // width / height of the trimmed wordmark
+const ASPECT = 144 / 98; // width / height of the tight-stack wordmark
 
 export default function Logo({ className = "", size = 56 }: Props) {
   const width = Math.round(size * ASPECT);

@@ -5,7 +5,7 @@ export default function WhichPath() {
         <p className="text-xs font-mono tracking-[0.18em] uppercase text-black/60 mb-5">
           Start a conversation
         </p>
-        <h2 className="text-3xl md:text-5xl font-bold text-black tracking-tight mb-4">
+        <h2 className="text-4xl md:text-6xl text-black tracking-tight mb-4" style={{ fontFamily: "var(--font-logo-serif), 'DM Serif Display', Georgia, serif", fontWeight: 400, lineHeight: 1.05 }}>
           Not sure which is right for you?
         </h2>
         <p className="text-black/70 mb-10 text-base md:text-lg">

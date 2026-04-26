@@ -212,8 +212,11 @@ function TransitionBand() {
         <p className="text-xs md:text-sm font-mono tracking-[0.18em] uppercase text-black/70 m-0">
           01 → 02
         </p>
-        <h3 className="text-3xl md:text-5xl font-bold text-black tracking-tight m-0 md:text-right leading-tight">
-          We also build <span className="italic font-serif">custom AI</span> systems.
+        <h3
+          className="text-3xl md:text-5xl text-black tracking-tight m-0 md:text-right leading-tight"
+          style={{ fontFamily: "var(--font-logo-serif), 'DM Serif Display', Georgia, serif", fontWeight: 400 }}
+        >
+          We also build custom AI systems.
         </h3>
       </div>
     </div>

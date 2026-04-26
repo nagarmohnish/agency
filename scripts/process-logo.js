@@ -95,8 +95,74 @@ async function main() {
   console.log(`bbox: x=${minX}..${maxX}, y=${minY}..${maxY}`);
   console.log(`crop (no brackets): x=${cropX}, y=${cropY}, w=${cropW}, h=${cropH}`);
 
-  await sharp(out, { raw: { width, height, channels: 4 } })
-    .extract({ left: cropX, top: cropY, width: cropW, height: cropH })
+  // 3. After horizontal crop: detect the empty band between ROI and LABS rows
+  //    inside the cropped region, then shrink that band so the wordmark sits
+  //    tighter (closer to a typical wordmark stack).
+  const rowHasOpaqueInCrop = (y) => {
+    for (let x = cropX; x <= rightCrop; x++) if (isOpaque(x, y)) return true;
+    return false;
+  };
+
+  // Find the gap: walk down from cropY, find first transparent row after the
+  // first opaque region (= bottom of ROI), then find next opaque row (= top
+  // of LABS). The gap is between them.
+  let gapStart = -1, gapEnd = -1;
+  let inFirst = false;
+  for (let y = cropY; y <= maxY; y++) {
+    const op = rowHasOpaqueInCrop(y);
+    if (op) {
+      if (gapStart !== -1 && gapEnd === -1) {
+        gapEnd = y - 1; // last transparent row
+        break;
+      }
+      inFirst = true;
+    } else if (inFirst && gapStart === -1) {
+      gapStart = y;
+    }
+  }
+
+  // Compose output: keep ROI rows as-is, shrink the gap to a small fixed
+  // amount, keep LABS rows as-is.
+  const TARGET_GAP = 6; // pixels — tighter spacing
+  const fullW = cropW;
+  let outBuf, outH;
+  if (gapStart > 0 && gapEnd > gapStart) {
+    const roiTop = cropY;
+    const roiBot = gapStart - 1;
+    const labsTop = gapEnd + 1;
+    const labsBot = maxY;
+    const roiH = roiBot - roiTop + 1;
+    const labsH = labsBot - labsTop + 1;
+    outH = roiH + TARGET_GAP + labsH;
+    outBuf = Buffer.alloc(fullW * outH * 4);
+
+    // Copy ROI rows
+    for (let y = 0; y < roiH; y++) {
+      const srcRow = (roiTop + y) * width * 4 + cropX * 4;
+      const dstRow = y * fullW * 4;
+      out.copy(outBuf, dstRow, srcRow, srcRow + fullW * 4);
+    }
+    // Gap rows are already zero (transparent) — Buffer.alloc zero-fills.
+    // Copy LABS rows
+    for (let y = 0; y < labsH; y++) {
+      const srcRow = (labsTop + y) * width * 4 + cropX * 4;
+      const dstRow = (roiH + TARGET_GAP + y) * fullW * 4;
+      out.copy(outBuf, dstRow, srcRow, srcRow + fullW * 4);
+    }
+    console.log(`gap: ${gapStart}..${gapEnd} (${gapEnd - gapStart + 1}px) → ${TARGET_GAP}px`);
+    console.log(`final: ${fullW}x${outH}`);
+  } else {
+    // Fallback: no gap detected, just crop normally
+    outBuf = Buffer.alloc(fullW * cropH * 4);
+    for (let y = 0; y < cropH; y++) {
+      const srcRow = (cropY + y) * width * 4 + cropX * 4;
+      const dstRow = y * fullW * 4;
+      out.copy(outBuf, dstRow, srcRow, srcRow + fullW * 4);
+    }
+    outH = cropH;
+  }
+
+  await sharp(outBuf, { raw: { width: fullW, height: outH, channels: 4 } })
     .png({ compressionLevel: 9 })
     .toFile(OUT);
 
