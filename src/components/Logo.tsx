@@ -1,49 +1,27 @@
-// Crisp inline ROI Labs wordmark — no brackets, no background.
-// Just the serif "ROI" with letter-spaced "LABS" beneath. Uses currentColor
-// so callers control ink via parent CSS.
+// ROI Labs wordmark — uses the original asset (cropped to remove the brackets,
+// background made transparent, ink remapped to white). The PNG is the exact
+// font from the brand asset, so the logo matches the source material.
+//
+// `size` = pixel height of the wordmark (ROI + LABS combined).
 
 type Props = {
   className?: string;
   size?: number;
 };
 
-export default function Logo({ className = "", size = 30 }: Props) {
-  const labsSize = size * 0.32;
-  const labsSpacing = labsSize * 0.55;
-  const labsTop = size * 0.12;
+const ASPECT = 144 / 142; // width / height of the trimmed wordmark
 
+export default function Logo({ className = "", size = 56 }: Props) {
+  const width = Math.round(size * ASPECT);
   return (
-    <span
-      className={`inline-flex flex-col items-center leading-none select-none ${className}`}
-      aria-label="ROI Labs"
-    >
-      <span
-        style={{
-          fontFamily: "var(--font-logo-serif), 'DM Serif Display', Georgia, 'Times New Roman', serif",
-          fontSize: size * 1.3,
-          fontWeight: 400,
-          lineHeight: 1,
-          letterSpacing: "0",
-          color: "currentColor",
-        }}
-      >
-        ROI
-      </span>
-      <span
-        style={{
-          fontFamily: "var(--font-poppins), system-ui, sans-serif",
-          fontSize: labsSize,
-          fontWeight: 500,
-          letterSpacing: labsSpacing,
-          textIndent: labsSpacing,
-          marginTop: labsTop,
-          textTransform: "uppercase",
-          lineHeight: 1,
-          color: "currentColor",
-        }}
-      >
-        Labs
-      </span>
-    </span>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/roi-logo.png"
+      alt="ROI Labs"
+      width={width}
+      height={size}
+      className={className}
+      style={{ display: "block", height: size, width: "auto" }}
+    />
   );
 }

@@ -39,7 +39,7 @@ export default function Navbar() {
       <div className="relative z-10 max-w-6xl mx-auto px-6 lg:px-8">
         <div className="flex justify-between items-center">
           <Link href="/" className="flex items-center text-white group" aria-label="ROI Labs">
-            <Logo size={30} />
+            <Logo size={48} />
           </Link>
 
           <div className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
