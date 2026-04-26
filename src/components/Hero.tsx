@@ -1,57 +1,52 @@
 export default function Hero() {
   return (
     <section className="relative overflow-hidden">
-      {/* Diagonal dotted texture backdrop */}
+      {/* Faint grain texture */}
       <div
         aria-hidden
-        className="absolute inset-0 pointer-events-none"
+        className="absolute inset-0 pointer-events-none opacity-60"
         style={{
           backgroundImage:
-            "linear-gradient(135deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
+            "linear-gradient(135deg, rgba(255,255,255,0.035) 1px, transparent 1px)",
           backgroundSize: "14px 14px",
           maskImage:
-            "radial-gradient(ellipse at 50% 40%, rgba(0,0,0,0.9), transparent 70%)",
+            "radial-gradient(ellipse at 50% 35%, rgba(0,0,0,1) 0%, transparent 75%)",
           WebkitMaskImage:
-            "radial-gradient(ellipse at 50% 40%, rgba(0,0,0,0.9), transparent 70%)",
+            "radial-gradient(ellipse at 50% 35%, rgba(0,0,0,1) 0%, transparent 75%)",
         }}
       />
 
-      {/* Warm yellow wash behind the headline */}
-      <div
-        aria-hidden
-        className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-        style={{
-          width: "min(900px, 90vw)",
-          height: 500,
-          background:
-            "radial-gradient(ellipse at center, rgba(250,204,21,0.14), rgba(250,204,21,0.04) 40%, transparent 70%)",
-          filter: "blur(40px)",
-        }}
-      />
+      <div className="relative z-10 max-w-6xl mx-auto px-6 lg:px-8 pt-44 pb-32 lg:pt-52 lg:pb-40">
+        <div className="max-w-4xl">
+          <p className="text-xs uppercase tracking-[0.22em] text-[var(--accent-yellow)] mb-8 font-medium">
+            Performance marketing agency
+          </p>
 
-      <div className="relative z-10 max-w-5xl mx-auto px-6 lg:px-8 pt-36 pb-28 lg:pt-44 lg:pb-36 text-center">
-        <h1 className="text-display text-white mb-8 max-w-4xl mx-auto">
-          Performance marketing and AI automation for{" "}
-          <span className="text-[var(--accent-yellow)]">ambitious brands</span>
-        </h1>
+          <h1 className="text-display text-white mb-10">
+            Paid media,
+            <br />
+            measured in <span className="text-[var(--accent-yellow)] italic">revenue</span>.
+          </h1>
 
-        <p className="text-body-lg text-[var(--text-secondary)] max-w-xl mx-auto mb-14">
-          We help growth-stage companies scale paid media and build custom AI
-          systems — measured in real revenue, not vanity metrics.
-        </p>
+          <p className="text-body-lg text-[var(--text-secondary)] max-w-xl mb-12">
+            We run Meta and Google ads for growth-stage brands. Strategy, creative, and
+            measurement under one roof — optimized for what hits your bank account, not
+            your dashboard.
+          </p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-x-3 gap-y-6">
-          <div className="flex flex-col items-center gap-2">
-            <a href="/#performance" className="btn-glass">
-              ROI Labs Performance
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-4">
+            <a href="/#contact" className="btn-primary">
+              Get a free audit
             </a>
-            <span className="text-xs text-[var(--text-muted)]">Paid media, measured</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <a href="/#ai" className="btn-primary">
-              ROI Labs AI
+            <a
+              href="/#platforms"
+              className="inline-flex items-center gap-2 px-1 py-2 text-sm text-[var(--text-secondary)] hover:text-white transition-colors"
+            >
+              Or see how we work
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+                <path d="M5 12h14M13 5l7 7-7 7" />
+              </svg>
             </a>
-            <span className="text-xs text-[var(--text-muted)]">Custom AI systems</span>
           </div>
         </div>
       </div>

@@ -48,16 +48,18 @@ export default function Numbers() {
   return (
     <section className="relative py-24 md:py-28">
       <div className="max-w-6xl mx-auto px-6 lg:px-8">
-        <div className="text-center mb-14">
-          <p className="text-xs md:text-sm font-sans tracking-[0.18em] uppercase text-[var(--accent-yellow)] mb-5">
-            ROI Labs in Numbers
-          </p>
-          <h2 className="text-headline text-white mb-0">
-            Performance marketing at real scale
-          </h2>
-          <p className="text-body-lg text-[var(--text-secondary)] max-w-2xl mx-auto mt-6">
-            Powered by a full-stack offering across paid media, creative, AI
-            automation, and measurement infrastructure.
+        <div className="flex items-end justify-between flex-wrap gap-6 mb-14">
+          <div className="max-w-2xl">
+            <p className="text-xs uppercase tracking-[0.22em] text-[var(--accent-yellow)] mb-5 font-medium">
+              In numbers
+            </p>
+            <h2 className="text-headline text-white">
+              Paid media, at scale.
+            </h2>
+          </div>
+          <p className="text-sm text-[var(--text-secondary)] max-w-md">
+            Seven years of running Meta and Google for D2C, SaaS, and B2B brands —
+            measured against revenue, not vanity metrics.
           </p>
         </div>
 

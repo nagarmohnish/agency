@@ -39,12 +39,12 @@ export default function WhyUs() {
   return (
     <section className="relative py-24 md:py-28 border-t border-b border-[var(--border-subtle)]">
       <div className="max-w-6xl mx-auto px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <p className="text-xs md:text-sm font-sans tracking-[0.18em] uppercase text-[var(--accent-yellow)] mb-5">
-            Why ROI Labs
+        <div className="mb-16">
+          <p className="text-xs uppercase tracking-[0.22em] text-[var(--accent-yellow)] mb-5 font-medium">
+            <span className="text-white/40 mr-3">04</span>Why ROI Labs
           </p>
-          <h2 className="text-headline text-white">
-            Why growth-stage brands choose ROI Labs
+          <h2 className="text-headline text-white max-w-3xl">
+            Why growth-stage brands choose us.
           </h2>
         </div>
 

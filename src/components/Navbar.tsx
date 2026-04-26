@@ -15,9 +15,8 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { href: "/", label: "Home" },
-    { href: "/#performance", label: "Performance Marketing" },
-    { href: "/#ai", label: "AI Automation" },
+    { href: "/#platforms", label: "Platforms" },
+    { href: "/#process", label: "Process" },
     { href: "/about", label: "About" },
     { href: "/calculator", label: "Calculator" },
   ];

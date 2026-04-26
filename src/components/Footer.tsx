@@ -13,8 +13,8 @@ export default function Footer() {
           <nav className="flex flex-wrap items-center gap-x-7 gap-y-3 text-sm">
             {[
               { label: "Home", href: "/" },
-              { label: "Performance", href: "/#performance" },
-              { label: "AI Automation", href: "/#ai" },
+              { label: "Platforms", href: "/#platforms" },
+              { label: "Process", href: "/#process" },
               { label: "About", href: "/about" },
               { label: "Calculator", href: "/calculator" },
               { label: "Contact", href: "/#contact" },

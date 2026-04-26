@@ -1,24 +1,23 @@
+// Subtle dark CTA — replaces the previous full-bleed yellow block. Yellow stays
+// as accent color only.
+
 export default function WhichPath() {
   return (
-    <section className="relative overflow-hidden" style={{ background: "var(--accent-yellow)" }}>
-      <div className="max-w-3xl mx-auto px-6 lg:px-8 py-20 md:py-24 text-center">
-        <p className="text-xs font-sans tracking-[0.18em] uppercase text-black/60 mb-5">
-          Start a conversation
+    <section className="relative py-24 md:py-32 border-t border-[var(--border-subtle)]">
+      <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
+        <p className="text-xs uppercase tracking-[0.22em] text-[var(--accent-yellow)] mb-6 font-medium">
+          Get started
         </p>
-        <h2 className="text-4xl md:text-6xl text-black tracking-tight mb-4" style={{ fontFamily: "var(--font-logo-serif), 'DM Serif Display', Georgia, serif", fontWeight: 400, lineHeight: 1.05 }}>
-          Not sure which is right for you?
+        <h2 className="text-headline text-white mb-5">
+          Want to know what your media is{" "}
+          <span className="italic text-[var(--accent-yellow)]">actually</span> doing?
         </h2>
-        <p className="text-black/70 mb-10 text-base md:text-lg">
-          Tell us about your business and we&apos;ll recommend the path that fits.
+        <p className="text-[var(--text-secondary)] mb-10 text-base md:text-lg max-w-xl mx-auto">
+          Send us your last 90 days. We&apos;ll come back with a free audit and a
+          shortlist of fixes.
         </p>
-        <a
-          href="/#contact"
-          className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-black text-white text-sm font-semibold tracking-wide hover:bg-neutral-900 transition-colors"
-        >
-          Book a call
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
-          </svg>
+        <a href="/#contact" className="btn-primary">
+          Get a free audit
         </a>
       </div>
     </section>
