@@ -21,9 +21,11 @@ import WhyUs from "@/components/WhyUs";
 import WhichPath from "@/components/WhichPath";
 import Contact from "@/components/Contact";
 
-const STEEL_BLUE = "#4682B4";
-const STEEL_BLUE_DIM = "#3D7099";
-const STEEL_BLUE_GLOW = "rgba(70, 130, 180, 0.28)";
+// Lively, "high-graphics" steel blue (#3B82F6) — same family as classic
+// steel blue but higher chroma, more SaaS/Vercel energy.
+const STEEL_BLUE = "#3B82F6";
+const STEEL_BLUE_DIM = "#2563EB";
+const STEEL_BLUE_GLOW = "rgba(59, 130, 246, 0.32)";
 
 export default function DemoBluePage() {
   useEffect(() => {

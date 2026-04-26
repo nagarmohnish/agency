@@ -6,7 +6,15 @@
 const sharp = require("sharp");
 
 const SRC = "C:/Users/mohni/AppData/Local/Temp/roi-design-v2/roi/project/assets/roi-logo.png";
-const OUT = "c:/Library/Projects/agency/public/roi-logo.png";
+const OUT = process.env.LOGO_OUT || "c:/Library/Projects/agency/public/roi-logo.png";
+
+// Pass LOGO_ROI=#HEX to override the ROI ink color (LABS stays white).
+const HEX = (process.env.LOGO_ROI || "#FACC15").replace("#", "");
+const ROI_HEX = {
+  r: parseInt(HEX.slice(0, 2), 16),
+  g: parseInt(HEX.slice(2, 4), 16),
+  b: parseInt(HEX.slice(4, 6), 16),
+};
 
 async function main() {
   // 1. Read raw RGBA, build white-on-transparent buffer
@@ -123,9 +131,10 @@ async function main() {
     }
   }
 
-  // Compose output: ROI rows in brand yellow, LABS rows in white.
+  // Compose output: ROI rows colored per LOGO_ROI env var (defaults yellow).
+  // LABS rows always white.
   const TARGET_GAP = 30; // close to original (50px) with a slight tightening
-  const ROI_COLOR  = { r: 250, g: 204, b: 21 };  // #FACC15 brand yellow
+  const ROI_COLOR  = ROI_HEX;
   const LABS_COLOR = { r: 255, g: 255, b: 255 }; // white
   const fullW = cropW;
   let outBuf, outH;
@@ -162,7 +171,7 @@ async function main() {
       recolorRow(srcRow, dstRow, LABS_COLOR);
     }
     console.log(`gap: ${gapStart}..${gapEnd} (${gapEnd - gapStart + 1}px) → ${TARGET_GAP}px`);
-    console.log(`ROI → #FACC15 (yellow), LABS → #FFFFFF (white)`);
+    console.log(`ROI → #${HEX.toUpperCase()}, LABS → #FFFFFF`);
     console.log(`final: ${fullW}x${outH}`);
   } else {
     // Fallback: no gap detected, just crop normally
