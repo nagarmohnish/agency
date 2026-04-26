@@ -27,8 +27,6 @@ const channels = [
   { id: "overview", label: "overview" },
   { id: "platforms", label: "platforms" },
   { id: "process", label: "process" },
-  { id: "numbers", label: "numbers" },
-  { id: "why", label: "why-roi-labs" },
   { id: "contact", label: "contact" },
 ];
 
@@ -248,8 +246,6 @@ export default function DiscordPage() {
           {active === "overview" && <OverviewSection />}
           {active === "platforms" && <PlatformsSection />}
           {active === "process" && <ProcessSection />}
-          {active === "numbers" && <NumbersSection />}
-          {active === "why" && <WhySection />}
           {active === "contact" && <ContactSection />}
         </section>
 
@@ -291,8 +287,6 @@ function topicFor(id: string): string {
     case "overview": return "Performance marketing for revenue, not vanity metrics.";
     case "platforms": return "Meta + Google primary. Add-ons added when they earn it.";
     case "process": return "Audit → Build → Scale. The first 60 days.";
-    case "numbers": return "$8M+ managed spend. 4.2x average ROI. 45+ brands.";
-    case "why": return "Proven playbooks. Integrated stack. Long-term mindset.";
     case "contact": return "Send your last 90 days. We'll come back with a clear read.";
     default: return "";
   }
@@ -424,8 +418,7 @@ function OverviewSection() {
         body={
           <p style={{ margin: 0 }}>
             Pick a channel on the left to dive in: <ChannelChip>#platforms</ChannelChip>{" "}
-            <ChannelChip>#process</ChannelChip> <ChannelChip>#numbers</ChannelChip>{" "}
-            <ChannelChip>#why-roi-labs</ChannelChip> <ChannelChip>#contact</ChannelChip>.
+            <ChannelChip>#process</ChannelChip> <ChannelChip>#contact</ChannelChip>.
           </p>
         }
       />
@@ -501,64 +494,6 @@ function ProcessSection() {
                 <span style={{ color: TEXT_DIM, marginLeft: 10, fontSize: 12 }}>· {s.label}</span>
               </p>
               <p style={{ margin: 0, color: TEXT_MUTED, fontSize: 14 }}>{s.desc}</p>
-            </>
-          }
-        />
-      ))}
-    </div>
-  );
-}
-
-function NumbersSection() {
-  const stats = [
-    { v: "$8M+", l: "Ad spend managed across the client portfolio." },
-    { v: "4.2x", l: "Average ROI delivered across campaigns." },
-    { v: "45+", l: "Brands partnered with since 2019." },
-    { v: "$34M", l: "Revenue generated for clients." },
-  ];
-  return (
-    <div style={{ maxWidth: 720 }}>
-      <SystemMessage>ROI Labs in numbers.</SystemMessage>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
-        {stats.map((s) => (
-          <div
-            key={s.l}
-            style={{
-              background: BG_SIDE,
-              border: `1px solid ${BORDER}`,
-              borderRadius: 8,
-              padding: 18,
-            }}
-          >
-            <div style={{ fontSize: 32, fontWeight: 700, color: ACCENT, lineHeight: 1, marginBottom: 8 }}>
-              {s.v}
-            </div>
-            <div style={{ fontSize: 13, color: TEXT_MUTED, lineHeight: 1.4 }}>{s.l}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function WhySection() {
-  const reasons = [
-    { t: "Proven playbooks", d: "Battle-tested frameworks for paid media. We've already made the mistakes you'd otherwise fund." },
-    { t: "Integrated stack", d: "Media buying, creative, and measurement built on a single foundation." },
-    { t: "Long-term mindset", d: "Optimized for compounding revenue, not short-term spikes that cost you later." },
-  ];
-  return (
-    <div style={{ maxWidth: 720 }}>
-      <SystemMessage>Why brands choose us.</SystemMessage>
-      {reasons.map((r) => (
-        <Message
-          key={r.t}
-          author="ROI Labs"
-          time="Today at 09:25"
-          body={
-            <>
-              <p style={{ margin: "0 0 4px", color: TEXT, fontWeight: 600 }}>{r.t}</p>
-              <p style={{ margin: 0, color: TEXT_MUTED, fontSize: 14 }}>{r.d}</p>
             </>
           }
         />
