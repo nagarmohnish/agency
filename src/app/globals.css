@@ -205,44 +205,43 @@ p {
 }
 
 /* === BUTTONS — pill-style, solid fill === */
-/* === Primary CTA — compact, squared. Inline arrow that slides on hover. === */
+/* === Primary CTA — ghost/outline. Compact, transparent, yellow border + text.
+       Hover fills with the accent color. Modern, restrained, no chunky chip. === */
 .btn-primary {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   padding: 9px 16px;
   font-family: var(--font-montserrat), system-ui, sans-serif;
   font-weight: 500;
-  font-size: 0.825rem;
-  letter-spacing: 0.005em;
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
   text-transform: none;
-  color: #0A0A0A;
-  background: var(--accent-yellow);
+  color: var(--accent-yellow);
+  background: transparent;
   border: 1px solid var(--accent-yellow);
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
   text-decoration: none;
-  transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  transition: background 0.18s ease, color 0.18s ease;
 }
 .btn-primary::after {
   content: "→";
   display: inline-block;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   line-height: 1;
   transition: transform 0.2s ease;
 }
 .btn-primary:hover {
-  background: var(--accent-yellow-dim);
-  border-color: var(--accent-yellow-dim);
-  box-shadow: 0 4px 14px var(--accent-glow);
+  background: var(--accent-yellow);
+  color: #0A0A0A;
 }
 .btn-primary:hover::after { transform: translateX(3px); }
 .btn-primary:active { transform: translateY(1px); }
-.btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-primary:disabled:hover {
-  background: var(--accent-yellow);
-  border-color: var(--accent-yellow);
-  box-shadow: none;
+  background: transparent;
+  color: var(--accent-yellow);
 }
 .btn-primary:disabled:hover::after { transform: none; }
 
