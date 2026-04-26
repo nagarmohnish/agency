@@ -58,8 +58,8 @@ export default function Contact() {
               <span className="text-gradient">growth</span>
             </h2>
             <p className="text-body-lg text-[var(--text-secondary)] mb-12">
-              Tell us about your business and goals. We&apos;ll respond with a free
-              audit and custom strategy within 24 hours.
+              Tell us about your business and goals. We&apos;ll respond with a clear read
+              and a shortlist of fixes within 24 hours.
             </p>
 
             {/* What's included */}
@@ -70,7 +70,7 @@ export default function Contact() {
               </div>
               <ul className="space-y-5">
                 {[
-                  "Free audit of current advertising",
+                  "Audit of current advertising",
                   "Competitive landscape analysis",
                   "Custom strategy recommendations",
                   "Transparent pricing proposal",
@@ -226,7 +226,7 @@ export default function Contact() {
                         </span>
                       ) : (
                         <>
-                          Get your free audit
+                          Send
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                           </svg>

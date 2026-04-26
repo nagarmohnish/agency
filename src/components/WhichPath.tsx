@@ -13,11 +13,11 @@ export default function WhichPath() {
           <span className="italic text-[var(--accent-yellow)]">actually</span> doing?
         </h2>
         <p className="text-[var(--text-secondary)] mb-10 text-base md:text-lg max-w-xl mx-auto">
-          Send us your last 90 days. We&apos;ll come back with a free audit and a
+          Send us your last 90 days. We&apos;ll come back with a clear read and a
           shortlist of fixes.
         </p>
         <a href="/#contact" className="btn-primary">
-          Get a free audit
+          Talk to us
         </a>
       </div>
     </section>

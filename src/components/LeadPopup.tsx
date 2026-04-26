@@ -126,7 +126,7 @@ export default function LeadPopup() {
                 Contact us
               </p>
               <h3 className="text-2xl font-semibold text-white mb-2 leading-tight">
-                Want a free audit?
+                Let&apos;s talk.
               </h3>
               <p className="text-sm text-[var(--text-secondary)] mb-6">
                 Drop your email and what you&apos;d like to talk about. We&apos;ll

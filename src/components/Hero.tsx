@@ -29,14 +29,14 @@ export default function Hero() {
           </h1>
 
           <p className="text-body-lg text-[var(--text-secondary)] max-w-xl mb-12">
-            We run Meta and Google ads for growth-stage brands. Strategy, creative, and
-            measurement under one roof — optimized for what hits your bank account, not
-            your dashboard.
+            We run Meta and Google ads end-to-end — strategy, creative, and
+            measurement under one roof, optimized for what hits your bank account,
+            not your dashboard.
           </p>
 
           <div className="flex flex-wrap items-center gap-x-3 gap-y-4">
             <a href="/#contact" className="btn-primary">
-              Get a free audit
+              Talk to us
             </a>
             <a
               href="/#platforms"

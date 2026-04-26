@@ -44,7 +44,7 @@ export default function WhyUs() {
             <span className="text-white/40 mr-3">04</span>Why ROI Labs
           </p>
           <h2 className="text-headline text-white max-w-3xl">
-            Why growth-stage brands choose us.
+            Why brands choose us.
           </h2>
         </div>
 

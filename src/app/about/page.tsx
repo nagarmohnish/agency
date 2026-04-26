@@ -192,14 +192,11 @@ export default function AboutPage() {
                   <span className="text-gradient">cares about your profit</span>?
                 </h3>
                 <p className="text-body text-[var(--text-secondary)]">
-                  Get a free audit of your current campaigns and see the ROI opportunity.
+                  Send your last 90 days of campaigns. We&apos;ll come back with a clear read.
                 </p>
               </div>
               <Link href="/#contact" className="btn-primary whitespace-nowrap">
-                Get your free audit
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
+                Talk to us
               </Link>
             </div>
           </div>

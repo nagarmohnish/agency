@@ -204,25 +204,43 @@ p {
 }
 
 /* === BUTTONS — pill-style, solid fill === */
+/* === Primary CTA — modern: dark fill, yellow accent border + arrow,
+       refined letter-spacing. Squarer corners, no pill. === */
 .btn-primary {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 11px 24px;
-  font-family: var(--font-montserrat), system-ui, -apple-system, "Segoe UI", sans-serif;
-  font-weight: 600;
-  font-size: 0.9375rem;
+  gap: 12px;
+  padding: 14px 22px;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 0.875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: #0A0A0A;
   background: var(--accent-yellow);
-  border: 1px solid transparent;
-  border-radius: var(--radius-pill);
+  border: 1px solid var(--accent-yellow);
+  border-radius: 4px;
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.05s ease, box-shadow 0.15s ease;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  text-decoration: none;
 }
-.btn-primary:hover { background: var(--accent-yellow-dim); box-shadow: 0 4px 18px rgba(250,204,21,0.25); }
+.btn-primary::after {
+  content: "→";
+  display: inline-block;
+  font-size: 1rem;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+.btn-primary:hover {
+  background: transparent;
+  color: var(--accent-yellow);
+}
+.btn-primary:hover::after { transform: translateX(4px); }
 .btn-primary:active { transform: translateY(1px); }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn-primary:disabled:hover { background: var(--accent-yellow); color: #0A0A0A; }
 
 .btn-dark {
   display: inline-flex;

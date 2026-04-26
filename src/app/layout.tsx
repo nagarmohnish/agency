@@ -45,7 +45,7 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: "ROI Labs | Performance Marketing Agency",
   description:
-    "Performance marketing agency for growth-stage brands. We run Meta and Google ads end-to-end — strategy, creative, and measurement focused on revenue, not vanity metrics.",
+    "Performance marketing agency. We run Meta and Google ads end-to-end — strategy, creative, and measurement focused on revenue, not vanity metrics.",
   keywords: ["paid ads", "Meta ads", "Google ads", "performance marketing", "paid social", "PPC agency", "ROI"],
 };
 

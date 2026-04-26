@@ -98,7 +98,7 @@ export default function Services() {
             </h2>
           </div>
           <p className="text-sm text-[var(--text-secondary)] max-w-md">
-            Meta and Google are 90% of the work for most growth-stage brands.
+            Meta and Google are 90% of the work for most brands we run.
             We run them in-house, end to end. Other channels added when they earn it.
           </p>
         </div>
