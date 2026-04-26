@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Poppins, DM_Sans, Instrument_Serif } from "next/font/google";
+import { Poppins, DM_Sans, Instrument_Serif, DM_Serif_Display } from "next/font/google";
 import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -29,6 +29,12 @@ const instrumentSerif = Instrument_Serif({
   style: ["normal", "italic"],
 });
 
+const dmSerifDisplay = DM_Serif_Display({
+  variable: "--font-logo-serif",
+  subsets: ["latin"],
+  weight: ["400"],
+});
+
 export const metadata: Metadata = {
   title: "ROI Labs | Performance Marketing + AI Automation",
   description:
@@ -44,7 +50,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${poppins.variable} ${dmSans.variable} ${geistMono.variable} ${instrumentSerif.variable} antialiased`}
+        className={`${poppins.variable} ${dmSans.variable} ${geistMono.variable} ${instrumentSerif.variable} ${dmSerifDisplay.variable} antialiased`}
       >
         <Navbar />
         <main>{children}</main>

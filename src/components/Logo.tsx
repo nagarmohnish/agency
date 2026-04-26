@@ -19,11 +19,11 @@ export default function Logo({ className = "", size = 30 }: Props) {
     >
       <span
         style={{
-          fontFamily: "var(--font-serif), 'Instrument Serif', Georgia, 'Times New Roman', serif",
+          fontFamily: "var(--font-logo-serif), 'DM Serif Display', Georgia, 'Times New Roman', serif",
           fontSize: size * 1.3,
           fontWeight: 400,
           lineHeight: 1,
-          letterSpacing: "-0.01em",
+          letterSpacing: "0",
           color: "currentColor",
         }}
       >
