@@ -40,7 +40,7 @@ export default function WhyUs() {
     <section className="relative py-24 md:py-28 border-t border-b border-[var(--border-subtle)]">
       <div className="max-w-6xl mx-auto px-6 lg:px-8">
         <div className="text-center mb-16">
-          <p className="text-xs md:text-sm font-serif tracking-[0.18em] uppercase text-[var(--accent-yellow)] mb-5">
+          <p className="text-xs md:text-sm font-sans tracking-[0.18em] uppercase text-[var(--accent-yellow)] mb-5">
             Why ROI Labs
           </p>
           <h2 className="text-headline text-white">

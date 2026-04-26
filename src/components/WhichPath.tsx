@@ -2,7 +2,7 @@ export default function WhichPath() {
   return (
     <section className="relative overflow-hidden" style={{ background: "var(--accent-yellow)" }}>
       <div className="max-w-3xl mx-auto px-6 lg:px-8 py-20 md:py-24 text-center">
-        <p className="text-xs font-serif tracking-[0.18em] uppercase text-black/60 mb-5">
+        <p className="text-xs font-sans tracking-[0.18em] uppercase text-black/60 mb-5">
           Start a conversation
         </p>
         <h2 className="text-4xl md:text-6xl text-black tracking-tight mb-4" style={{ fontFamily: "var(--font-logo-serif), 'DM Serif Display', Georgia, serif", fontWeight: 400, lineHeight: 1.05 }}>
