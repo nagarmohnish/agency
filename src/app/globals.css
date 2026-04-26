@@ -10,7 +10,8 @@
 
   /* === Accent — brand yellow === */
   --accent-yellow:    #FACC15;
-  --accent-yellow-dim:#EAB308;
+  --accent-yellow-dim:#F5C518;
+  --accent-glow:      rgba(250, 204, 21, 0.28);
   --accent-green:     #FACC15;
   --accent-green-dim: #EAB308;
   --accent-orange:    #FACC15;
@@ -243,9 +244,9 @@ p {
   flex-shrink: 0;
 }
 .btn-primary:hover {
-  background: #F5C518;
+  background: var(--accent-yellow-dim);
   transform: translateY(-1px);
-  box-shadow: 0 10px 28px rgba(250, 204, 21, 0.28);
+  box-shadow: 0 10px 28px var(--accent-glow);
 }
 .btn-primary:hover::after { transform: translateX(3px); }
 .btn-primary:active { transform: translateY(0); }
