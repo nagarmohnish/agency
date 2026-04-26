@@ -15,6 +15,8 @@ async function main() {
   const { width, height, channels } = info;
   const out = Buffer.alloc(data.length);
 
+  // First pass: build white-on-transparent buffer (we'll re-tint LABS later
+  // once we know the gap rows).
   for (let i = 0; i < data.length; i += channels) {
     const r = data[i];
     const g = data[i + 1];
@@ -121,11 +123,21 @@ async function main() {
     }
   }
 
-  // Compose output: keep ROI rows as-is, shrink the gap to a small fixed
-  // amount, keep LABS rows as-is.
-  const TARGET_GAP = 6; // pixels — tighter spacing
+  // Compose output: ROI rows in brand yellow, LABS rows in white.
+  const TARGET_GAP = 30; // close to original (50px) with a slight tightening
+  const ROI_COLOR  = { r: 250, g: 204, b: 21 };  // #FACC15 brand yellow
+  const LABS_COLOR = { r: 255, g: 255, b: 255 }; // white
   const fullW = cropW;
   let outBuf, outH;
+  const recolorRow = (srcRowStart, dstRowStart, color) => {
+    for (let x = 0; x < fullW; x++) {
+      const sa = out[srcRowStart + x * 4 + 3];
+      outBuf[dstRowStart + x * 4] = color.r;
+      outBuf[dstRowStart + x * 4 + 1] = color.g;
+      outBuf[dstRowStart + x * 4 + 2] = color.b;
+      outBuf[dstRowStart + x * 4 + 3] = sa;
+    }
+  };
   if (gapStart > 0 && gapEnd > gapStart) {
     const roiTop = cropY;
     const roiBot = gapStart - 1;
@@ -136,20 +148,21 @@ async function main() {
     outH = roiH + TARGET_GAP + labsH;
     outBuf = Buffer.alloc(fullW * outH * 4);
 
-    // Copy ROI rows
+    // ROI rows → yellow
     for (let y = 0; y < roiH; y++) {
       const srcRow = (roiTop + y) * width * 4 + cropX * 4;
       const dstRow = y * fullW * 4;
-      out.copy(outBuf, dstRow, srcRow, srcRow + fullW * 4);
+      recolorRow(srcRow, dstRow, ROI_COLOR);
     }
-    // Gap rows are already zero (transparent) — Buffer.alloc zero-fills.
-    // Copy LABS rows
+    // Gap rows zero-filled by Buffer.alloc (transparent).
+    // LABS rows → white
     for (let y = 0; y < labsH; y++) {
       const srcRow = (labsTop + y) * width * 4 + cropX * 4;
       const dstRow = (roiH + TARGET_GAP + y) * fullW * 4;
-      out.copy(outBuf, dstRow, srcRow, srcRow + fullW * 4);
+      recolorRow(srcRow, dstRow, LABS_COLOR);
     }
     console.log(`gap: ${gapStart}..${gapEnd} (${gapEnd - gapStart + 1}px) → ${TARGET_GAP}px`);
+    console.log(`ROI → #FACC15 (yellow), LABS → #FFFFFF (white)`);
     console.log(`final: ${fullW}x${outH}`);
   } else {
     // Fallback: no gap detected, just crop normally
