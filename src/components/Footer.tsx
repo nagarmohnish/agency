@@ -16,7 +16,6 @@ export default function Footer() {
               { label: "Platforms", href: "/#platforms" },
               { label: "Process", href: "/#process" },
               { label: "About", href: "/about" },
-              { label: "Calculator", href: "/calculator" },
               { label: "Contact", href: "/#contact" },
             ].map((item) => (
               <a

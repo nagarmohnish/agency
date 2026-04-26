@@ -18,7 +18,6 @@ export default function Navbar() {
     { href: "/#platforms", label: "Platforms" },
     { href: "/#process", label: "Process" },
     { href: "/about", label: "About" },
-    { href: "/calculator", label: "Calculator" },
   ];
 
   return (
