@@ -225,25 +225,16 @@ p {
   text-decoration: none;
   transition: background 0.18s ease, color 0.18s ease;
 }
-.btn-primary::after {
-  content: "→";
-  display: inline-block;
-  font-size: 0.9rem;
-  line-height: 1;
-  transition: transform 0.2s ease;
-}
 .btn-primary:hover {
   background: var(--accent-yellow);
   color: #0A0A0A;
 }
-.btn-primary:hover::after { transform: translateX(3px); }
 .btn-primary:active { transform: translateY(1px); }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-primary:disabled:hover {
   background: transparent;
   color: var(--accent-yellow);
 }
-.btn-primary:disabled:hover::after { transform: none; }
 
 .btn-dark {
   display: inline-flex;

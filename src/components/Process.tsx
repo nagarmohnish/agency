@@ -19,7 +19,7 @@ const steps = [
   {
     n: "03",
     title: "Scale",
-    label: "Month 2 →",
+    label: "Month 2 onward",
     desc: "Weekly creative iteration. Holdout-tested incrementality. Ruthless budget reallocation toward what compounds. Reporting that ties paid spend back to bank-account revenue.",
     points: ["Weekly creative", "Incrementality testing", "P&L-anchored reporting"],
   },

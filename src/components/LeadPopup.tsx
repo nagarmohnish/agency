@@ -192,8 +192,8 @@ export default function LeadPopup() {
 
                 <p className="text-[11px] text-center text-[var(--text-muted)] pt-1">
                   Or email us at{" "}
-                  <a href="mailto:support@roilabs.in" className="text-[var(--text-secondary)] hover:text-white">
-                    support@roilabs.in
+                  <a href="mailto:mohnish@roilabs.in" className="text-[var(--text-secondary)] hover:text-white">
+                    mohnish@roilabs.in
                   </a>
                 </p>
               </form>

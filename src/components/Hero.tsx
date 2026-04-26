@@ -40,12 +40,9 @@ export default function Hero() {
             </a>
             <a
               href="/#platforms"
-              className="inline-flex items-center gap-2 px-1 py-2 text-sm text-[var(--text-secondary)] hover:text-white transition-colors"
+              className="inline-flex items-center px-1 py-2 text-sm text-[var(--text-secondary)] hover:text-white transition-colors"
             >
               Or see how we work
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
-                <path d="M5 12h14M13 5l7 7-7 7" />
-              </svg>
             </a>
           </div>
         </div>
