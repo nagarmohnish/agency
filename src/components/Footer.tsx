@@ -1,7 +1,12 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import Logo from "@/components/Logo";
 
 export default function Footer() {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/discord")) return null;
   return (
     <footer className="py-10 md:py-12 border-t border-[var(--border-subtle)]">
       <div className="max-w-6xl mx-auto px-6 lg:px-8">

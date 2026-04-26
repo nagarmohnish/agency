@@ -18,8 +18,10 @@ export default function LeadPopup() {
 
   // Schedule the popup 10s after the user lands. Once dismissed (close or
   // submit), we set a sessionStorage flag so it doesn't pop again in this tab.
+  // Suppressed on the /discord route so it doesn't break the app shell.
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (pathname?.startsWith("/discord")) return;
     if (sessionStorage.getItem(STORAGE_KEY)) return;
     const t = setTimeout(() => setOpen(true), SHOW_AFTER_MS);
     return () => clearTimeout(t);
