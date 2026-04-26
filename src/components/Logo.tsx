@@ -29,9 +29,9 @@ export default function Logo({ className = "", size = 30 }: Props) {
         <Bracket width={bracketW} height={bracketH} stroke={bracketStroke} side="left" />
         <span
           style={{
-            fontFamily: "Georgia, 'Times New Roman', 'Instrument Serif', serif",
-            fontSize: size,
-            fontWeight: 500,
+            fontFamily: "var(--font-serif), 'Instrument Serif', Georgia, 'Times New Roman', serif",
+            fontSize: size * 1.15,
+            fontWeight: 400,
             lineHeight: 1,
             letterSpacing: "-0.01em",
             color: "currentColor",
