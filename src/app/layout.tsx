@@ -4,7 +4,6 @@ import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import LeadPopup from "@/components/LeadPopup";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -62,7 +61,6 @@ export default function RootLayout({
         <Navbar />
         <main>{children}</main>
         <Footer />
-        <LeadPopup />
       </body>
     </html>
   );

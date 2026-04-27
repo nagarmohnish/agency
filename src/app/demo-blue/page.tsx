@@ -14,11 +14,7 @@
 
 import { useEffect } from "react";
 import Hero from "@/components/Hero";
-import Numbers from "@/components/Numbers";
 import Services from "@/components/Services";
-import Process from "@/components/Process";
-import WhyUs from "@/components/WhyUs";
-import WhichPath from "@/components/WhichPath";
 import Contact from "@/components/Contact";
 
 // Lively, "high-graphics" steel blue (#3B82F6) — same family as classic
@@ -66,11 +62,7 @@ export default function DemoBluePage() {
       </div>
 
       <Hero />
-      <Numbers />
       <Services />
-      <Process />
-      <WhyUs />
-      <WhichPath />
       <Contact />
     </>
   );

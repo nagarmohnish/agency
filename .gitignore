@@ -16,6 +16,7 @@
 # next.js
 /.next/
 /out/
+roi-labs-site.zip
 
 # production
 /build
