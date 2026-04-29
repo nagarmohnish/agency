@@ -1,0 +1,21 @@
+# ROI Labs
+
+> ROI Labs is a performance marketing agency that runs Meta Ads and Google Ads end-to-end — strategy, creative, and measurement — optimized for revenue, not vanity metrics.
+
+ROI Labs is a boutique agency. We focus on two channels (Meta and Google) and run them in-house, end-to-end. We have managed $8M+ in ad spend and generated $34M+ in revenue across 45+ brands. We work with Meta Ads (Facebook, Instagram, Messenger, Reels), Google Ads (Search, Performance Max, YouTube, Demand Gen), and add LinkedIn, Snapchat, and programmatic when they earn the budget.
+
+## Pages
+
+- [Homepage](https://roilabs.in/): Overview of services, channels, and capabilities — strategy, creative, landing pages, and measurement.
+- [About](https://roilabs.in/about): Why we exist, what we do, and how we work — performance-driven, transparent, agile, partnership.
+
+## Services
+
+- Meta Ads — Facebook, Instagram, Messenger, Reels — full-funnel paid social, conversion campaigns, lead generation, catalog and dynamic ads, Reels-native creative, Advantage+ Shopping, Pixel and CAPI setup.
+- Google Ads — Search, Performance Max, YouTube, Demand Gen — search and shopping, Performance Max, YouTube ads, Demand Gen, Tag Manager and GA4 setup, negative-keyword discipline.
+- Capabilities — strategy (channel mix, audience architecture, budget allocation), creative (static, motion, UGC-style, weekly shipping), landing pages (mobile-first, A/B-ready), and measurement (GA4, server-side tracking, attribution modeling, weekly revenue reporting).
+
+## Contact
+
+- Email: mohnish@roilabs.in
+- Site: https://roilabs.in
