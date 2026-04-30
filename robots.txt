@@ -1,0 +1,6 @@
+User-Agent: *
+Allow: /
+Disallow: /api/
+
+Host: https://roilabs.in
+Sitemap: https://roilabs.in/sitemap.xml
