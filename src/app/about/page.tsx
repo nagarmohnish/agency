@@ -119,7 +119,7 @@ export default function AboutPage() {
               </div>
               <div className="space-y-5 text-body-lg">
                 <p className="text-[var(--text-secondary)]">
-                  ROIlabs was born from a simple frustration: most agencies report ROAS
+                  ROI Labs was born from a simple frustration: most agencies report ROAS
                   because it always looks impressive — even when their clients are losing money.
                 </p>
                 <p className="text-[var(--text-secondary)]">
