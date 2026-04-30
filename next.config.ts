@@ -24,6 +24,12 @@ const nextConfig: NextConfig = {
         assetPrefix: basePath,
       }
     : {}),
+  // Expose basePath to the client so manually-routed asset URLs (e.g. raw
+  // <img> / <Image unoptimized />) can prepend it. Stays an empty string
+  // for production root deploys.
+  env: {
+    NEXT_PUBLIC_BASE_PATH: basePath,
+  },
 };
 
 export default nextConfig;

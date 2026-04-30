@@ -5,6 +5,7 @@
 // Both variants are produced by scripts/process-logo.js with different
 // LOGO_ROI env values.
 
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 type Props = {
@@ -14,22 +15,25 @@ type Props = {
 
 const ASPECT = 144 / 122;
 
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 export default function Logo({ className = "", size = 56 }: Props) {
   const pathname = usePathname();
-  const src = pathname?.startsWith("/demo-blue")
+  const file = pathname?.startsWith("/demo-blue")
     ? "/roi-logo-blue.png"
     : "/roi-logo.png";
+  const src = `${BASE_PATH}${file}`;
 
   const width = Math.round(size * ASPECT);
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
+    <Image
       src={src}
       alt="ROI Labs"
       width={width}
       height={size}
       className={className}
       style={{ display: "block", height: size, width: "auto" }}
+      priority
     />
   );
 }
