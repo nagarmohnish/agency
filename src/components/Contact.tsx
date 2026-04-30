@@ -86,8 +86,8 @@ export default function Contact() {
             {/* Email & Address */}
             <div className="flex items-center gap-4">
               <span className="text-small text-[var(--text-muted)]">Or email us directly:</span>
-              <a href="mailto:mohnish@roilabs.in" className="link-glow text-[var(--accent-green)]">
-                mohnish@roilabs.in
+              <a href="mailto:support@roilabs.in" className="link-glow text-[var(--accent-green)]">
+                support@roilabs.in
               </a>
             </div>
           </div>

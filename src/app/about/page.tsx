@@ -1,9 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata = {
-  title: "About Us | ROIlabs",
-  description:
-    "We're a boutique performance marketing agency specializing in paid social advertising. Meet the team behind $8M+ in managed ad spend and $34M in revenue generated.",
+const aboutDescription =
+  "ROI Labs is a boutique performance marketing agency. We run Meta and Google ads end-to-end — strategy, creative, and measurement — built around revenue, not vanity metrics.";
+
+export const metadata: Metadata = {
+  title: "About Us",
+  description: aboutDescription,
   keywords: [
     "about roilabs",
     "performance marketing agency",
@@ -11,6 +14,22 @@ export const metadata = {
     "advertising team",
     "marketing experts",
   ],
+  alternates: { canonical: "/about" },
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    siteName: "ROI Labs",
+    url: "/about",
+    title: "About Us | ROI Labs",
+    description: aboutDescription,
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "ROI Labs — Performance Marketing Agency" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About Us | ROI Labs",
+    description: aboutDescription,
+    images: ["/og-image.png"],
+  },
 };
 
 const principles = [
@@ -38,13 +57,6 @@ const principles = [
     description:
       "We're an extension of your team, invested in your long-term success — not just the next invoice.",
   },
-];
-
-const stats = [
-  { value: "$8M+", label: "Ad budget managed", color: "text-[var(--accent-green)]" },
-  { value: "4.2x", label: "Average ROI delivered", color: "text-[var(--accent-orange)]" },
-  { value: "45+", label: "Brands partnered with", color: "text-[var(--accent-blue)]" },
-  { value: "$34M", label: "Revenue generated", color: "text-[var(--accent-purple)]" },
 ];
 
 const capabilities = [
@@ -89,16 +101,6 @@ export default function AboutPage() {
               everything — we specialize in paid social advertising and the creative
               that makes it work.
             </p>
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-20">
-            {stats.map((stat) => (
-              <div key={stat.label} className="glass-card p-6 text-center">
-                <p className={`stat-number mb-2 ${stat.color}`}>{stat.value}</p>
-                <p className="text-small text-[var(--text-muted)]">{stat.label}</p>
-              </div>
-            ))}
           </div>
 
           <div className="section-gradient-divider" />

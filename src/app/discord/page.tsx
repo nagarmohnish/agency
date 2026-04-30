@@ -481,10 +481,10 @@ function ContactSection() {
             <p style={{ margin: "0 0 12px" }}>
               Email us at{" "}
               <a
-                href="mailto:mohnish@roilabs.in"
+                href="mailto:support@roilabs.in"
                 style={{ color: ACCENT, textDecoration: "none", fontWeight: 600 }}
               >
-                mohnish@roilabs.in
+                support@roilabs.in
               </a>
             </p>
             <a

@@ -48,8 +48,8 @@ export default function Footer() {
         <div className="mt-8 pt-6 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between text-xs text-[var(--text-muted)]">
           <p className="m-0">© 2026 ROI Labs. All rights reserved.</p>
           <p className="m-0">
-            <a href="mailto:mohnish@roilabs.in" className="hover:text-white transition-colors">
-              mohnish@roilabs.in
+            <a href="mailto:support@roilabs.in" className="hover:text-white transition-colors">
+              support@roilabs.in
             </a>
           </p>
         </div>
