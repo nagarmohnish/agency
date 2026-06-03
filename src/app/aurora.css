@@ -26,6 +26,9 @@ html:has(.aurora){scroll-behavior:smooth;}
 .aurora::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
   background:radial-gradient(54% 42% at 50% -6%,rgba(250,204,21,.34),transparent 62%),radial-gradient(36% 30% at 8% 26%,rgba(250,204,21,.12),transparent 60%),radial-gradient(36% 30% at 92% 36%,rgba(250,204,21,.16),transparent 60%);}
 .aurora a{color:inherit;text-decoration:none;}
+/* Win over the dark globals.css heading/paragraph colors (h1..h6 -> white). */
+.aurora h1,.aurora h2,.aurora h3,.aurora h4,.aurora h5,.aurora h6{color:var(--ink);}
+.aurora p{color:var(--muted);}
 .aurora .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px;position:relative;z-index:1;}
 .aurora ::selection{background:rgba(250,204,21,.4);}
 .aurora .grad{color:var(--ink);background-image:linear-gradient(transparent 56%,var(--yellow) 56%,var(--yellow) 92%,transparent 92%);padding:0 .04em;-webkit-box-decoration-break:clone;box-decoration-break:clone;}
