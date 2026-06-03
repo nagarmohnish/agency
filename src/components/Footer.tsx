@@ -6,7 +6,8 @@ import Logo from "@/components/Logo";
 
 export default function Footer() {
   const pathname = usePathname();
-  if (pathname?.startsWith("/discord")) return null;
+  // Aurora Light homepage ships its own footer; hide the global one on "/".
+  if (pathname === "/" || pathname?.startsWith("/discord")) return null;
   return (
     <footer className="py-10 md:py-12 border-t border-[var(--border-subtle)]">
       <div className="max-w-6xl mx-auto px-6 lg:px-8">
@@ -18,7 +19,7 @@ export default function Footer() {
           <nav className="flex flex-wrap items-center gap-x-7 gap-y-3 text-sm">
             {[
               { label: "Home", href: "/" },
-              { label: "Platforms", href: "/#platforms" },
+              { label: "Services", href: "/#services" },
               { label: "About", href: "/about" },
               { label: "Contact", href: "/#contact" },
             ].map((item) => (

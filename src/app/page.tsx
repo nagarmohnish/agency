@@ -1,27 +1,20 @@
 import type { Metadata } from "next";
-import Hero from "@/components/Hero";
-import Services from "@/components/Services";
-import Contact from "@/components/Contact";
+import "./aurora.css";
+import AuroraHome from "./AuroraHome";
 
 export const metadata: Metadata = {
-  title: "ROI Labs | Performance Marketing Agency",
+  title: "ROI Labs | AI-Native Paid Media Agency",
   description:
-    "Performance marketing agency. We run Meta and Google ads end-to-end — strategy, creative, and measurement focused on revenue, not vanity metrics.",
+    "ROI Labs is the AI-native paid media agency. AI agents draft and test creative at a volume no human team can match; senior operators own the strategy and the number that matters — revenue. We run Meta and Google end-to-end.",
   alternates: { canonical: "/" },
   openGraph: {
     url: "/",
-    title: "ROI Labs | Performance Marketing Agency",
+    title: "ROI Labs | AI-Native Paid Media Agency",
     description:
-      "Performance marketing agency. We run Meta and Google ads end-to-end — strategy, creative, and measurement focused on revenue, not vanity metrics.",
+      "AI agents draft and test creative at a volume no human team can match; senior operators own the strategy and the number that matters — revenue. We run Meta and Google end-to-end.",
   },
 };
 
 export default function Home() {
-  return (
-    <>
-      <Hero />
-      <Services />
-      <Contact />
-    </>
-  );
+  return <AuroraHome />;
 }

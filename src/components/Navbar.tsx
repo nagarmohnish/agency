@@ -16,10 +16,12 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  if (pathname?.startsWith("/discord")) return null;
+  // Aurora Light homepage ships its own nav; hide the global one on "/".
+  if (pathname === "/" || pathname?.startsWith("/discord")) return null;
 
   const navLinks = [
-    { href: "/#platforms", label: "Platforms" },
+    { href: "/#services", label: "Services" },
+    { href: "/#how-we-work", label: "How we work" },
     { href: "/about", label: "About" },
   ];
 
