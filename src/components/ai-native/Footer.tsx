@@ -6,8 +6,7 @@ import Logo from "@/components/Logo";
 
 export default function Footer() {
   const pathname = usePathname();
-  // Aurora pages ship their own footer; hide the global one there.
-  if (pathname === "/" || pathname?.startsWith("/audit") || pathname?.startsWith("/discord")) return null;
+  if (pathname?.startsWith("/discord")) return null;
   return (
     <footer className="py-10 md:py-12 border-t border-[var(--border-subtle)]">
       <div className="max-w-6xl mx-auto px-6 lg:px-8">

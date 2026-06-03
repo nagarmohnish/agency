@@ -1,0 +1,9 @@
+.next
+out
+node_modules
+.git
+roi-labs-site.zip
+roi-labs-home.html
+roi-labs-about.html
+scripts/build-standalone.js
+scripts/build-pages.js

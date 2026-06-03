@@ -4,9 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:lan": "next dev -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "preview": "next build && next start",
+    "lint": "eslint",
+    "verify": "next build",
+    "deploy": "next build && npx --yes vercel@latest --prod --yes"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.95.3",

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ROI Labs | AI-Native Paid Media Agency</title>
+<meta name="description" content="ROI Labs is the AI-native paid media agency. AI agents draft and test creative at a volume no human team can match; senior operators own the strategy and the number that matters — revenue. We run Meta and Google end-to-end." />
+<meta name="keywords" content="AI native agency,AI paid media,Meta ads,Google ads,AI ad creative,performance marketing,paid social,PPC,ROAS,CAC,creative testing" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#FCFBF7; --surface:#FFFFFF; --surface-2:#FBF6E6;
+    --ink:#1A1710; --muted:#6A6456; --faint:#9C968A;
+    --line:#ECE7DA; --line-2:#F4F0E6;
+    --yellow:#FACC15; --yellow-2:#EFC00A; --yellow-ink:#1A1408;
+    --gold:#FACC15; --gold-2:#EFC00A; --gold-text:#8A6D00; --green:#1E9E6A;
+    --maxw:1160px;
+    --disp:"Sora",system-ui,sans-serif; --sans:"Manrope",system-ui,sans-serif;
+    --grad:linear-gradient(95deg,#FFE05A,#FACC15 55%,#F2BE00);
+    --sh:0 1px 2px rgba(60,48,20,.04),0 14px 34px -18px rgba(80,62,22,.22);
+    --sh-lg:0 2px 6px rgba(60,48,20,.06),0 34px 70px -30px rgba(80,62,22,.30);
+    --err:#CC4A3F;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(54% 42% at 50% -6%,rgba(250,204,21,.34),transparent 62%),radial-gradient(36% 30% at 8% 26%,rgba(250,204,21,.12),transparent 60%),radial-gradient(36% 30% at 92% 36%,rgba(250,204,21,.16),transparent 60%);}
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px;position:relative;z-index:1;}
+  ::selection{background:rgba(250,204,21,.4);}
+  /* accent words: yellow highlighter marker (legible on white) */
+  .grad{color:var(--ink);background-image:linear-gradient(transparent 56%,var(--yellow) 56%,var(--yellow) 92%,transparent 92%);padding:0 .04em;-webkit-box-decoration-break:clone;box-decoration-break:clone;}
+  .ey{font-size:12.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-text);}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(251,247,239,.8);border-bottom:1px solid var(--line);}
+  .nv{display:flex;align-items:center;justify-content:space-between;height:70px;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--disp);font-weight:700;font-size:19px;letter-spacing:-.02em;}
+  .brand img{height:34px;width:auto;display:block;}
+  .brand .lg{width:30px;height:30px;border-radius:9px;background:var(--grad);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:800;}
+  .nv-links{display:flex;gap:30px;font-size:14.5px;color:var(--muted);font-weight:500;}
+  .nv-links a{white-space:nowrap;}
+  .nv-links a:hover{color:var(--ink);}
+  .btn{font-weight:700;font-size:14.5px;display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:100px;cursor:pointer;border:1px solid transparent;transition:.16s;white-space:nowrap;}
+  .btn-pri{background:var(--grad);color:var(--yellow-ink);box-shadow:0 10px 26px -10px rgba(250,204,21,.7);}
+  .btn-pri:hover{transform:translateY(-1px);box-shadow:0 16px 36px -12px rgba(250,204,21,.9);}
+  .btn-gh{background:var(--surface);color:var(--ink);border-color:var(--line);box-shadow:var(--sh);}
+  .btn-gh:hover{border-color:#DBD3C0;}
+  .btn-lg{padding:14px 26px;font-size:15.5px;}
+
+  /* hero */
+  .hero{padding:84px 0 60px;text-align:center;}
+  .pill{display:inline-flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--line);border-radius:100px;padding:7px 16px 7px 9px;font-size:13px;font-weight:600;color:var(--muted);box-shadow:var(--sh);}
+  .pill .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px rgba(30,158,106,.7);}
+  h1{font-family:var(--disp);font-weight:800;font-size:clamp(42px,6.4vw,76px);line-height:1.01;letter-spacing:-.035em;margin:26px auto 0;max-width:16ch;}
+  .hero .l{font-size:19px;color:var(--muted);max-width:60ch;margin:26px auto 0;}
+  .hero-cta{display:flex;gap:14px;justify-content:center;margin-top:34px;flex-wrap:wrap;}
+  .trust{display:flex;justify-content:center;margin-top:54px;border:1px solid var(--line);border-radius:18px;overflow:hidden;max-width:780px;margin-left:auto;margin-right:auto;background:var(--surface);box-shadow:var(--sh-lg);}
+  .trust .t{flex:1;padding:24px 18px;border-right:1px solid var(--line);}
+  .trust .t:last-child{border-right:0;}
+  .trust .t .n{font-family:var(--disp);font-size:clamp(24px,3vw,34px);font-weight:700;letter-spacing:-.02em;}
+  .trust .t .k{font-size:12.5px;color:var(--muted);font-weight:500;margin-top:5px;}
+
+  /* section */
+  section{padding:80px 0;}
+  .sec-head{text-align:center;max-width:700px;margin:0 auto 48px;}
+  h2{font-family:var(--disp);font-weight:700;font-size:clamp(30px,4.2vw,48px);line-height:1.07;letter-spacing:-.03em;margin:14px 0 0;}
+  .sec-head p{font-size:18px;color:var(--muted);margin:16px 0 0;}
+
+  /* broken card */
+  .broken{border:1px solid var(--line);border-radius:24px;background:var(--surface);box-shadow:var(--sh-lg);padding:54px;text-align:center;position:relative;overflow:hidden;}
+  .broken::before{content:"";position:absolute;top:-40%;left:50%;transform:translateX(-50%);width:620px;height:420px;background:radial-gradient(ellipse,rgba(240,183,58,.18),transparent 62%);}
+  .broken h2{position:relative;max-width:18ch;margin:14px auto 0;}
+  .broken p{position:relative;color:var(--muted);max-width:72ch;margin:22px auto 0;font-size:17px;}
+
+  /* orbit + agents */
+  .orbit-wrap{display:grid;grid-template-columns:500px 1fr;gap:48px;align-items:center;}
+  .orbit{position:relative;width:500px;height:500px;flex:none;}
+  .orbit .ring{position:absolute;border-radius:50%;border:1px solid var(--line);}
+  .orbit .ring.r1{inset:86px;}
+  .orbit .ring.r2{inset:28px;border-style:dashed;border-color:#EEE7D8;}
+  .orbit > svg{position:absolute;inset:0;width:100%;height:100%;}
+  .core{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:148px;height:148px;border-radius:50%;
+    background:radial-gradient(circle at 50% 35%,#fff,#FFF7D6);border:1px solid rgba(250,204,21,.55);
+    display:grid;place-items:center;text-align:center;box-shadow:0 18px 50px -16px rgba(250,204,21,.6);}
+  .core .ttl{font-family:var(--disp);font-weight:800;font-size:18px;letter-spacing:-.01em;}
+  .core .sub{font-size:10.5px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:4px;}
+  .node{position:absolute;transform:translate(-50%,-50%);width:60px;text-align:center;}
+  .node .bubble{width:60px;height:60px;border-radius:50%;margin:0 auto;background:var(--surface);border:1px solid var(--line);box-shadow:var(--sh);display:grid;place-items:center;color:var(--gold-text);transition:.2s;}
+  .node .bubble svg{position:static;inset:auto;width:22px;height:22px;}
+  .node:hover .bubble{border-color:rgba(250,204,21,.7);transform:scale(1.08);box-shadow:0 14px 30px -10px rgba(250,204,21,.55);}
+  .node .label{position:absolute;left:50%;top:70px;transform:translateX(-50%);width:120px;}
+  .node .nm{font-family:var(--disp);font-weight:700;font-size:14px;}
+  .node .rl{font-size:10.5px;color:var(--faint);margin-top:2px;}
+  .alist{display:flex;flex-direction:column;gap:12px;}
+  .arow{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--sh);padding:16px 18px;transition:.18s;}
+  .arow:hover{border-color:#E3DCC9;transform:translateY(-1px);}
+  .arow .ic{width:38px;height:38px;border-radius:11px;background:rgba(250,204,21,.16);border:1px solid rgba(250,204,21,.4);display:grid;place-items:center;color:var(--gold-text);flex:none;}
+  .arow .nm{font-family:var(--disp);font-weight:700;font-size:15.5px;}
+  .arow .rl{font-size:12px;color:var(--faint);margin-top:1px;}
+  .arow .dc{font-size:13px;color:var(--muted);margin-top:5px;}
+  .arow .mt{text-align:right;}
+  .arow .mt .v{font-family:var(--disp);font-weight:700;font-size:16px;}
+  .arow .mt .k{font-size:10.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.05em;margin-top:2px;}
+  .disclaim{margin-top:26px;text-align:center;font-size:14.5px;color:var(--muted);max-width:80ch;margin-left:auto;margin-right:auto;}
+  .disclaim b{color:var(--ink);font-weight:700;}
+
+  /* services */
+  .svc{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .scard{border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:var(--sh);padding:26px;transition:.18s;}
+  .scard:hover{transform:translateY(-2px);box-shadow:var(--sh-lg);}
+  .scard .ic{width:42px;height:42px;border-radius:12px;background:rgba(250,204,21,.16);border:1px solid rgba(250,204,21,.4);display:grid;place-items:center;color:var(--gold-text);margin-bottom:16px;}
+  .scard h4{font-family:var(--disp);font-weight:700;font-size:19px;margin:0;}
+  .scard p{font-size:14px;color:var(--muted);margin:10px 0 0;}
+
+  /* platforms */
+  .plat{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .pcard{border:1px solid var(--line);border-radius:20px;background:var(--surface);box-shadow:var(--sh);padding:30px;}
+  .pcard .top{display:flex;justify-content:space-between;align-items:center;}
+  .pcard .bdg{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--yellow-ink);background:var(--yellow);border:1px solid var(--yellow-2);padding:4px 11px;border-radius:100px;}
+  .pcard h3{font-family:var(--disp);font-weight:700;font-size:23px;margin:16px 0 0;}
+  .pcard .ch{font-size:12.5px;color:var(--faint);margin-top:6px;}
+  .pcard .pd{font-size:14.5px;color:var(--muted);margin:14px 0 0;}
+  .pcard ul{list-style:none;padding:0;margin:18px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:9px 16px;}
+  .pcard li{font-size:13.5px;display:flex;gap:8px;align-items:center;}
+  .pcard li svg{flex:none;color:var(--gold-text);}
+  .addons{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px;}
+  .adn{border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:var(--sh);padding:20px;}
+  .adn .top{display:flex;justify-content:space-between;align-items:center;}
+  .adn h4{font-family:var(--disp);font-size:16px;font-weight:700;margin:0;}
+  .adn .bdg{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);border:1px solid var(--line);padding:3px 9px;border-radius:100px;}
+  .adn p{font-size:13px;color:var(--muted);margin:10px 0 0;}
+
+  /* process */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .stp{border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:var(--sh);padding:24px;}
+  .stp .sn{font-family:var(--disp);font-weight:800;font-size:15px;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--grad);color:var(--yellow-ink);}
+  .stp h4{font-family:var(--disp);font-weight:700;font-size:17px;margin:16px 0 0;}
+  .stp p{font-size:13.5px;color:var(--muted);margin:8px 0 0;}
+
+  /* contact */
+  .contact-wrap{border:1px solid var(--line);border-radius:24px;background:var(--surface);box-shadow:var(--sh-lg);overflow:hidden;display:grid;grid-template-columns:.92fr 1.08fr;max-width:1020px;margin:0 auto;}
+  .contact-l{padding:44px;position:relative;overflow:hidden;background:var(--surface-2);border-right:1px solid var(--line);}
+  .contact-l::before{content:"";position:absolute;bottom:-140px;left:-100px;width:380px;height:380px;background:radial-gradient(circle,rgba(240,183,58,.22),transparent 65%);}
+  .contact-l h2{position:relative;font-size:32px;margin-top:12px;}
+  .contact-l p{position:relative;color:var(--muted);font-size:15.5px;margin-top:14px;}
+  .incl{list-style:none;padding:0;margin:26px 0 0;position:relative;display:flex;flex-direction:column;gap:13px;}
+  .incl li{display:flex;gap:11px;font-size:14.5px;align-items:flex-start;}
+  .incl li svg{flex:none;margin-top:2px;color:var(--gold-text);}
+  .email{margin-top:26px;position:relative;font-size:14px;color:var(--muted);}
+  .email a{color:var(--gold-text);font-weight:600;}
+  .contact-r{padding:44px;}
+  .f{margin-bottom:17px;}
+  .f.row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  label{display:block;font-size:12.5px;font-weight:600;color:var(--ink);margin-bottom:7px;}
+  input,select,textarea{width:100%;font-family:var(--sans);font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:12px 14px;outline:none;transition:.15s;}
+  input::placeholder,textarea::placeholder{color:var(--faint);}
+  input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(240,183,58,.22);background:var(--surface);}
+  textarea{resize:vertical;min-height:96px;}
+  select{appearance:none;}
+  .f.err input,.f.err select,.f.err textarea,.err input,.err select,.err textarea{border-color:var(--err);}
+  .errm{display:none;color:#B23A2E;font-size:12px;margin-top:5px;}
+  .f.err .errm,.err .errm{display:block;}
+  .fbtn{width:100%;justify-content:center;}
+  .sent{display:none;text-align:center;color:var(--green);font-weight:600;font-size:14.5px;margin-top:14px;}
+
+  footer{padding:40px 0;border-top:1px solid var(--line);margin-top:10px;}
+  .foot{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;font-size:13.5px;color:var(--muted);}
+
+  @media(max-width:980px){
+    .nv-links{display:none;}
+    .orbit-wrap{grid-template-columns:1fr;}
+    .orbit{display:none;}
+    .svc,.plat,.steps,.contact-wrap{grid-template-columns:1fr;}
+    .addons{grid-template-columns:1fr;}
+    .contact-l{border-right:0;border-bottom:1px solid var(--line);}
+    .arow{grid-template-columns:auto 1fr;}.arow .mt{display:none;}
+  }
+
+  /* ===== dynamic elements ===== */
+  [data-reveal]{opacity:1;}
+  html.js [data-reveal]{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);}
+  html.js [data-reveal="scale"]{transform:translateY(22px) scale(.96);}
+  html.js [data-reveal].in{opacity:1;transform:none;}
+  html.reveal-off [data-reveal]{opacity:1!important;transform:none!important;transition:none!important;}
+  .pill .dot{position:relative;}
+  .pill .dot::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--green);opacity:.5;animation:pingdot 1.9s ease-out infinite;}
+  @keyframes pingdot{0%{transform:scale(.55);opacity:.7;}100%{transform:scale(1.9);opacity:0;}}
+  .core .pulse{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(250,204,21,.55);animation:corepulse 3s ease-out infinite;}
+  @keyframes corepulse{0%{transform:scale(.9);opacity:.7;}100%{transform:scale(1.32);opacity:0;}}
+  .orbit .ring.r2{animation:ringspin 64s linear infinite;}
+  @keyframes ringspin{to{transform:rotate(360deg);}}
+  body::before{animation:heroGlow 16s ease-in-out infinite;}
+  @keyframes heroGlow{50%{opacity:.78;}}
+  nav{transition:box-shadow .25s, border-color .25s;}
+  nav.scrolled{box-shadow:0 10px 30px -22px rgba(80,62,22,.5);}
+  .scard,.pcard,.adn,.arow{transition:transform .2s, box-shadow .2s, border-color .2s;}
+  .scard:hover,.pcard:hover{transform:translateY(-4px);box-shadow:var(--sh-lg);}
+  @media (prefers-reduced-motion: reduce){
+    html.js [data-reveal]{opacity:1!important;transform:none!important;transition:none!important;}
+    .pill .dot::after,.core .pulse,.orbit .ring.r2{animation:none!important;}
+    body::before{animation:none!important;}
+  }
+</style>
+</head>
+<body id="top">
+
+<nav>
+  <div class="wrap nv">
+    <a href="#top" class="brand"><img src="roi-logo-light.png" alt="ROI Labs" /></a>
+    <div class="nv-links"><a href="#system">The agents</a><a href="#services">What we do</a><a href="#platforms">Platforms</a><a href="#process">How it works</a></div>
+    <a href="#contact" class="btn btn-pri">Talk to us</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <span class="pill" data-reveal><span class="dot"></span> Five agents online · human-in-the-loop</span>
+    <h1 data-reveal data-delay="80">Paid media, run by AI agents. Measured in <span class="grad">revenue.</span></h1>
+    <p class="l" data-reveal data-delay="160">We run Meta and Google end-to-end. Agents draft and test creative at a volume no human team can match; senior operators own the strategy and the only number that matters — revenue.</p>
+    <div class="hero-cta" data-reveal data-delay="240">
+      <a href="#contact" class="btn btn-pri btn-lg">Get a free teardown →</a>
+      <a href="#system" class="btn btn-gh btn-lg">See how it works</a>
+    </div>
+    <div class="trust">
+      <div class="t" data-reveal><div class="n"><span data-count="120" data-prefix="$" data-suffix="M+">$0M+</span></div><div class="k">Ad spend managed</div></div>
+      <div class="t" data-reveal data-delay="80"><div class="n"><span data-count="6400" data-suffix="+">0+</span></div><div class="k">Creatives shipped</div></div>
+      <div class="t" data-reveal data-delay="160"><div class="n"><span data-count="38" data-suffix="%">0%</span></div><div class="k">Avg. CAC reduction</div></div>
+      <div class="t" data-reveal data-delay="240"><div class="n"><span data-count="84" data-prefix="$" data-suffix="M+">$0M+</span></div><div class="k">Revenue influenced</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- BROKEN -->
+<section style="padding-top:10px;">
+  <div class="wrap">
+    <div class="broken" data-reveal>
+      <p class="ey">Why AI-native</p>
+      <h2>The agency model is broken. <span class="grad">We thought so too.</span></h2>
+      <p>Most shops ship ten ads a month, hand your account to a junior buyer, and report on metrics that never reach your P&amp;L. AI changed what's possible — so we built the agency around it. Agents produce and test creative at a volume no human team can match; senior operators own the strategy and the one number that pays the bills.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SYSTEM / ORBIT -->
+<section id="system">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <p class="ey">The system</p>
+      <h2>A senior team at the core. <span class="grad">Five agents</span> in orbit.</h2>
+      <p>Five agents run the work in the background. Senior operators own the strategy and sign off on everything that ships.</p>
+    </div>
+    <div class="orbit-wrap" data-reveal>
+      <div class="orbit">
+        <div class="ring r1"></div><div class="ring r2"></div>
+        <svg viewBox="0 0 500 500" fill="none">
+          <line x1="250" y1="250" x2="250" y2="50" stroke="rgba(250,204,21,.45)"/>
+          <line x1="250" y1="250" x2="440" y2="188" stroke="rgba(250,204,21,.45)"/>
+          <line x1="250" y1="250" x2="368" y2="412" stroke="rgba(250,204,21,.45)"/>
+          <line x1="250" y1="250" x2="132" y2="412" stroke="rgba(250,204,21,.45)"/>
+          <line x1="250" y1="250" x2="60" y2="188" stroke="rgba(250,204,21,.45)"/>
+        </svg>
+        <div class="core"><div class="pulse"></div><div><div class="ttl">ROI Core</div><div class="sub">Senior Ops</div></div></div>
+        <div class="node" style="left:250px;top:50px;"><div class="bubble"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></div><div class="label"><div class="nm">Scout</div><div class="rl">Research</div></div></div>
+        <div class="node" style="left:440px;top:188px;"><div class="bubble"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 2.4 7.4H22l-6 4.5 2.3 7.1L12 16.7 5.7 21l2.3-7.1-6-4.5h7.6z"/></svg></div><div class="label"><div class="nm">Forge</div><div class="rl">Creative</div></div></div>
+        <div class="node" style="left:368px;top:412px;"><div class="bubble"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div><div class="label"><div class="nm">Pilot</div><div class="rl">Media buying</div></div></div>
+        <div class="node" style="left:132px;top:412px;"><div class="bubble"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg></div><div class="label"><div class="nm">Frame</div><div class="rl">Landing/CRO</div></div></div>
+        <div class="node" style="left:60px;top:188px;"><div class="bubble"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 3-3 3 3 5-6"/></svg></div><div class="label"><div class="nm">Signal</div><div class="rl">Measurement</div></div></div>
+      </div>
+      <div class="alist">
+        <div class="arow" data-reveal><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></div><div><div class="nm">Scout</div><div class="rl">Research &amp; Intelligence</div><div class="dc">Tears down competitor ad libraries, maps audiences, finds angles worth testing.</div></div><div class="mt"><div class="v">[500+]</div><div class="k">accounts</div></div></div>
+        <div class="arow" data-reveal><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 2.4 7.4H22l-6 4.5 2.3 7.1L12 16.7 5.7 21l2.3-7.1-6-4.5h7.6z"/></svg></div><div><div class="nm">Forge</div><div class="rl">Creative Engine</div><div class="dc">Static, motion, and UGC concepts and variants at volume, tested at the asset level.</div></div><div class="mt"><div class="v">[1,200+]</div><div class="k">variants/qtr</div></div></div>
+        <div class="arow" data-reveal><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div><div><div class="nm">Pilot</div><div class="rl">Media Buying &amp; Optimization</div><div class="dc">Structures campaigns, paces budget, rotates creative across Meta and Google.</div></div><div class="mt"><div class="v">[$25M+]</div><div class="k">optimized</div></div></div>
+        <div class="arow" data-reveal><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg></div><div><div class="nm">Frame</div><div class="rl">Landing Pages &amp; CRO</div><div class="dc">Fast, mobile-first landing pages for ad traffic, A/B tested continuously.</div></div><div class="mt"><div class="v">[300+]</div><div class="k">pages</div></div></div>
+        <div class="arow" data-reveal><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 3-3 3 3 5-6"/></svg></div><div><div class="nm">Signal</div><div class="rl">Measurement &amp; Attribution</div><div class="dc">GA4, server-side tracking, and attribution that ties every dollar to revenue.</div></div><div class="mt"><div class="v">[40+]</div><div class="k">brands</div></div></div>
+      </div>
+    </div>
+    <p class="disclaim" data-reveal>This isn't AI spam. Agents do the research, drafts, and optimization at scale. <b>Senior humans review, refine, and approve everything before a dollar goes live.</b></p>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="wrap">
+    <div class="sec-head" data-reveal><p class="ey">What we do</p><h2>Strategy, creative, and media — <span class="grad">as one engine.</span></h2></div>
+    <div class="svc">
+      <div class="scard" data-reveal><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div><h4>Paid Media</h4><p>Meta and Google end-to-end — proper structure, real keyword discipline, and Advantage+ / PMax that don't torch the budget.</p></div>
+      <div class="scard" data-reveal><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 2.4 7.4H22l-6 4.5 2.3 7.1L12 16.7 5.7 21l2.3-7.1-6-4.5h7.6z"/></svg></div><h4>Content &amp; Creative</h4><p>An always-on engine. Static, motion, and UGC shipped weekly, tested at the asset level. Volume is the strategy.</p></div>
+      <div class="scard" data-reveal><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></div><h4>Strategy</h4><p>Channel mix and budget on margin math — informed by AI teardowns at machine speed, not vanity ROAS.</p></div>
+      <div class="scard" data-reveal><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg></div><h4>Landing &amp; CRO</h4><p>Fast, mobile-first pages built for ad traffic and A/B tested continuously.</p></div>
+      <div class="scard" data-reveal><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 3-3 3 3 5-6"/></svg></div><h4>Measurement</h4><p>GA4, server-side tracking, and attribution that ties spend to revenue — not clicks.</p></div>
+      <div class="scard" data-reveal><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12H4z"/><path d="M4 20h16"/></svg></div><h4>Reporting</h4><p>Weekly read on revenue and CAC, in plain English. What worked, what didn't, what's next.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PLATFORMS -->
+<section id="platforms">
+  <div class="wrap">
+    <div class="sec-head" data-reveal><p class="ey">Platforms</p><h2>Two channels. Run properly. <span class="grad">Amplified by AI.</span></h2><p>Meta and Google are 90% of the work for most brands we run. Other channels added when they earn it.</p></div>
+    <div class="plat">
+      <div class="pcard" data-reveal>
+        <div class="top"><h3>Meta Ads</h3><span class="bdg">Primary</span></div>
+        <div class="ch">Facebook · Instagram · Messenger · Reels</div>
+        <p class="pd">Full-funnel paid social — cold prospecting to retargeting and catalog sales. Creative-led campaigns built around what converts on platform.</p>
+        <ul>
+          <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 4.5 6 12l-3.5-3.5"/></svg>Conversion campaigns</li>
+          <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 4.5 6 12l-3.5-3.5"/></svg>Lead generation</li>
+          <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 4.5 6 12l-3.5-3.5"/></svg>Catalog &amp; dynamic ads</li>
+          <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 4.5 6 12l-3.5-3.5"/></svg>Reels-native creative</li>
+          <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 4.5 6 12l-3.5-3.5"/></svg>Advantage+ Shopping</li>
+          <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 4.5 6 12l-3.5-3.5"/></svg>Pixel &amp; CAPI setup</li>
+        </ul>
+      </div>
+      <div class="pcard" data-reveal>
+        <div class="top"><h3>Google Ads</h3><span class="bdg">Primary</span></div>
+        <div class="ch">Search · Performance Max · YouTube · Demand Gen</div>
+        <p class="pd">Search intent and visual demand, run together. Tight structure, real keyword discipline, and Performance Max that doesn't burn budget.</p>
+        <ul>
+          <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 4.5 6 12l-3.5-3.5"/></svg>Search &amp; shopping</li>
+          <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 4.5 6 12l-3.5-3.5"/></svg>Performance Max</li>
+          <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 4.5 6 12l-3.5-3.5"/></svg>YouTube ads</li>
+          <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 4.5 6 12l-3.5-3.5"/></svg>Demand Gen</li>
+          <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 4.5 6 12l-3.5-3.5"/></svg>Tag Manager &amp; GA4</li>
+          <li><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 4.5 6 12l-3.5-3.5"/></svg>Negative keywords</li>
+        </ul>
+      </div>
+    </div>
+    <div class="addons">
+      <div class="adn" data-reveal><div class="top"><h4>LinkedIn Ads</h4><span class="bdg">Add-on</span></div><p>B2B targeting, ABM lists, lead-gen forms.</p></div>
+      <div class="adn" data-reveal><div class="top"><h4>Snapchat Ads</h4><span class="bdg">Add-on</span></div><p>Gen Z reach, AR lenses, creative-first formats.</p></div>
+      <div class="adn" data-reveal><div class="top"><h4>Programmatic</h4><span class="bdg">Add-on</span></div><p>Display, native, and direct deal placements.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="wrap">
+    <div class="sec-head" data-reveal><p class="ey">How it works</p><h2>From audit to live in <span class="grad">days, not months.</span></h2></div>
+    <div class="steps">
+      <div class="stp" data-reveal><div class="sn">1</div><h4>Audit &amp; teardown</h4><p>Free audit of your Meta and Google accounts plus an AI competitive teardown. Clear read in 24 hours.</p></div>
+      <div class="stp" data-reveal><div class="sn">2</div><h4>Architecture</h4><p>Audience map, funnel, and budget on margin math — built in days, not a month-long deck.</p></div>
+      <div class="stp" data-reveal><div class="sn">3</div><h4>Creative spins up</h4><p>Your first batch of static, motion, and UGC ads in [under a week], tested at the asset level.</p></div>
+      <div class="stp" data-reveal><div class="sn">4</div><h4>Launch</h4><p>Campaigns structured properly. Pixel/CAPI, GA4, and server-side tracking from day one.</p></div>
+      <div class="stp" data-reveal><div class="sn">5</div><h4>Optimize daily</h4><p>Agents handle bidding, pacing, and rotation; senior operators steer weekly.</p></div>
+      <div class="stp" data-reveal><div class="sn">6</div><h4>Compound</h4><p>Weekly reporting on revenue and CAC. Winning angles compound.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" style="padding-bottom:60px;">
+  <div class="wrap">
+    <div class="contact-wrap" data-reveal="scale">
+      <div class="contact-l">
+        <p class="ey">Contact</p>
+        <h2>Let's talk about your <span class="grad">growth.</span></h2>
+        <p>Tell us about your business and goals. You'll get a clear read on your Meta and Google accounts — plus a shortlist of the highest-leverage fixes — within 24 hours.</p>
+        <ul class="incl">
+          <li><svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 7 13l-4-4"/></svg>AI-powered audit of your current ad accounts</li>
+          <li><svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 7 13l-4-4"/></svg>Competitive ad-library teardown</li>
+          <li><svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 7 13l-4-4"/></svg>Custom paid media + creative strategy</li>
+          <li><svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 7 13l-4-4"/></svg>Transparent pricing — no retainer pitch unless it fits</li>
+        </ul>
+        <p class="email">Or email us directly — <a href="mailto:support@roilabs.in">support@roilabs.in</a></p>
+      </div>
+      <div class="contact-r">
+        <form id="cf" novalidate>
+          <div class="f row">
+            <div><label>Name</label><input id="c-name" type="text" placeholder="Your name" required /><div class="errm">Please enter your name.</div></div>
+            <div><label>Email</label><input id="c-email" type="email" placeholder="you@company.com" required /><div class="errm">Enter a valid email.</div></div>
+          </div>
+          <div class="f row">
+            <div><label>Company</label><input type="text" placeholder="Company name" /><div class="errm"></div></div>
+            <div><label>Monthly budget</label><select id="c-budget" required><option value="" selected disabled>Select range</option><option>Under $5,000</option><option>$5,000 – $15,000</option><option>$15,000 – $50,000</option><option>$50,000+</option></select><div class="errm">Please pick a range.</div></div>
+          </div>
+          <div class="f"><label>Message</label><textarea id="c-msg" placeholder="Tell us about your goals…" required></textarea><div class="errm">Tell us a little about your goals.</div></div>
+          <button type="submit" class="btn btn-pri btn-lg fbtn">Send message →</button>
+          <div class="sent" id="sent">✓ Sent — we'll be in touch within 24 hours.</div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <span>ROI Labs — the AI-native paid media agency.</span>
+    <span>© 2026 · support@roilabs.in</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var docEl = document.documentElement; docEl.classList.add('js');
+  setTimeout(function(){ docEl.classList.add('reveal-off'); }, 1100);
+  var nav=document.querySelector('nav');
+  function navShadow(){ if(nav) nav.classList.toggle('scrolled', window.scrollY>6); }
+  var reveals=[].slice.call(document.querySelectorAll('[data-reveal]'));
+  var counts=[].slice.call(document.querySelectorAll('[data-count]'));
+  function fmt(n){return n.toLocaleString('en-US');}
+  function countUp(el){ if(el.__d)return; el.__d=1;
+    var t=parseFloat(el.getAttribute('data-count')),dur=1500,pre=el.getAttribute('data-prefix')||'',suf=el.getAttribute('data-suffix')||'',dec=parseInt(el.getAttribute('data-decimals')||'0',10);
+    if(reduce){el.textContent=pre+(dec?t.toFixed(dec):fmt(t))+suf;return;}
+    var s=null; function step(ts){ if(!s)s=ts; var p=Math.min((ts-s)/dur,1),e=1-Math.pow(1-p,3),v=t*e; el.textContent=pre+(dec?v.toFixed(dec):fmt(Math.round(v)))+suf; if(p<1)requestAnimationFrame(step); else el.textContent=pre+(dec?t.toFixed(dec):fmt(t))+suf; } requestAnimationFrame(step);
+    setTimeout(function(){ el.textContent=pre+(dec?t.toFixed(dec):fmt(t))+suf; }, dur+260);
+  }
+  function inView(el,m){ var r=el.getBoundingClientRect(),vh=window.innerHeight||800; if(!r.height&&!r.width)return false; return r.top<vh-(m||0)*vh&&r.bottom>0; }
+  function check(){
+    for(var i=reveals.length-1;i>=0;i--){ if(inView(reveals[i],0.06)){ (function(el){var d=parseInt(el.getAttribute('data-delay')||'0',10);setTimeout(function(){el.classList.add('in');},reduce?0:d);})(reveals[i]); reveals.splice(i,1); } }
+    for(var j=counts.length-1;j>=0;j--){ if(inView(counts[j],0)){ countUp(counts[j]); counts.splice(j,1); } }
+  }
+  if(reduce){ document.querySelectorAll('[data-reveal]').forEach(function(el){el.classList.add('in');}); counts.forEach(countUp); }
+  var tick=false;
+  function onScroll(){ navShadow(); if(!tick){tick=true;requestAnimationFrame(function(){check();tick=false;});} }
+  window.addEventListener('scroll',onScroll,{passive:true}); window.addEventListener('resize',onScroll,{passive:true});
+  navShadow(); check(); requestAnimationFrame(check); setTimeout(check,120); setTimeout(check,400); window.addEventListener('load',check);
+})();
+</script>
+<script>
+// Contact-form validation (inlined from the bundle's form.js)
+(function(){
+  var f=document.getElementById('cf'); if(!f) return;
+  var sent=document.getElementById('sent');
+  var re=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  f.addEventListener('submit',function(e){
+    e.preventDefault();
+    var ok=true;
+    [['c-name',function(v){return v;}],['c-email',function(v){return re.test(v);}],['c-budget',function(v){return v;}],['c-msg',function(v){return v;}]].forEach(function(pair){
+      var el=document.getElementById(pair[0]); if(!el) return;
+      var box=el.closest('.f.row > div')||el.closest('.f');
+      var bad=!pair[1](el.value.trim());
+      box.classList.toggle('err',bad);
+      if(bad) ok=false;
+    });
+    if(ok){ var b=f.querySelector('.fbtn'); if(b) b.style.display='none'; if(sent) sent.style.display='block'; f.reset(); }
+  });
+  f.addEventListener('input',function(e){
+    var b=e.target.closest('.f.row > div')||e.target.closest('.f');
+    if(b) b.classList.remove('err');
+  });
+})();
+</script>
+</body>
+</html>

@@ -16,8 +16,7 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Aurora pages ship their own nav; hide the global one there.
-  if (pathname === "/" || pathname?.startsWith("/audit") || pathname?.startsWith("/discord")) return null;
+  if (pathname?.startsWith("/discord")) return null;
 
   const navLinks = [
     { href: "/#services", label: "Services" },
