@@ -1,0 +1,17 @@
+/* Demo gallery — scoped under .demos so it doesn't inherit the dark global
+   heading/serif styles in an unwanted way. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.demos{
+  font-family:'Inter',system-ui,sans-serif;
+  background:#0B0B0F;
+  color:#E9E9EC;
+  min-height:100vh;
+  position:relative;
+  z-index:1;
+}
+.demos h1,.demos h2,.demos h3{font-family:'Inter',sans-serif;color:#fff;margin:0;letter-spacing:-.02em;line-height:1.1;}
+.demos p{font-family:'Inter',sans-serif;margin:0;color:#9A9AA2;line-height:1.6;}
+.demos a{text-decoration:none;color:inherit;}
+.demos .card{transition:transform .15s ease,border-color .15s ease,background .15s ease;}
+.demos .card:hover{transform:translateY(-3px);border-color:rgba(250,204,21,.55);background:#15151b;}

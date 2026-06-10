@@ -28,11 +28,15 @@ const XICON = `<svg width="15" height="15" fill="currentColor" viewBox="0 0 24 2
 const SF = (icon: string, t: string, d: string) =>
   `<div class="sf"><div class="t"><span class="i">${icon}</span>${t}</div><p>${d}</p></div>`;
 
+// Prefix assets with the deploy base path so raw <img> srcs resolve on
+// subpath hosts like GitHub Pages (/agency). Empty string on Vercel/apex.
+const BP = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 const HTML = `
 <div class="navwrap">
   <nav>
     <div class="nv">
-      <a href="#top" class="brand"><img src="/roi-logo-light.png" alt="ROI Labs" /></a>
+      <a href="#top" class="brand"><img src="${BP}/roi-logo-dark.png" alt="ROI Labs" /></a>
       <div class="nv-links"><a href="#process">How it works</a><a href="#system">The system</a><a href="/audit">Free audit</a><a href="#plans">Plans</a><a href="#faq">FAQ</a></div>
       <a href="#contact" class="btn btn-pri">Book your audit</a>
     </div>
@@ -75,6 +79,7 @@ const HTML = `
     <div class="orbit-wrap" data-reveal>
       <div class="orbit">
         <div class="ring r1"></div><div class="ring r2"></div>
+        <div class="sweep"><span class="comet"></span></div>
         <svg viewBox="0 0 500 500" fill="none">
           <line x1="250" y1="250" x2="250" y2="50" stroke="rgba(250,204,21,.45)"/>
           <line x1="250" y1="250" x2="440" y2="188" stroke="rgba(250,204,21,.45)"/>
@@ -82,12 +87,12 @@ const HTML = `
           <line x1="250" y1="250" x2="132" y2="412" stroke="rgba(250,204,21,.45)"/>
           <line x1="250" y1="250" x2="60" y2="188" stroke="rgba(250,204,21,.45)"/>
         </svg>
-        <div class="core"><div class="pulse"></div><div><div class="ttl">ROI Core</div><div class="sub">Senior Ops</div></div></div>
-        <div class="node" style="left:250px;top:50px;"><div class="bubble">${I_SEARCH}</div><div class="label"><div class="nm">Scout</div><div class="rl">Research</div></div></div>
-        <div class="node" style="left:440px;top:188px;"><div class="bubble">${I_SPARK}</div><div class="label"><div class="nm">Forge</div><div class="rl">Creative</div></div></div>
+        <div class="node nt" style="left:250px;top:50px;"><div class="bubble">${I_SEARCH}</div><div class="label"><div class="nm">Scout</div><div class="rl">Research</div></div></div>
+        <div class="node nt" style="left:440px;top:188px;"><div class="bubble">${I_SPARK}</div><div class="label"><div class="nm">Forge</div><div class="rl">Creative</div></div></div>
         <div class="node" style="left:368px;top:412px;"><div class="bubble">${I_BOLT}</div><div class="label"><div class="nm">Pilot</div><div class="rl">Media buying</div></div></div>
         <div class="node" style="left:132px;top:412px;"><div class="bubble">${I_FRAME}</div><div class="label"><div class="nm">Frame</div><div class="rl">Landing/CRO</div></div></div>
-        <div class="node" style="left:60px;top:188px;"><div class="bubble">${I_CHART}</div><div class="label"><div class="nm">Signal</div><div class="rl">Measurement</div></div></div>
+        <div class="node nt" style="left:60px;top:188px;"><div class="bubble">${I_CHART}</div><div class="label"><div class="nm">Signal</div><div class="rl">Measurement</div></div></div>
+        <div class="core"><div class="pulse"></div><div><div class="ttl">ROI Core</div><div class="sub">Senior Ops</div></div></div>
       </div>
       <div class="alist">
         <div class="arow" data-reveal><div class="ic">${I_SEARCH}</div><div><div class="nm">Scout</div><div class="rl">Research &amp; Intelligence</div><div class="dc">Tears down competitor ad libraries, maps audiences, finds angles worth testing.</div></div><div class="mt"><div class="v">[500+]</div><div class="k">accounts</div></div></div>
@@ -335,7 +340,7 @@ const HTML = `
   <div class="wrap">
     <div class="fgrid">
       <div class="fbrand">
-        <img src="/roi-logo-light.png" alt="ROI Labs" />
+        <img src="${BP}/roi-logo-light.png" alt="ROI Labs" />
         <p class="ft">AI-native paid media for growth brands on Meta &amp; Google. Measured in revenue.</p>
         <div class="fsoc"><a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">${LINKEDIN}</a><a href="https://x.com" target="_blank" rel="noopener noreferrer" aria-label="X">${XICON}</a></div>
       </div>
@@ -366,7 +371,7 @@ const HTML = `
   <div class="modal">
     <div class="mL">
       <button class="mClose" id="popupClose" type="button" aria-label="Close">${SVG('<path d="M5 5l14 14M19 5 5 19"/>')}</button>
-      <h3>Ready to fill your pipeline?</h3>
+      <h3>Put AI to work on your paid media.</h3>
       <p class="ms">Book an audit and see what AI-run paid media could do for your revenue.</p>
       <form id="pf" novalidate>
         <div class="mf"><label>First name</label><input id="p-name" type="text" placeholder="John" /></div>

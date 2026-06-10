@@ -1,5 +1,6 @@
 # ROI Labs — edit → verify → deploy
 
+
 The live site (**https://roilabs.in**) is this Next.js app on Vercel. The
 homepage is the **Aurora Light** design. This is the loop for changing it
 safely and shipping.

@@ -30,6 +30,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+# local dev server logs (may contain stack traces / request detail — never commit)
+*.log
 
 # env files (can opt-in for committing if needed)
 .env*
@@ -56,3 +58,6 @@ next-env.d.ts
 nul
 skills-lock.json
 images (*).jpg
+# large media — don't commit screen recordings to git
+*.mp4
+*.mov
