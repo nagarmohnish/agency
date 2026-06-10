@@ -14,8 +14,11 @@ Convert relative dates to absolute. Newest changelog entry on top.
   separate from the marketing leads DB (`gaulosvlnynoxgdjelgm`).
 - ✅ Security hardened (server-derived spend cap, per-mutation ceiling, dry-run on
   approvals, constant-time auth) — see `SECURITY.md`.
+- ✅ **Shopify LIVE** (revenue source of truth): AstroTime Store, 160 orders /
+  ₹120,787 / 30d. Revenue tab shows KPIs, trend, daily table, reconciliation.
 - ⏳ **Meta pending**: app needs the Marketing API use case added (admin, ~next
-  day) → generate System User token → pick 1 of 4 ad accounts → wire it.
+  day) → generate System User token → pick 1 of 4 ad accounts → wire it. Once
+  live, the Revenue reconciliation (Meta-reported vs Shopify-actual) populates.
 - 🔒 Safety: `ENGINE_DRY_RUN=true`, global cap `0` — nothing can spend yet.
 
 ## Key facts / IDs (non-secret)
@@ -47,6 +50,40 @@ Convert relative dates to absolute. Newest changelog entry on top.
 3. The AEO/GEO AI-search module + the public case-study page generator.
 
 ## Changelog
+
+### 2026-06-11 — Dashboard re-skinned to roilabs.in (Aurora) design
+- `engine.css` rebuilt on the **Aurora Light tokens** (from `aurora.css`): cream
+  `#FCFBF7` bg, white cards, brand-yellow gradient, ink, gold eyebrows, `--sh`
+  shadows. Fonts: **Sora** (headings) + **Manrope** (body) — already on `<body>`.
+- **Dark sidebar** with the real `roi-logo-dark.png` (ROI/LABS) — the site's
+  dark-nav treatment; light content area. Pill gradient buttons, gold eyebrows.
+
+### 2026-06-11 — 🎉 Shopify LIVE + Revenue tab sections
+- Shopify connected on AstroTime Store (`fuwxki-13.myshopify.com`): **160 orders /
+  ₹120,787 / 30d, AOV ₹755**. Connection green in `/status`.
+- Token obtained via OAuth (Dev Dashboard apps are OAuth-only; the "App automation
+  token" is for CI/CD, not the Admin API — it 401s). Client ID/secret →
+  `scripts/shopify-exchange.mjs` minted a `shpat_` token (scope read_orders).
+  Approved on Mac → redirect to example.com (the app URL) → pasted callback → exchanged.
+- Revenue tab now has proper sections: KPIs (revenue/orders/AOV), revenue trend,
+  **daily orders & revenue table**, and the Meta-vs-Shopify reconciliation
+  (shows null until Meta connects).
+- `.env.local`: SHOPIFY_API_KEY/SECRET kept only for re-minting (not read by engine).
+
+### 2026-06-11 — Shopify integration (revenue source of truth)
+- New `src/lib/engine/shopify.ts` (Admin API, `read_orders`): `getRevenue(days)`
+  pulls real orders (paginated), daily series, AOV. Not an ad connector.
+- New route `/api/engine/revenue`: Shopify actual + Meta-reported purchase-value
+  **reconciliation** (discrepancy %). New `/engine` **Revenue** tab (KPIs, revenue
+  trend, reconciliation card). Shopify ping added to `/status` connections.
+- Config: `SHOPIFY_STORE_DOMAIN` / `SHOPIFY_ADMIN_TOKEN` / `SHOPIFY_API_VERSION`
+  + `requireShopify`/`shopifyConfigured`. ENGINE.md "Connecting Shopify" added.
+- Awaiting creds: custom-app `shpat_` token + store domain → `.env.local`.
+
+### 2026-06-11 — Account-structure context
+- Learned AstroTime runs two funnels: **Google = app/video** (₹0 conversion value),
+  **Meta = Shopify store** (real purchase revenue). Meta will make ROAS computable.
+  Captured in CONTEXT.md; flagged a future Shopify-connector idea (revenue truth).
 
 ### 2026-06-10 — Repo cleanup + pushed to GitHub
 - Cleaned: gitignored `*.mp4`/`*.mov` (kept the screen recording out of git),

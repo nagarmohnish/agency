@@ -56,6 +56,16 @@ export const config = {
     apiVersion: env("META_API_VERSION") || "v21.0",
   },
 
+  // --- Shopify Admin API (revenue source of truth) --------------------
+  // For ecommerce brands (e.g. AstroTime's store): real orders/revenue, used to
+  // reconcile against platform-reported purchase value. Custom-app admin token.
+  shopify: {
+    // e.g. "theastrotime.myshopify.com" (protocol stripped automatically)
+    storeDomain: env("SHOPIFY_STORE_DOMAIN").replace(/^https?:\/\//, "").replace(/\/$/, ""),
+    adminToken: env("SHOPIFY_ADMIN_TOKEN"), // shpat_...
+    apiVersion: env("SHOPIFY_API_VERSION") || "2025-10",
+  },
+
   // --- Admin auth for the /api/engine/* ops routes --------------------
   // A static bearer token. These routes can move real money, so they are
   // never public — a missing token blocks all access (fail closed).
@@ -111,6 +121,20 @@ export function requireMeta() {
     );
   }
   return config.meta;
+}
+
+export function requireShopify() {
+  const s = config.shopify;
+  if (!s.storeDomain || !s.adminToken) {
+    throw new Error(
+      "Shopify not connected — set SHOPIFY_STORE_DOMAIN and SHOPIFY_ADMIN_TOKEN. See ENGINE.md."
+    );
+  }
+  return s;
+}
+
+export function shopifyConfigured(): boolean {
+  return !!(config.shopify.storeDomain && config.shopify.adminToken);
 }
 
 export function requireAnthropic() {

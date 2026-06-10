@@ -6,7 +6,8 @@ import { authorize } from "@/lib/engine/auth";
 import { getAccount, getDefaultAccount } from "@/lib/engine/db";
 import { listPendingApprovals, recentActions } from "@/lib/engine/audit-log";
 import { verifyConnections } from "@/lib/engine/runner";
-import { config } from "@/lib/engine/config";
+import { config, shopifyConfigured } from "@/lib/engine/config";
+import { shopifyPing } from "@/lib/engine/shopify";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,8 @@ export async function GET(req: NextRequest) {
       recentActions(account.id, 25),
       listPendingApprovals(account.id),
     ]);
+    // Shopify isn't an ad platform (not in verifyConnections) — ping separately.
+    if (shopifyConfigured()) connections.shopify = await shopifyPing();
     return NextResponse.json({
       account: {
         id: account.id,

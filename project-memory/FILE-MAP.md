@@ -17,6 +17,8 @@ Keep this in sync when files are added/moved/removed.
   enforces autonomy + cap + dry-run) and `executeApproved`.
 - `auth.ts` — `authorize(req)` bearer guard for the ops routes (fail-closed).
 - `runner.ts` — high-level `runAudit(accountId)` + `verifyConnections(account)`.
+- `shopify.ts` — Shopify Admin API (revenue source of truth; NOT an ad connector):
+  `shopifyPing` + `getRevenue(days)` (orders pagination, daily series, AOV).
 - `connectors/`
   - `types.ts` — `AdConnector` interface (ping, listCampaigns, getMetrics, mutate).
   - `google.ts` — Google Ads REST (OAuth refresh, GAQL, mutate).
@@ -36,6 +38,7 @@ Keep this in sync when files are added/moved/removed.
 - `approvals/route.ts` — GET pending; POST approve/reject (executes via gate).
 - `runs/route.ts` — GET recent runs grouped with fetches + mutations + audit + token cost.
 - `breakdowns/route.ts` — GET traffic-source/gender/age rollups (account + campaign), spend + CAC.
+- `revenue/route.ts` — GET Shopify actual revenue + Meta-reported reconciliation (discrepancy).
 
 ## Dashboard — `src/app/engine/`
 - `page.tsx` — route + metadata (noindex).

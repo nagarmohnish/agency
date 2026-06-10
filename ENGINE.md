@@ -103,6 +103,22 @@ At this point the engine runs in dry-run against an empty account — safe.
      where name = 'Brand name';
    ```
 
+### Connecting Shopify (revenue source of truth)
+
+For ecommerce brands (e.g. AstroTime's store, whose ads run on Meta), Shopify is
+the real revenue — used to reconcile against Meta's platform-reported purchase
+value. Not an ad platform; read-only.
+
+1. Shopify admin → **Settings → Apps and sales channels → Develop apps → Create
+   an app** (custom app).
+2. **Configure Admin API scopes** → enable **`read_orders`**. Install the app.
+3. Copy the **Admin API access token** (`shpat_…`).
+4. Set env: `SHOPIFY_STORE_DOMAIN` (e.g. `theastrotime.myshopify.com`) and
+   `SHOPIFY_ADMIN_TOKEN`. No DB row change needed.
+
+Then `/api/engine/status` shows a `shopify` connection and the **Revenue** tab
+shows actual orders/revenue + (once Meta is connected) the reported-vs-actual gap.
+
 ### Verify the connection (read-only, $0)
 
 ```bash
@@ -151,3 +167,4 @@ decisions, real numbers, no fabrication.
 Forge/Frame creative+page generation, Signal CAPI/GA4 wiring, the AEO/GEO
 (AI-search visibility) module, and the case-study page generator. The roles,
 gate, connectors, and audit log are all in place for them to plug into.
+

@@ -36,6 +36,22 @@ real results, get Basic token). We have the brand's Google MCC + Meta BM access.
   with APIs: Profound (REST + MCP), Peec AI, Scrunch.
 - → Treat as two products: paid where buyable + citation optimization elsewhere.
 
+## The Astro Time — account structure (non-obvious)
+
+The brand runs two funnels on different platforms:
+- **Google = app / video** (app installs, YouTube-heavy). This is why Google shows
+  conversions but **₹0 conversion value** — app campaigns don't report purchase
+  revenue, and these campaign types also don't populate Google's age/gender views.
+- **Meta = the Shopify store** (ecommerce purchases). Shopify orders fire as pixel
+  `purchase` events → so Meta WILL carry real conversion value (revenue) and ROAS
+  becomes computable once connected. Our Meta connector already reads `purchase` /
+  `offsite_conversion.fb_pixel_purchase` for conversions + value. Meta age/gender
+  breakdowns will populate the Segments tab.
+
+**Idea (Phase 3 / Signal):** add a Shopify Admin-API connector as the *revenue
+source of truth* — reconcile platform-reported purchase value against actual
+Shopify orders. The most defensible version of "measured in revenue, not ROAS."
+
 ## Project infrastructure facts
 
 - Marketing site: Next.js 16 + React 19 + Tailwind 4 + Supabase, on Vercel.

@@ -8,7 +8,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 const TOKEN_KEY = "roi_engine_token";
-type Tab = "overview" | "runs" | "audit" | "campaigns" | "segments" | "activity" | "approvals";
+type Tab = "overview" | "runs" | "audit" | "campaigns" | "segments" | "revenue" | "activity" | "approvals";
 
 // chart palette (on-brand: yellow lead, ink, golds, neutrals)
 const PALETTE = ["#FACC15", "#1b1a16", "#a87f00", "#d97706", "#9a8f6a", "#c9bfa3"];
@@ -180,10 +180,11 @@ const NAV: { id: Tab; label: string; sub?: string }[] = [
   { id: "audit", label: "Audit", sub: "Scout" },
   { id: "campaigns", label: "Campaigns", sub: "Pilot" },
   { id: "segments", label: "Segments", sub: "source · age · gender" },
+  { id: "revenue", label: "Revenue", sub: "Shopify truth" },
   { id: "activity", label: "Activity log", sub: "Signal" },
   { id: "approvals", label: "Approvals" },
 ];
-const RANGED: Tab[] = ["overview", "campaigns", "segments"];
+const RANGED: Tab[] = ["overview", "campaigns", "segments", "revenue"];
 
 function Cockpit({ token, onSignOut }: { token: string; onSignOut: () => void }) {
   const call = useApi(token);
@@ -195,7 +196,11 @@ function Cockpit({ token, onSignOut }: { token: string; onSignOut: () => void })
   return (
     <div className="eng shell">
       <aside className="sidebar">
-        <div className="logo">ROI Labs <span>Engine</span></div>
+        <div className="brandwrap">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/roi-logo-dark.png" alt="ROI Labs" className="brandlogo" />
+          <span className="brandtag">Engine</span>
+        </div>
         <nav className="snav">
           {NAV.map((n) => (
             <button key={n.id} className={tab === n.id ? "on" : ""} onClick={() => setTab(n.id)}>
@@ -224,6 +229,7 @@ function Cockpit({ token, onSignOut }: { token: string; onSignOut: () => void })
           {tab === "audit" && <Audit call={call} />}
           {tab === "campaigns" && <Campaigns call={call} days={days} />}
           {tab === "segments" && <Segments call={call} days={days} />}
+          {tab === "revenue" && <Revenue call={call} days={days} />}
           {tab === "activity" && <Activity call={call} />}
           {tab === "approvals" && <Approvals call={call} onPending={setPending} />}
         </main>
@@ -489,6 +495,77 @@ function Segments({ call, days }: { call: Call; days: number }) {
           </Card>
         </div>
       ))}
+    </div>
+  );
+}
+
+// ---- Revenue (Shopify source of truth + reconciliation) --------------------
+
+interface ShopRev { currency: string; days: number; orders: number; revenueCents: number; aovCents: number | null; daily: { date: string; orders: number; revenueCents: number }[] }
+
+function RevTrend({ daily }: { daily: { date: string; revenueCents: number }[] }) {
+  if (daily.length < 2) return <div className="empty">Not enough daily data for a trend.</div>;
+  const W = 680, H = 150, P = 10;
+  const max = Math.max(...daily.map((d) => d.revenueCents), 1);
+  const xAt = (i: number) => P + (i / (daily.length - 1)) * (W - 2 * P);
+  const y = (v: number) => H - P - (v / max) * (H - 2 * P);
+  const path = daily.map((d, i) => `${i ? "L" : "M"}${xAt(i).toFixed(1)} ${y(d.revenueCents).toFixed(1)}`).join(" ");
+  return (
+    <div>
+      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="trend"><path d={path} fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinejoin="round" /></svg>
+      <div className="trendaxis"><span>{daily[0].date.slice(5)}</span><span>{daily[daily.length - 1].date.slice(5)}</span></div>
+    </div>
+  );
+}
+
+function Revenue({ call, days }: { call: Call; days: number }) {
+  const { data, err, loading, reload } = useLoad(() => call(`/api/engine/revenue?days=${days}`), [call, days]);
+  if (loading) return <Loading note="Pulling Shopify orders…" />;
+  if (err) return <ErrBox msg={err} retry={reload} />;
+  if (!data) return null;
+  if (data.configured === false) return <Empty big>Shopify not connected. Add SHOPIFY_STORE_DOMAIN + SHOPIFY_ADMIN_TOKEN to .env.local (see ENGINE.md).</Empty>;
+  const s = data.shopify as ShopRev;
+  const cur = s.currency || "INR";
+  const meta = data.metaReported as { revenueCents: number; conversions: number } | null;
+  const disc = data.discrepancyPct as number | null;
+  return (
+    <div className="stack">
+      <div className="kpis">
+        <Kpi label={`Shopify revenue · ${days}d`} value={money(s.revenueCents, cur)} big />
+        <Kpi label="Orders" value={num(s.orders)} />
+        <Kpi label="Avg order value" value={money(s.aovCents, cur)} />
+      </div>
+      {meta ? (
+        <Card title="Revenue reconciliation" subtitle="Meta-reported purchase value vs actual store revenue">
+          <div className="recon">
+            <div><div className="kpil">Meta-reported</div><div className="kpiv">{money(meta.revenueCents, cur)}</div></div>
+            <div><div className="kpil">Shopify actual</div><div className="kpiv">{money(s.revenueCents, cur)}</div></div>
+            <div><div className="kpil">Discrepancy</div><div className={`kpiv ${disc != null && Math.abs(disc) > 0.15 ? "warn-t" : ""}`}>{disc == null ? "—" : `${disc > 0 ? "+" : ""}${(disc * 100).toFixed(0)}%`}</div></div>
+          </div>
+          <p className="muted recnote">Meta counts purchases on click/view windows and can over- or under-count vs the store&apos;s real orders. Shopify is the source of truth for &ldquo;measured in revenue.&rdquo;</p>
+        </Card>
+      ) : (
+        <Card title="Revenue reconciliation" subtitle="connect Meta to compare"><p className="muted">Once Meta is connected, this compares its reported purchase value against actual Shopify revenue.</p></Card>
+      )}
+      <Card title="Revenue trend" subtitle={`daily, last ${days} days`}><RevTrend daily={s.daily} /></Card>
+
+      <Card title="Daily orders & revenue" subtitle={`${s.daily.length} days with orders`}>
+        {s.daily.length === 0 ? <Empty>No orders in this window.</Empty> : (
+          <table className="tbl">
+            <thead><tr><th>Date</th><th className="r">Orders</th><th className="r">Revenue</th><th className="r">AOV</th></tr></thead>
+            <tbody>
+              {[...s.daily].reverse().map((d) => (
+                <tr key={d.date}>
+                  <td>{d.date}</td>
+                  <td className="r">{num(d.orders)}</td>
+                  <td className="r">{money(d.revenueCents, cur)}</td>
+                  <td className="r">{d.orders > 0 ? money(Math.round(d.revenueCents / d.orders), cur) : "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </Card>
     </div>
   );
 }
