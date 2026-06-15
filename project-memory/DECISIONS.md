@@ -226,3 +226,21 @@ measured in revenue" is the *store* thesis, not the whole story. Decision: surfa
   installs/CPI, Shopify orders/sales/AOV/products) from modeled (all Meta; GA4 sessions/CVR; last-click
   attribution) via the gold `*` convention. **Why:** completeness + accuracy aren't in tension — show
   the full instrument, but never imply we can extract what we can't. Extends D16-era honesty work.
+
+### D18 · Organize the repo root into `documentation/` + `design/` (2026-06-15)
+The root had accumulated ~12 loose files (HTML mockups, logo PNGs, a zip, a stray JPG) plus 5
+scattered spec docs — no structure. Reorganized **without deleting anything**, all via `git mv`
+(history preserved):
+- **`documentation/`** ← `ARCHITECTURE.md`, `ENGINE.md`, `DEVELOPMENT.md`, `GITHUB-PAGES.md`.
+- **`design/pages/`** ← the standalone HTML exports; **`design/logos/`** ← loose source logo art;
+  **`design/archive/`** ← `roi-labs-site.zip` + `images (3).jpg` (both gitignored).
+- **Kept at root:** `README.md`, `CLAUDE.md` (Claude-Code loads it from root), `SECURITY.md`
+  (GitHub special file), and all build config.
+**Why not move everything:** `src/`, `public/`, `scripts/`, `supabase/` are the app/infra and must
+stay; `brand-kit/`, `data-sources/`, `vision/` are already well-named; `docs/` is confidential
+(gitignored, untouched) and `demo assets/` is gitignored scratch. **Constraint honored:** every
+reference updated so nothing breaks — `CLAUDE.md`/`INDEX.md` spec links, the moved docs' own relative
+links (`../` prefix), the 5 legacy generator scripts that read/write these files (none in the
+`npm run` pipeline), and `.gitignore`/`.vercelignore` patterns. The live Next build (`src/`, `public/`)
+references none of the moved files, so `npm run verify` is unaffected. The root logos are *source* art
+for the standalone generators; the app uses the separate `public/roi-logo-*.png` copies.

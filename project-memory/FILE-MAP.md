@@ -118,10 +118,10 @@ Keep this in sync when files are added/moved/removed.
   `data-sources/CATALOG.md` with the external-API + product-scope layer added.
 
 ## Standalone artifact
-- `roi-engine-dashboard.html` (repo root) — the whole v2 cockpit in ONE self-contained
-  file (inlined CSS + vanilla JS port of `src/app/engine/v2/`, no deps, no build).
-  Opens via file://; shareable demo. Not connected to the live backend. Regenerate by
-  re-porting from `v2/` if the React app changes.
+- `design/pages/roi-engine-dashboard.html` (gitignored; moved from root 2026-06-15, D18) —
+  the whole v2 cockpit in ONE self-contained file (inlined CSS + vanilla JS port of
+  `src/app/engine/v2/`, no deps, no build). Opens via file://; shareable demo. Not connected
+  to the live backend. Regenerate by re-porting from `v2/` if the React app changes.
 
 ## Marketing pages
 - `src/app/page.tsx` → `AuroraHome.tsx` — the homepage (scoped `.aurora`). The **"How it
@@ -134,7 +134,8 @@ Keep this in sync when files are added/moved/removed.
   stack"). `page.tsx` (metadata + imports `aurora.css` + `integrations.css`),
   `Integrations.tsx` (client: hand-built brand-logo SVGs, 14-connector data, live search
   filter, inline Aurora nav/footer), `integrations.css` (scoped under `.aurora`). Nav:
-  Solutions · Blog · Integrations · Audit · Pricing · FAQ.
+  **How it works · Integrations · Free audit · Plans · FAQ** — the unified nav now shared by
+  `Navbar.tsx`, `AuroraHome.tsx`, `AuditPage.tsx`, `Integrations.tsx` (2026-06-15).
 
 ## Touched marketing files
 - `src/components/Navbar.tsx`, `Footer.tsx` — hide marketing chrome on `/engine` **and
@@ -142,7 +143,18 @@ Keep this in sync when files are added/moved/removed.
 - `src/app/engine/Dashboard.tsx` — engine tabs deep-linked via `?view=` (`ALL_VIEWS`,
   `viewFromUrl()`, URL-sync effect, popstate) → each tab is a shareable URL.
 
-## Docs
-- Root: `ARCHITECTURE.md`, `ENGINE.md`, `SECURITY.md` (threat model + go-live
-  checklist), `.env.example` (engine block).
+## Docs & repo layout
+- `documentation/` — project specs (moved from root 2026-06-15, D18): `ARCHITECTURE.md` (data
+  flow + screens), `ENGINE.md` (operator guide + credential steps), `DEVELOPMENT.md`
+  (edit→verify→deploy loop), `GITHUB-PAGES.md` (live static-export URLs).
+- Root (kept): `README.md`, `CLAUDE.md` (Claude-Code entry), `SECURITY.md` (threat model +
+  go-live checklist — GitHub special file), `.env.example` (engine block).
 - `project-memory/` — this alignment layer.
+- `design/` — non-app source artifacts, **not in the Next build** (D18): `design/pages/`
+  standalone HTML exports (legacy static site + the dashboard export); `design/logos/` loose
+  source logo art for the standalone generators — the live app uses the separate `public/`
+  copies; `design/archive/` old bundles/media (`roi-labs-site.zip`, gitignored). The 5 legacy
+  generator scripts in `scripts/` (`build-pages.js`, `build-standalone.js`,
+  `build_standalone_new.py`, `gen-clean-logo.js`, `make-logo.js`) read/write these paths.
+- `brand-kit/`, `data-sources/`, `vision/` — design tokens, raw-data catalog, vision narrative.
+  `demo assets/` (gitignored) = local scratch; `docs/` (gitignored) = confidential material.

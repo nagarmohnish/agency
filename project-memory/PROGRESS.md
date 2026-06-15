@@ -4,6 +4,107 @@ Convert relative dates to absolute. Newest changelog entry on top.
 
 ## Changelog
 
+### 2026-06-15 · Repo restructure (clean root) + dev-indicator off + push to GitHub
+Tidied the cluttered repo root and pushed the full session's work. **Nothing deleted** — every move
+was `git mv` (history preserved); references updated so nothing breaks.
+- **`documentation/`** ← `ARCHITECTURE.md`, `ENGINE.md`, `DEVELOPMENT.md`, `GITHUB-PAGES.md`.
+- **`design/pages/`** ← standalone HTML exports (`roi-labs-home/about/header-banners/new-design.html`
+  + the gitignored `roi-engine-dashboard.html`); **`design/logos/`** ← loose source logo art
+  (`roi-labs-logo*.png`, `roi-logo-dark/light.png`); **`design/archive/`** ← `roi-labs-site.zip`,
+  `images (3).jpg` (both gitignored).
+- **Kept at root:** `README.md`, `CLAUDE.md`, `SECURITY.md` + build config only.
+- **Refs updated:** `CLAUDE.md`/`INDEX.md` spec links → `documentation/…`; moved docs' own relative
+  links got a `../` prefix; the 5 legacy generator scripts (`build-pages.js`, `build-standalone.js`,
+  `build_standalone_new.py`, `gen-clean-logo.js`, `make-logo.js` — none in the `npm run` pipeline)
+  repointed to `design/…`; `.gitignore` + `.vercelignore` patterns moved with their files. The Next
+  build references none of the moved files → `npm run verify` unaffected. Decision logged as **D18**;
+  FILE-MAP "Docs & repo layout" rewritten.
+- Also this session: hid the Next dev-tools **"N" indicator** (`devIndicators:false` in
+  `next.config.ts` — dev-only, never shipped); restarted a **wedged Turbopack dev server** (it had hit
+  an internal cache error and hung on dynamic routes) — `/engine` + `/promo/index.html` 200 again
+  (note: the promo's local URL is `/promo/index.html`, the bare `/promo/` 308-redirects to a
+  non-route in dev). Pushed everything to **nagarmohnish/agency `master`**.
+
+### 2026-06-15 · Unified nav across pages + homepage trims + centered cockpit wordmark + claims audit
+Marketing↔product consistency pass (local-first; shipped in the restructure push above):
+- **Unified the top-nav** to the final set — **How it works · Integrations · Free audit · Plans · FAQ**
+  — across `Navbar.tsx`, `AuroraHome.tsx`, `AuditPage.tsx`, `Integrations.tsx` (it had been drifting
+  per page).
+- **Homepage** (`AuroraHome.tsx` / `aurora.css`): removed the **Free-audit** "how much is your paid
+  media leaving on the table?" section; footer logo switched to `roi-logo-light.png` with the **dark
+  tile/box removed** so "LABS" reads black on the light footer (`.fbrand img` stripped to a plain
+  inline image).
+- **Cockpit** (`v3.tsx`): center-aligned the sidebar **"ROI Engine"** wordmark; regenerated
+  `v3aurora.tsx` via `scripts/make-aurora-theme.mjs`.
+- **Claims audit** (`vision/CLAIMS-AUDIT.md`, NEW): a 5-agent workflow + adversarial verification of
+  website↔cockpit alignment. Flagged high-severity mismatches — Meta badged "Live" but not connected;
+  GA4/CAPI shown "Connected" with no connector; For-Brands/For-Agencies + white-label plans unbuilt;
+  creative-at-volume / landing-pages shown only as *modeled*; €/$ testimonials vs the single ₹ brand.
+  The adversarial pass corrected an overstated finding (the cockpit *does* show modeled creative/LP
+  surfaces — it just doesn't generate them).
+
+### 2026-06-15 · Refreshed promo dashboard screenshots (current cockpit data)
+Re-captured the four cockpit views used in the animated promo (`public/promo/assets/dash-{overview,
+google,meta,shopify}.png`) from the running dev cockpit so they show the **current** demo state
+(date window now **May 18 – Jun 14, 2026** instead of the stale Jun 24). Method: headless Chrome
+(`puppeteer-core`) drove `localhost:3002/engine`, clicked each sidebar source, screenshot at clean
+**1920×1080** (was mismatched ~1740×1026 crops). Frames preserve aspect ratio (`BrowserFrame` uses
+`width:100%;height:auto`), so the taller 16:9 caps just show a bit more dashboard. Verified the promo
+still renders (no `[bundle]` error, assets 200) and scrubbed the timeline: overview frame (11.2–19.4s)
+and the Google·Meta·Shopify fan (19.4–26.4s) both show the new captures. Local only — **Pages still
+serves the old assets until a republish**. Capture was a one-off (temp scripts removed).
+
+### 2026-06-15 · ROI Labs animated promo published to Pages
+User dropped a Claude Design bundle in `demo assets/claude-design/` (a "ROI Labs Promo" — animated
+HTML + the ROI Engine.dc.html dashboard design + jsx scenes). Took the self-contained
+**`ROI Labs Promo (download).html`** (fully bundled — no external assets, scenes drawn in code),
+copied it to `public/roi-promo.html`, published to gh-pages — **but the "download" bundle was broken**
+(its in-browser Babel+base64 bundler threw `[bundle] error` — "Missing script tags", a bad/partial
+export; same error on localhost + Pages). **Fix:** served the **raw source** instead — the design
+tool's `support.js` runtime (self-contained: Babel Standalone + `window.React`, no design-tool API)
++ `roi-promo.html`(=the `.dc.html`) + `roi-promo.jsx`/`roi-scenes.jsx`/`animations.jsx` +
+`assets/dash-*.png`, all under **`public/promo/`** (the dc-runtime fetches the .jsx + assets at
+relative paths). **Verified with headless Chrome** (installed `puppeteer-core --no-save`, drove the
+local Chrome): `[dc-runtime] x-import: loaded ./roi-promo.jsx`, no bundle-error in DOM, promo renders
++ animates (37.5s) — on BOTH localhost and the live Pages URL. Removed the broken `roi-promo.html`.
+**Live: https://nagarmohnish.github.io/agency/promo/** ; dev: `http://localhost:3002/promo/`.
+(The only Pages console 404 is the auto-requested favicon — harmless.) Lesson: Claude Design
+"(download)" exports can ship a broken bundler — prefer the `.dc.html`+`support.js` raw source, and
+verify client-render with headless Chrome (curl can't see it).
+
+### 2026-06-15 · Published the new design to GitHub Pages (engine + Aurora + integrations)
+Republished the static export to **gh-pages** (nagarmohnish account) so the **new v3 cockpit** is
+live (was serving the old v2). Now live:
+- **https://nagarmohnish.github.io/agency/engine/** — redesigned v3 (Atlas indigo).
+- **https://nagarmohnish.github.io/agency/engine/aurora/** — roilabs Aurora variant (cream/gold).
+- **/agency/integrations/** — 13 real platform logos (served from `/agency/logos/`).
+Process: PowerShell export build (`NEXT_BUILD_MODE=export NEXT_BASE_PATH=/agency
+NEXT_PUBLIC_ENGINE_DEMO=1 npm run build`) → `out/` → worktree publish to gh-pages →
+push with nagarmohnish token (commit **44ae0e8**; Pages built ✓). **Two fixes required:**
+(1) BP-prefixed the integration `<img src>` logos (`${BP}/logos/…`) so they resolve under
+`/agency` (raw `/logos` 404s on Pages); (2) added `".next/dev/types"` to tsconfig `exclude` — the
+Next-16 export build emits an orphan dev `validator.ts` importing a dev-only `routes.js`, which
+broke the build type-check (kept as a permanent fix; documented in `GITHUB-PAGES.md`). **Caveat:**
+the v2 `?view=` per-tab deep links no longer work (not re-wired into v3 — opens Overview always).
+Vercel/roilabs.in untouched. master source unchanged (this only touched gh-pages + local docs).
+
+### 2026-06-15 · Real platform logos on /integrations + dashboard sources
+User added real brand logos under `demo assets/logos/` (gitignored). Copied the 13 served ones to
+**`public/logos/`** (google.jpg · meta.png · shopify.svg · tiktok.png · linkedin.png · pinterest.png ·
+snapchat.jpg · ga4.png · woo.png · highlevel.jpg · hubspot.png · salesforce.png · airtable.png) and
+wired them in:
+- **`/integrations`** (`Integrations.tsx`): the `L_*` logo constants now hold `/logos/…` paths; the
+  `Logo` component renders `<img>` for paths (SVG fallback kept — **Pipedrive** has no file, keeps its
+  inline SVG). Added `.ig-logo img{28px,object-fit:contain}` so each sits in the 46px white chip.
+- **Dashboard** (`v3.tsx` `SourceIcon`): Google/Meta/Shopify use **transparent multicolor brand
+  SVGs** (full Google G, Meta infinity, Shopify bag — ported from the legacy `Dashboard.tsx`
+  `BrandIcon`), directly on the dark sidebar + on the white funnel cards (no white chip — per user
+  screenshot). The provided white-bg JPGs only suit light cards, so the dashboard uses SVGs, not the
+  image files. Regenerated `v3aurora.tsx` via `scripts/make-aurora-theme.mjs` (brand hexes aren't in
+  the remap, so they survive). Homepage has no logo grid (text-only "Meta & Google") → unchanged.
+`tsc` clean; `/integrations` (13/13 logos), `/engine`, `/engine/aurora` all 200; assets serve.
+**Local only — not committed/pushed.**
+
 ### 2026-06-15 · Cleaned working tree + pushed master to GitHub (nagarmohnish/agency)
 Reviewed the whole working tree, cleaned scratch, and pushed the session's work. Commit **73184d9**
 (`02a5220..73184d9 master`, author Mohnish Nagar <mohnish238@gmail.com>, pushed with the
@@ -238,7 +339,7 @@ shareable URL (`/engine/?view=runs` etc.) — works on static Pages (client-read
 overview·google·meta·shopify·runs·activity·approvals.
 
 Republished **GitHub Pages** (gh-pages, nagarmohnish account) with both changes; all URLs +
-per-tab deep links documented in root [`GITHUB-PAGES.md`](../GITHUB-PAGES.md). Live:
+per-tab deep links documented in [`GITHUB-PAGES.md`](../documentation/GITHUB-PAGES.md). Live:
 https://nagarmohnish.github.io/agency/integrations/ and
 https://nagarmohnish.github.io/agency/engine/?view=runs . Vercel/roilabs.in untouched (no deploy).
 

@@ -27,11 +27,11 @@ Higher-level narrative lives in [`../vision/`](../vision/README.md):
 
 ## Canonical specs (the real source for these topics)
 
-These live at the repo root and are referenced — don't duplicate them here:
+These live in [`../documentation/`](../documentation/) and are referenced — don't duplicate them here:
 
-- [ARCHITECTURE.md](../ARCHITECTURE.md) — data flow + the dashboard screens
-- [ENGINE.md](../ENGINE.md) — operator guide + the connection (credential) steps
-- [DEVELOPMENT.md](../DEVELOPMENT.md) — the marketing-site edit→verify→deploy loop
+- [ARCHITECTURE.md](../documentation/ARCHITECTURE.md) — data flow + the dashboard screens
+- [ENGINE.md](../documentation/ENGINE.md) — operator guide + the connection (credential) steps
+- [DEVELOPMENT.md](../documentation/DEVELOPMENT.md) — the marketing-site edit→verify→deploy loop
 
 ## One-line state
 
