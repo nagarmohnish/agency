@@ -36,12 +36,12 @@ const USES = [
 
 const STEPS = [
   { n: "1", t: "Audit your account", d: "We score your Meta & Google, creative, and tracking, then map the highest-leverage fixes." },
-  { n: "2", t: "Spin up the engine", d: "Agents build and launch creative across both platforms with attribution wired from day one." },
+  { n: "2", t: "Spin up the engine", d: "AI builds and launches creative across both platforms with attribution wired from day one." },
   { n: "3", t: "Compound the wins", d: "Daily optimization, weekly senior review, and reporting on revenue and CAC — angles compound." },
 ];
 
 const FEATS = [
-  { icon: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', t: "Always-on optimization", d: "Agents manage bids, pacing, and creative rotation every day — not just when a human logs in." },
+  { icon: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', t: "Always-on optimization", d: "AI manages bids, pacing, and creative rotation every day — not just when a human logs in." },
   { icon: '<path d="M16 11a4 4 0 1 0-8 0"/><path d="M2 21a8 8 0 0 1 16 0"/><circle cx="12" cy="7" r="0"/>', t: "Senior-led judgment", d: "The people who pitched you own the strategy and approve everything before a dollar goes live." },
   { icon: '<path d="M12 2v20M2 12h20"/>', t: "Revenue reporting", d: "MER, CAC, and contribution margin in plain English — the numbers on your P&L, weekly." },
 ];
@@ -53,7 +53,7 @@ const TESTI = [
 ];
 
 const FAQS = [
-  { q: "Is the creative actually AI, or real?", a: "Agents do the research, drafts, and variants at scale; senior operators review, refine, and approve everything before launch — and we disclose AI-generated creative per platform policy." },
+  { q: "Is the creative actually AI, or real?", a: "AI does the research, drafts, and variants at scale; senior operators review, refine, and approve everything before launch — and we disclose AI-generated creative per platform policy." },
   { q: "How fast can we go live?", a: "Typically under two weeks from audit to first live campaign — the engine spins up your first creative batch in days, not a month-long deck." },
   { q: "What do you report on?", a: "Revenue, CAC, MER, and contribution margin — the numbers on your P&L — with a weekly read on what's working and what's next." },
   { q: "What does it cost?", a: "Transparent and scoped to your spend, with no per-seat tool fees. We start with an audit; if we're a fit, the fee is credited to the engagement." },
@@ -66,7 +66,7 @@ export default function Demo() {
     <div className="hhd" id="top">
       <nav>
         <div className="wrap nv">
-          <a href="#top" className="brand">{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/roi-logo-light.png" alt="ROI Labs" /></a>
+          <a href="#top" className="brand">{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/roi-logo-dark.png" alt="ROI Labs" /></a>
           <div className="nv-links"><a href="#uses">Product</a><a href="#how">How it works</a><a href="#faq">FAQ</a><a href="/">Live site</a></div>
           <div className="nv-right"><a href="/#contact" className="link">Sign in</a><a href="/#contact" className="btn btn-pri">Get started</a></div>
         </div>
@@ -77,7 +77,7 @@ export default function Demo() {
           <div className="hero-l">
             <span className="ann"><span className="tag">New</span> AI-run paid media, measured in revenue</span>
             <h1>A dedicated growth team for <span className="g">every brand</span>.</h1>
-            <p className="sub">AI agents run your Meta &amp; Google around the clock — senior operators own the strategy, and everything is measured in revenue, not ROAS.</p>
+            <p className="sub">AI runs your Meta &amp; Google around the clock — senior operators own the strategy, and everything is measured in revenue, not ROAS.</p>
             <div className="cta-row">
               <a href="/#contact" className="btn btn-pri btn-lg">Book your audit →</a>
               <a href="#how" className="btn btn-gh btn-lg">See how it works</a>
@@ -116,7 +116,7 @@ export default function Demo() {
 
       <section id="uses">
         <div className="wrap">
-          <div className="center"><p className="ey">One system</p><h2>Three engines, run as one.</h2><p className="lead">Creative, media, and measurement — powered by agents, owned by senior operators.</p></div>
+          <div className="center"><p className="ey">One system</p><h2>Three engines, run as one.</h2><p className="lead">Creative, media, and measurement — powered by AI, owned by senior operators.</p></div>
           <div className="uses">
             {USES.map((u) => (
               <div className="uc" key={u.t}>
@@ -191,7 +191,7 @@ export default function Demo() {
       <footer>
         <div className="wrap">
           <div className="fgrid">
-            <div className="fbr">{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/roi-logo-light.png" alt="ROI Labs" /><p>AI-native paid media for growth brands on Meta &amp; Google. Measured in revenue.</p></div>
+            <div className="fbr">{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/roi-logo-dark.png" alt="ROI Labs" /><p>AI-native paid media for growth brands on Meta &amp; Google. Measured in revenue.</p></div>
             <div className="fcol"><h5>Product</h5><a href="#uses">Creative</a><a href="#uses">Media</a><a href="#uses">Measurement</a></div>
             <div className="fcol"><h5>Company</h5><a href="/">Live site</a><a href="/audit">Free audit</a><a href="/#contact">Contact</a></div>
             <div className="fcol"><h5>Get in touch</h5><a href="mailto:support@roilabs.in">support@roilabs.in</a></div>

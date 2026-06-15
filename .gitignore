@@ -39,6 +39,7 @@ yarn-error.log*
 
 # vercel
 .vercel
+.vercel-engine.json
 
 # supabase local dev artifacts (keep config.toml + migrations tracked)
 /supabase/.branches/
@@ -61,3 +62,10 @@ images (*).jpg
 # large media — don't commit screen recordings to git
 *.mp4
 *.mov
+
+# scratch / local-only working media (WhatsApp exports, screen recordings)
+demo assets/
+# stale standalone export (regenerable)
+/roi-engine-dashboard.html
+# confidential business/legal material — never commit (note: pre-existing docs/* remain in history)
+/docs/

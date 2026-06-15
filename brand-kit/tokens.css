@@ -1,0 +1,66 @@
+/* ROI Labs — design tokens (CSS custom properties)
+   Drop into :root, or scope per system. Authoritative values from production.
+   See BRAND-GUIDELINES.md for usage rules (esp. yellow-on-white accessibility). */
+
+:root {
+  /* ── Brand core (shared) ── */
+  --roi-yellow:          #FACC15; /* the signature */
+  --roi-yellow-deep:     #EFC00A; /* hover / pressed */
+  --roi-yellow-hi:       #FFE05A; /* gradient top stop */
+  --roi-gold-text:       #8A6D00; /* yellow AS TEXT on light (AA-safe) */
+  --roi-yellow-grad:     linear-gradient(95deg, #FFE05A, #FACC15 55%, #F2BE00);
+
+  /* ── Aurora — marketing site (roilabs.in) ── */
+  --aurora-bg:           #FCFBF7;
+  --aurora-surface:      #FFFFFF;
+  --aurora-surface-2:    #FBF6E6;
+  --aurora-ink:          #1A1710;
+  --aurora-muted:        #6A6456;
+  --aurora-faint:        #9C968A;
+  --aurora-line:         #ECE7DA;
+  --aurora-line-2:       #F4F0E6;
+  --aurora-green:        #1E9E6A;
+  --aurora-error:        #CC4A3F;
+
+  /* ── Atlas — Engine light mode ── */
+  --atlas-bg:            #F4F5F7;
+  --atlas-panel:         #FFFFFF;
+  --atlas-panel-2:       #F6F7FB;
+  --atlas-sidebar:       #1E1B4B; /* deep indigo column */
+  --atlas-ink:           #15171C;
+  --atlas-ink-2:         #6B7280;
+  --atlas-ink-3:         #9CA0A8;
+  --atlas-border:        #ECEDF1;
+  --atlas-accent:        #4F46E5; /* indigo working accent */
+  --atlas-accent-2:      #4338CA;
+  --atlas-accent-tint:   #EEF0FE;
+  --atlas-pos:           #16A34A;
+  --atlas-neg:           #DC2626;
+  --atlas-warn:          #B45309;
+
+  /* ── Terminal — Engine dark mode ── */
+  --terminal-bg:         #08090A;
+  --terminal-panel:      #0C0D0F;
+  --terminal-panel-2:    #101113;
+  --terminal-sidebar:    #0B0C0E;
+  --terminal-ink:        #E6E7E9;
+  --terminal-ink-2:      #9A9DA4;
+  --terminal-border:     #17181B;
+  --terminal-accent:     #FACC15; /* brand yellow on near-black */
+
+  /* ── Type ── */
+  --font-display:        "Sora", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body:           "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display-ui:     "Space Grotesk", system-ui, sans-serif;
+  --font-body-ui:        "Hanken Grotesk", system-ui, sans-serif;
+  --font-mono:           "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* ── Shape ── */
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-xl:  20px;
+  --radius-pill: 9999px;
+  --shadow-rest: 0 1px 2px rgba(20,22,28,.05);
+  --shadow-lift: 0 34px 70px -30px rgba(80,62,22,.30);
+}

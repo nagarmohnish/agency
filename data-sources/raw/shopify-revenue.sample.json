@@ -1,0 +1,30 @@
+{
+  "currency": "INR",
+  "days": 28,
+  "orders": 2294,
+  "revenueCents": 191521300,
+  "grossCents": 214905600,
+  "discountCents": 14820300,
+  "refundCents": 8564000,
+  "aovCents": 83488,
+  "daily": [
+    { "date": "2026-06-09", "orders": 83, "revenueCents": 6921400, "grossCents": 7760900, "discountCents": 535600, "refundCents": 303900 },
+    { "date": "2026-06-10", "orders": 86, "revenueCents": 7180400, "grossCents": 8051200, "discountCents": 556100, "refundCents": 314700 }
+  ],
+  "orderList": [
+    {
+      "date": "2026-06-10", "orderId": "5512000000001",
+      "revenueGrossCents": 480000, "discountAmountCents": 72000, "refundAmountCents": 0, "revenueNetCents": 408000,
+      "customerType": "new", "utmSource": "google", "utmMedium": "cpc", "utmCampaign": "pmax-gemstones",
+      "discountUsed": true,
+      "products": [{ "title": "Certified Gemstone Ring", "quantity": 1, "revenueCents": 480000 }]
+    },
+    {
+      "date": "2026-06-10", "orderId": "5512000000002",
+      "revenueGrossCents": 49900, "discountAmountCents": 0, "refundAmountCents": 0, "revenueNetCents": 49900,
+      "customerType": "returning", "utmSource": null, "utmMedium": null, "utmCampaign": null,
+      "discountUsed": false,
+      "products": [{ "title": "Personalised Kundli Report", "quantity": 1, "revenueCents": 49900 }]
+    }
+  ]
+}

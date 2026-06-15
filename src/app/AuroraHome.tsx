@@ -1,32 +1,21 @@
 "use client";
 
-// ROI Labs homepage — Aurora Light system (warm cream + brand yellow), with
-// content/structure inspired by proof-forward SaaS landing pages: two-tone
-// hero, stat band, a detailed numbered "how it works" with product mockups,
-// case-study results, a dark audit band, two plans, and an FAQ. All markup is
-// rendered verbatim inside the scoped `.aurora` wrapper; motion, the FAQ
-// accordion, and the audit/contact forms (-> /api/leads) run in one effect.
+// ROI Labs homepage — Aurora Light system (warm cream + brand yellow). The
+// "How it works" section is an Adwize-style auto-playing process engine: a left
+// "app" panel that builds cards per phase while a right step list highlights the
+// active phase with a progress bar (App-flow / Timeline toggle). It cycles the
+// four offerings — Audit → Creative → Launch → Optimize. Implemented from the
+// Claude Design handoff (how-it-works/index.html), ported into this scoped
+// `.aurora` component; motion, FAQ accordion, the auto-player, and the
+// audit/contact forms (-> /api/leads) all run in one effect.
 
 import { useEffect, useRef } from "react";
 
 const CHK = `<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 4.5 6 12l-3.5-3.5"/></svg>`;
 const SVG = (p: string) => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
-const I_SEARCH = SVG(`<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>`);
-const I_CHART = SVG(`<path d="M3 3v18h18"/><path d="m7 14 3-3 3 3 5-6"/>`);
-const I_TARGET = SVG(`<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/>`);
-const I_GEAR = SVG(`<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3 1a7 7 0 0 0-1.7-1l-.3-2.5h-4l-.3 2.5a7 7 0 0 0-1.7 1l-2.3-1-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 1.7 1l.3 2.5h4l.3-2.5a7 7 0 0 0 1.7-1l2.3 1 2-3.4-2-1.5c.1-.3.1-.7.1-1Z"/>`);
-const I_SPARK = SVG(`<path d="m12 2 2.4 7.4H22l-6 4.5 2.3 7.1L12 16.7 5.7 21l2.3-7.1-6-4.5h7.6z"/>`);
-const I_BOLT = SVG(`<path d="M3 12h4l3 8 4-16 3 8h4"/>`);
-const I_FRAME = SVG(`<rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18"/>`);
-const I_REFRESH = SVG(`<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>`);
-const I_DOC = SVG(`<path d="M14 3v5h5"/><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/>`);
 
-const META = `<svg width="16" height="16" viewBox="0 0 24 24" fill="#1877F2"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.45 2.91h-2.33V22c4.78-.79 8.44-4.94 8.44-9.94z"/></svg>`;
-const GOOGLE = `<svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.5 12.27c0-.79-.07-1.54-.2-2.27H12v4.51h6.47a5.53 5.53 0 0 1-2.4 3.63v3h3.88c2.27-2.09 3.55-5.17 3.55-8.87z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.08 7.95-2.91l-3.88-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.27v3.09A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.27 14.29a7.2 7.2 0 0 1 0-4.58V6.62H1.27a12 12 0 0 0 0 10.76l4-3.09z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.43-3.43C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.27 6.62l4 3.09C6.22 6.86 8.87 4.75 12 4.75z"/></svg>`;
 const LINKEDIN = `<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.124 2.062 2.062 0 0 1 0 4.124zM7.119 20.452H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>`;
 const XICON = `<svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`;
-const SF = (icon: string, t: string, d: string) =>
-  `<div class="sf"><div class="t"><span class="i">${icon}</span>${t}</div><p>${d}</p></div>`;
 
 // Prefix assets with the deploy base path so raw <img> srcs resolve on
 // subpath hosts like GitHub Pages (/agency). Empty string on Vercel/apex.
@@ -37,7 +26,7 @@ const HTML = `
   <nav>
     <div class="nv">
       <a href="#top" class="brand"><img src="${BP}/roi-logo-dark.png" alt="ROI Labs" /></a>
-      <div class="nv-links"><a href="#process">How it works</a><a href="#system">The system</a><a href="/audit">Free audit</a><a href="#plans">Plans</a><a href="#faq">FAQ</a></div>
+      <div class="nv-links"><a href="#process">How it works</a><a href="/integrations">Integrations</a><a href="/audit">Free audit</a><a href="#plans">Plans</a><a href="#faq">FAQ</a></div>
       <a href="#contact" class="btn btn-pri">Book your audit</a>
     </div>
   </nav>
@@ -47,7 +36,7 @@ const HTML = `
   <div class="wrap">
     <p class="ey" data-reveal>AI-native paid media agency</p>
     <h1 data-reveal data-delay="80">Paid media, measured in revenue.<span class="l2"><span class="grad">Scaled by AI.</span></span></h1>
-    <p class="l" data-reveal data-delay="140">ROI Labs runs an AI-native engine that researches, produces, launches, and optimizes — until spend tracks to revenue, not ROAS.</p>
+    <p class="l" data-reveal data-delay="140">ROI Labs runs an AI-native engine that researches, produces, launches, and optimizes — until every campaign tracks to the outcome that matters: revenue for stores, installs for apps, leads for lead-gen.</p>
     <div class="hero-cta" data-reveal data-delay="240">
       <a href="#contact" class="btn btn-pri btn-lg">Book your audit →</a>
       <a href="#process" class="btn btn-gh btn-lg">See how it works</a>
@@ -64,168 +53,48 @@ const HTML = `
     <div class="broken" data-reveal>
       <p class="ey">Why AI-native</p>
       <h2>The agency model is broken. <span class="grad">We thought so too.</span></h2>
-      <p>Most shops ship ten ads a month, hand your account to a junior buyer, and report on metrics that never reach your P&amp;L. AI changed what's possible — so we built the agency around it. Agents produce and test creative at a volume no human team can match; senior operators own the strategy and the one number that pays the bills.</p>
+      <p>Most shops ship ten ads a month, hand your account to a junior buyer, and report on metrics that never reach your P&amp;L. AI changed what's possible — so we built the agency around it. AI produces and tests creative at a volume no human team can match; senior operators own the strategy and the number that pays the bills for each funnel — revenue for stores, cost-per-install for apps, cost-per-lead for lead-gen.</p>
     </div>
   </div>
 </section>
 
-<section id="system">
-  <div class="wrap">
-    <div class="sec-head" data-reveal>
-      <p class="ey">The system</p>
-      <h2>A senior team at the core. <span class="grad">Five agents</span> in orbit.</h2>
-      <p>Five agents run the work in the background. Senior operators own the strategy and sign off on everything that ships.</p>
+<section class="hiw" id="process">
+  <div class="hiw__wrap">
+    <div class="hiw__head" data-reveal>
+      <div class="hiw__eyebrow">How it works</div>
+      <h2 class="hiw__title">An engine, not a <span class="grad">campaign.</span></h2>
+      <p class="hiw__sub">Senior operators handle the highest-leverage work; AI runs the volume underneath. Watch the loop that turns spend into the outcome that matters — revenue, installs, or leads — it runs itself.</p>
     </div>
-    <div class="orbit-wrap" data-reveal>
-      <div class="orbit">
-        <div class="ring r1"></div><div class="ring r2"></div>
-        <div class="sweep"><span class="comet"></span></div>
-        <svg viewBox="0 0 500 500" fill="none">
-          <line x1="250" y1="250" x2="250" y2="50" stroke="rgba(250,204,21,.45)"/>
-          <line x1="250" y1="250" x2="440" y2="188" stroke="rgba(250,204,21,.45)"/>
-          <line x1="250" y1="250" x2="368" y2="412" stroke="rgba(250,204,21,.45)"/>
-          <line x1="250" y1="250" x2="132" y2="412" stroke="rgba(250,204,21,.45)"/>
-          <line x1="250" y1="250" x2="60" y2="188" stroke="rgba(250,204,21,.45)"/>
-        </svg>
-        <div class="node nt" style="left:250px;top:50px;"><div class="bubble">${I_SEARCH}</div><div class="label"><div class="nm">Scout</div><div class="rl">Research</div></div></div>
-        <div class="node nt" style="left:440px;top:188px;"><div class="bubble">${I_SPARK}</div><div class="label"><div class="nm">Forge</div><div class="rl">Creative</div></div></div>
-        <div class="node" style="left:368px;top:412px;"><div class="bubble">${I_BOLT}</div><div class="label"><div class="nm">Pilot</div><div class="rl">Media buying</div></div></div>
-        <div class="node" style="left:132px;top:412px;"><div class="bubble">${I_FRAME}</div><div class="label"><div class="nm">Frame</div><div class="rl">Landing/CRO</div></div></div>
-        <div class="node nt" style="left:60px;top:188px;"><div class="bubble">${I_CHART}</div><div class="label"><div class="nm">Signal</div><div class="rl">Measurement</div></div></div>
-        <div class="core"><div class="pulse"></div><div><div class="ttl">ROI Core</div><div class="sub">Senior Ops</div></div></div>
-      </div>
-      <div class="alist">
-        <div class="arow" data-reveal><div class="ic">${I_SEARCH}</div><div><div class="nm">Scout</div><div class="rl">Research &amp; Intelligence</div><div class="dc">Tears down competitor ad libraries, maps audiences, finds angles worth testing.</div></div><div class="mt"><div class="v">[500+]</div><div class="k">accounts</div></div></div>
-        <div class="arow" data-reveal><div class="ic">${I_SPARK}</div><div><div class="nm">Forge</div><div class="rl">Creative Engine</div><div class="dc">Static, motion, and UGC concepts and variants at volume, tested at the asset level.</div></div><div class="mt"><div class="v">[1,200+]</div><div class="k">variants/qtr</div></div></div>
-        <div class="arow" data-reveal><div class="ic">${I_BOLT}</div><div><div class="nm">Pilot</div><div class="rl">Media Buying &amp; Optimization</div><div class="dc">Structures campaigns, paces budget, rotates creative across Meta and Google.</div></div><div class="mt"><div class="v">[$25M+]</div><div class="k">optimized</div></div></div>
-        <div class="arow" data-reveal><div class="ic">${I_FRAME}</div><div><div class="nm">Frame</div><div class="rl">Landing Pages &amp; CRO</div><div class="dc">Fast, mobile-first landing pages for ad traffic, A/B tested continuously.</div></div><div class="mt"><div class="v">[300+]</div><div class="k">pages</div></div></div>
-        <div class="arow" data-reveal><div class="ic">${I_CHART}</div><div><div class="nm">Signal</div><div class="rl">Measurement &amp; Attribution</div><div class="dc">GA4, server-side tracking, and attribution that ties every dollar to revenue.</div></div><div class="mt"><div class="v">[40+]</div><div class="k">brands</div></div></div>
+
+    <div class="toggle" data-reveal>
+      <div class="toggle__group">
+        <button class="toggle__btn is-on" data-mode="app" type="button">App flow</button>
+        <button class="toggle__btn" data-mode="timeline" type="button">Timeline</button>
       </div>
     </div>
-    <p class="disclaim" data-reveal>This isn't AI spam. Agents do the research, drafts, and optimization at scale. <b>Senior humans review, refine, and approve everything before a dollar goes live.</b></p>
-  </div>
-</section>
 
-<section id="process">
-  <div class="wrap">
-    <div class="sec-head" data-reveal>
-      <p class="ey">How it works</p>
-      <h2>An engine, not a <span class="grad">campaign.</span></h2>
-      <p>Senior operators handle the highest-leverage work first; agents run the volume underneath. Here's the loop that turns spend into revenue.</p>
+    <div class="app" id="appView" data-reveal>
+      <div class="app__panelwrap">
+        <div class="app__glow"></div>
+        <div class="panel">
+          <div class="chrome">
+            <div class="chrome__dots"><span></span><span></span><span></span></div>
+            <div class="chrome__url"><b id="chromeUrl">roilabs.in/audit</b><span class="chrome__tag" id="chromeTag">Audit flow</span></div>
+          </div>
+          <div class="stack" id="stack"></div>
+        </div>
+      </div>
+      <div class="steps" id="steps"></div>
     </div>
-    <div class="hiw">
 
-      <div class="step" data-reveal>
-        <div class="txt">
-          <div class="stepn">1</div>
-          <h3>Audit &amp; opportunity</h3>
-          <p class="sd">We tear down your Meta and Google accounts, creative, and tracking, then map where the money's leaking and the upside that's left on the table.</p>
-          <div class="subfeat">
-            ${SF(I_SEARCH, "Account teardown", "Structure, spend, and creative reviewed against what's working in your category.")}
-            ${SF(I_TARGET, "Opportunity map", "The highest-leverage fixes and angles, ranked by impact on CAC and revenue.")}
-            ${SF(I_DOC, "Competitor library", "What your competitors are running — and the gaps you can win.")}
-            ${SF(I_GEAR, "Engine setup", "We configure the agent stack around your business, margins, and goals.")}
-          </div>
-        </div>
-        <div class="visual">
-          <div class="mock">
-            <div class="bar"><i></i><i></i><i></i><span class="fav"></span><span class="url">roilabs.in/audit</span></div>
-            <div class="mbody">
-              <div class="mt"><span class="livedot"></span>Account opportunity</div>
-              <div class="mrow">
-                <div class="tile"><div class="tv g">31%</div><div class="tk">Spend at risk</div></div>
-                <div class="tile"><div class="tv">6/mo</div><div class="tk">Creatives shipped</div></div>
-                <div class="tile"><div class="tv">$74</div><div class="tk">Current CAC</div></div>
-              </div>
-              <div class="spark"><svg viewBox="0 0 300 72" preserveAspectRatio="none"><polyline points="0,58 40,52 80,55 120,40 160,42 200,28 240,22 300,10" fill="none" stroke="#FACC15" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            </div>
-          </div>
-        </div>
+    <div class="tl hidden" id="timelineView">
+      <div class="tl__track" id="tlTrack"></div>
+      <div class="tl__card">
+        <div class="tl__prompt"><span class="tl__logo">R</span><div class="tl__bubble" id="tlPrompt"></div></div>
+        <div class="k" id="tlLabel"></div>
+        <div class="tl__main" id="tlMain"></div>
+        <div class="tl__stats" id="tlStats"></div>
       </div>
-
-      <div class="step rev" data-reveal>
-        <div class="txt">
-          <div class="stepn">2</div>
-          <h3>Creative at volume</h3>
-          <p class="sd">Targeting is automated — creative is the lever. Forge produces static, motion, and UGC concepts at a volume no studio can match, tested at the asset level.</p>
-          <div class="subfeat">
-            ${SF(I_SPARK, "Always-on engine", "Fresh static, motion, and UGC shipped every week, not once a month.")}
-            ${SF(I_TARGET, "Asset-level testing", "Every hook, format, and angle tested on its own merits — winners scale.")}
-            ${SF(I_FRAME, "On-brand at scale", "A brand system keeps volume on-brand, not off the rails.")}
-            ${SF(I_REFRESH, "Beat fatigue", "New angles in rotation before CPMs climb.")}
-          </div>
-        </div>
-        <div class="visual">
-          <div class="mock">
-            <div class="bar"><i></i><i></i><i></i><span class="fav"></span><span class="url">roilabs.in/creative</span></div>
-            <div class="mbody">
-              <div class="mt"><span class="livedot"></span>Creative pipeline</div>
-              <div class="listrow"><span><b>Hook A</b> · UGC 9:16</span><span class="pb">Scaled</span></div>
-              <div class="listrow"><span><b>Static v7</b> · offer card</span><span class="pb">Testing</span></div>
-              <div class="listrow"><span><b>Demo cut</b> · 15s motion</span><span class="pb">Shipped</span></div>
-              <div class="listrow"><span><b>Testimonial</b> · UGC</span><span class="pb">Queued</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="step" data-reveal>
-        <div class="txt">
-          <div class="stepn">3</div>
-          <h3>Launch across Meta &amp; Google</h3>
-          <p class="sd">Campaigns go live with proper structure and attribution from day one — Pilot manages bids and budget while Frame ships the landing pages traffic actually converts on.</p>
-          <div class="subfeat">
-            ${SF(I_BOLT, "Proper structure", "Clean account architecture across Meta and Google — no spaghetti.")}
-            ${SF(I_TARGET, "Advantage+ / PMax", "Platform automation fed the right inputs, kept on a budget.")}
-            ${SF(I_CHART, "Tracking from day one", "Pixel, CAPI, GA4, and server-side wired before launch.")}
-            ${SF(I_FRAME, "Landing &amp; CRO", "Fast, mobile-first pages built for the click and A/B tested.")}
-          </div>
-        </div>
-        <div class="visual">
-          <div class="mock">
-            <div class="bar"><i></i><i></i><i></i><span class="fav"></span><span class="url">roilabs.in/campaigns</span></div>
-            <div class="mbody">
-              <div class="mt"><span class="livedot"></span>Live campaigns</div>
-              <div class="mrow">
-                <div class="tile"><div class="tv" style="display:flex;align-items:center;gap:7px;font-size:15px">${META}Meta</div><div class="tk">Prospecting + retarget</div></div>
-                <div class="tile"><div class="tv" style="display:flex;align-items:center;gap:7px;font-size:15px">${GOOGLE}Google</div><div class="tk">Search + PMax</div></div>
-                <div class="tile"><div class="tv g">12</div><div class="tk">Live tests</div></div>
-              </div>
-              <div class="listrow"><span><b>Pixel &amp; CAPI</b></span><span class="pb">✓ Connected</span></div>
-              <div class="listrow"><span><b>GA4 + server-side</b></span><span class="pb">✓ Connected</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="step rev" data-reveal>
-        <div class="txt">
-          <div class="stepn">4</div>
-          <h3>Optimize until it works</h3>
-          <p class="sd">Performance isn't solved on launch. Signal measures what's working, kills what isn't, and feeds Scout the next angle — daily by agents, weekly by senior operators.</p>
-          <div class="subfeat">
-            ${SF(I_REFRESH, "Daily optimization", "Bids, pacing, and creative rotation handled every day.")}
-            ${SF(I_CHART, "Kill &amp; scale", "Losers cut fast; winners get budget. Decisions tied to revenue.")}
-            ${SF(I_SEARCH, "Senior review", "Operators steer weekly — strategy stays human.")}
-            ${SF(I_DOC, "Revenue reporting", "Weekly read on revenue and CAC, in plain English.")}
-          </div>
-        </div>
-        <div class="visual">
-          <div class="mock">
-            <div class="bar"><i></i><i></i><i></i><span class="fav"></span><span class="url">roilabs.in/performance</span></div>
-            <div class="mbody">
-              <div class="mt"><span class="livedot"></span>What's working</div>
-              <div class="mrow">
-                <div class="tile"><div class="tv g">3.2x</div><div class="tk">ROAS</div></div>
-                <div class="tile"><div class="tv g">−47%</div><div class="tk">CAC</div></div>
-                <div class="tile"><div class="tv">$284K</div><div class="tk">Net new rev</div></div>
-              </div>
-              <div class="spark"><svg viewBox="0 0 300 72" preserveAspectRatio="none"><polyline points="0,60 40,55 80,48 120,50 160,36 200,30 240,18 300,8" fill="none" stroke="#FACC15" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </div>
   </div>
 </section>
@@ -291,8 +160,8 @@ const HTML = `
         <p>Everything you need to know about working with ROI Labs.</p>
       </div>
       <div class="faq" data-reveal>
-        <div class="item"><button class="q" aria-expanded="false">What exactly does ROI Labs do?<span class="ic">+</span></button><div class="a"><p>We run your Meta and Google paid media end-to-end — strategy, creative production at volume, landing pages, launches, and optimization — as one accountable system, measured in revenue.</p></div></div>
-        <div class="item"><button class="q" aria-expanded="false">Is the creative actually AI, or real?<span class="ic">+</span></button><div class="a"><p>Agents do the research, drafts, and variants at scale. Senior operators review, refine, and approve everything before a dollar goes live — and we disclose AI-generated creative per platform policy.</p></div></div>
+        <div class="item"><button class="q" aria-expanded="false">What exactly does ROI Labs do?<span class="ic">+</span></button><div class="a"><p>We run your Meta and Google paid media end-to-end — strategy, creative production at volume, landing pages, launches, and optimization — as one accountable system, measured against each campaign's real objective: store revenue, app installs, or qualified leads.</p></div></div>
+        <div class="item"><button class="q" aria-expanded="false">Is the creative actually AI, or real?<span class="ic">+</span></button><div class="a"><p>AI does the research, drafts, and variants at scale. Senior operators review, refine, and approve everything before a dollar goes live — and we disclose AI-generated creative per platform policy.</p></div></div>
         <div class="item"><button class="q" aria-expanded="false">How fast can we launch?<span class="ic">+</span></button><div class="a"><p>Typically under two weeks from audit to first live campaign — the engine spins up your first creative batch in days, not a month-long deck.</p></div></div>
         <div class="item"><button class="q" aria-expanded="false">What does it cost?<span class="ic">+</span></button><div class="a"><p>Transparent, scoped to your spend — no per-seat tool fees. We start with an audit; if we're a fit, the audit fee is credited to the engagement.</p></div></div>
         <div class="item"><button class="q" aria-expanded="false">Do you work with agencies?<span class="ic">+</span></button><div class="a"><p>Yes — we white-label the whole creative + media engine so you can offer AI-run paid media to your clients under your own brand. See the agency plan above.</p></div></div>
@@ -340,14 +209,14 @@ const HTML = `
   <div class="wrap">
     <div class="fgrid">
       <div class="fbrand">
-        <img src="${BP}/roi-logo-light.png" alt="ROI Labs" />
-        <p class="ft">AI-native paid media for growth brands on Meta &amp; Google. Measured in revenue.</p>
+        <img src="${BP}/roi-logo-dark.png" alt="ROI Labs" />
+        <p class="ft">AI-native paid media for growth brands on Meta &amp; Google. Measured by the outcome that matters — revenue, installs, or leads.</p>
         <div class="fsoc"><a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">${LINKEDIN}</a><a href="https://x.com" target="_blank" rel="noopener noreferrer" aria-label="X">${XICON}</a></div>
       </div>
       <div class="fcol">
         <h5>Company</h5>
-        <a href="#system">The system</a>
         <a href="#process">How it works</a>
+        <a href="/integrations">Integrations</a>
         <a href="#plans">Plans</a>
       </div>
       <div class="fcol">
@@ -384,7 +253,7 @@ const HTML = `
     </div>
     <div class="mR">
       <h4>Join growth brands scaling on <span class="hl">Meta &amp; Google</span></h4>
-      <p class="mrp">AI-run paid media, measured in revenue — not ROAS.</p>
+      <p class="mrp">AI-run paid media, measured by the outcome that matters — not platform-reported vanity metrics.</p>
       <div class="chips"><span>DTC</span><span>B2B SaaS</span><span>Ecommerce</span><span>Subscription</span><span>Marketplaces</span><span>Lead-gen</span></div>
     </div>
   </div>
@@ -454,6 +323,191 @@ export default function AuroraHome() {
       }
     };
     qs.forEach((b) => b.addEventListener("click", onQ));
+
+    // ── "How it works" auto-playing process engine ───────────────────────────
+    const HIW_PHASE_MS = 4600;
+    const HIW_PHASES = [
+      {
+        num: "01", tag: "Audit flow", url: "roilabs.in/audit", agent: "Research & intelligence",
+        title: "Audit & opportunity",
+        desc: "We tear down your Meta and Google accounts, creative, and tracking — then map where the money's leaking and the upside left on the table.",
+        prompt: "Find where this account is leaking spend.",
+        result: { label: "Opportunity map", main: "31% of spend at risk, mapped to ranked fixes.", stats: [["$74", "Current CAC"], ["31%", "Spend at risk"], ["6", "Creatives / mo"]] },
+        stack: `
+          <div class="bubble">Find where this account is leaking spend.</div>
+          <div class="card">
+            <div class="k">Account teardown</div>
+            <div class="card__title">Spend at risk · 31%</div>
+            <div class="rows">
+              <div class="row"><span class="tick">&check;</span>Account structure reviewed</div>
+              <div class="row"><span class="tick">&check;</span>Creative library audited</div>
+              <div class="row"><span class="tick">&check;</span>Tracking gaps found</div>
+            </div>
+          </div>
+          <div class="card card--y">
+            <div class="k">Opportunity map</div>
+            <div class="card__lead">The highest-leverage fixes, ranked by impact on CAC &amp; revenue.</div>
+            <div class="minis">
+              <div class="mini"><b>$74</b><span>current CAC</span></div>
+              <div class="mini"><b>6/mo</b><span>creatives now</span></div>
+            </div>
+          </div>`,
+      },
+      {
+        num: "02", tag: "Creative flow", url: "roilabs.in/creative", agent: "Creative production",
+        title: "Creative at volume",
+        desc: "Targeting is automated — creative is the lever. We produce static, motion, and UGC at a volume no studio can match, tested at the asset level.",
+        prompt: "Produce this week's creative batch for the vitamin brand.",
+        result: { label: "Creative pipeline", main: "6 assets generated and queued for testing.", stats: [["3", "Static"], ["2", "Motion"], ["1", "UGC"]] },
+        stack: `
+          <div class="bubble">Produce this week's creative batch for the vitamin brand.</div>
+          <div class="card">
+            <div class="k">Creative pipeline</div>
+            <div class="card__title">6 assets generated</div>
+            <div class="rows">
+              <div class="row"><span class="tick">&check;</span>Static offer cards — on-brand</div>
+              <div class="row"><span class="tick">&check;</span>Motion + UGC hooks drafted</div>
+              <div class="row"><span class="tick">&check;</span>Tested at the asset level</div>
+            </div>
+          </div>
+          <div class="card card--y">
+            <div class="k">Pick the next test</div>
+            <div class="thumbs">
+              <div class="thumb thumb--win"><img src="${BP}/hiw/creative-1.png" alt="Scaled creative"><span class="thumb__badge">3.4x</span><div class="thumb__label thumb__label--win">Scaled</div></div>
+              <div class="thumb"><img src="${BP}/hiw/creative-2.png" alt="Testing creative"><div class="thumb__label">Testing</div></div>
+              <div class="thumb"><img src="${BP}/hiw/creative-3.png" alt="Queued creative" style="opacity:.78"><div class="thumb__label">Queued</div></div>
+            </div>
+          </div>`,
+      },
+      {
+        num: "03", tag: "Launch flow", url: "roilabs.in/campaigns", agent: "Media buying & landing pages",
+        title: "Launch across Meta & Google",
+        desc: "Campaigns go live with proper structure, landing pages, and attribution from day one — bids and budget managed automatically while we ship landing pages that convert.",
+        prompt: "Launch across Meta & Google with tracking wired.",
+        result: { label: "Campaigns live", main: "Meta + Google live with attribution from day one.", stats: [["12", "Live tests"], ["On", "Pixel / CAPI"], ["On", "GA4"]] },
+        stack: `
+          <div class="bubble">Launch across Meta &amp; Google with tracking wired.</div>
+          <div class="card">
+            <div class="k">Campaigns live</div>
+            <div class="platforms">
+              <div class="plat"><b>Meta</b><span>Prospecting + retarget</span></div>
+              <div class="plat"><b>Google</b><span>Search + PMax</span></div>
+            </div>
+            <div class="rows">
+              <div class="row row--between"><span>Pixel &amp; CAPI</span><span class="ok">&check; Connected</span></div>
+              <div class="row row--between"><span>GA4 + server-side</span><span class="ok">&check; Connected</span></div>
+            </div>
+          </div>
+          <div class="card card--y card--split">
+            <div><div class="k">Ready to launch</div><div class="card__title sm">12 live tests structured</div></div>
+            <span class="apply">Apply</span>
+          </div>`,
+      },
+      {
+        num: "04", tag: "Optimize flow", url: "roilabs.in/performance", agent: "Measurement & attribution",
+        title: "Optimize until it works",
+        desc: "We measure each campaign against its own objective — revenue for stores, cost-per-install for apps, cost-per-lead for lead-gen — kill what isn't working, and feed the next angle back into research. Optimized daily by AI, reviewed weekly by senior operators.",
+        prompt: "What should we cut and scale today?",
+        result: { label: "What's working", main: "Losers cut, winners scaled — tracked to each funnel's true outcome.", stats: [["3.2x", "ROAS"], ["−47%", "CAC"], ["$284K", "Net new"]] },
+        stack: `
+          <div class="bubble">What should we cut and scale today?</div>
+          <div class="card">
+            <div class="k">Performance check</div>
+            <div class="card__title">One ad is under target</div>
+            <div class="rows">
+              <div class="row"><span class="tick tick--warn">!</span>ROAS below objective</div>
+              <div class="row"><span class="tick tick--warn">!</span>CPA above ecommerce target</div>
+              <div class="row"><span class="tick tick--ok">&check;</span>Other ads within objective</div>
+            </div>
+          </div>
+          <div class="card card--y">
+            <div class="k">What's working</div>
+            <div class="minis minis--3">
+              <div class="mini c"><b>3.2x</b><span>ROAS</span></div>
+              <div class="mini c"><b style="color:var(--gold-text)">−47%</b><span>CAC</span></div>
+              <div class="mini c"><b>$284K</b><span>net new</span></div>
+            </div>
+          </div>`,
+      },
+    ];
+
+    let hiwPhase = 0;
+    let hiwMode = "app";
+    let hiwTimer = 0;
+    const hq = (sel: string) => root.querySelector<HTMLElement>(sel);
+
+    const hiwRenderApp = () => {
+      const p = HIW_PHASES[hiwPhase];
+      const cu = hq("#chromeUrl"); if (cu) cu.textContent = p.url;
+      const ct = hq("#chromeTag"); if (ct) ct.textContent = p.tag;
+      const st = hq("#stack");
+      if (st) {
+        st.innerHTML = p.stack;
+        // Cascade every element in: each block rises, then its inner rows/stats
+        // tick in, then the next block — assigning delays in document order.
+        let d = 0;
+        Array.from(st.children).forEach((blk) => {
+          (blk as HTMLElement).classList.add("hiw-anim");
+          (blk as HTMLElement).style.animationDelay = d + "ms";
+          d += 150;
+          blk.querySelectorAll<HTMLElement>(".row,.mini,.plat,.thumb,.card__lead").forEach((c) => {
+            c.classList.add("hiw-anim2");
+            c.style.animationDelay = d + "ms";
+            d += 85;
+          });
+        });
+      }
+      const steps = hq("#steps");
+      if (steps) steps.innerHTML = HIW_PHASES.map((ph, i) => `
+        <div class="step ${i === hiwPhase ? "is-active" : ""}" data-i="${i}">
+          <div class="step__head">
+            <span class="step__num">${ph.num}</span>
+            <div><div class="step__title">${ph.title}</div><div class="step__agent">${ph.agent}</div></div>
+          </div>
+          ${i === hiwPhase ? `<div class="step__body"><p>${ph.desc}</p><div class="bar"><i></i></div></div>` : ``}
+        </div>`).join("");
+    };
+
+    const hiwRenderTimeline = () => {
+      const track = hq("#tlTrack");
+      if (track) track.innerHTML = HIW_PHASES.map((ph, i) => `
+        <div class="tl__node ${i === hiwPhase ? "is-active" : ""}" data-i="${i}">
+          <span class="tl__dot">${ph.num}</span>
+          <span class="tl__label">${ph.title}</span>
+        </div>`).join("");
+      const p = HIW_PHASES[hiwPhase];
+      const pr = hq("#tlPrompt"); if (pr) pr.textContent = p.prompt;
+      const lb = hq("#tlLabel"); if (lb) lb.textContent = p.result.label;
+      const mn = hq("#tlMain"); if (mn) mn.textContent = p.result.main;
+      const stt = hq("#tlStats");
+      if (stt) stt.innerHTML = p.result.stats.map(([v, k]) => `<div class="tl__stat"><b>${v}</b><span>${k}</span></div>`).join("");
+    };
+
+    const hiwRender = () => { if (hiwMode === "app") hiwRenderApp(); else hiwRenderTimeline(); };
+    const hiwStart = () => {
+      if (reduce) return;
+      window.clearInterval(hiwTimer);
+      hiwTimer = window.setInterval(() => { hiwPhase = (hiwPhase + 1) % HIW_PHASES.length; hiwRender(); }, HIW_PHASE_MS);
+    };
+    const hiwJump = (i: number) => { hiwPhase = i; hiwRender(); hiwStart(); };
+    const hiwSetMode = (m: string) => {
+      hiwMode = m; hiwPhase = 0;
+      hq("#appView")?.classList.toggle("hidden", m !== "app");
+      hq("#timelineView")?.classList.toggle("hidden", m !== "timeline");
+      root.querySelectorAll<HTMLElement>(".toggle__btn").forEach((b) => b.classList.toggle("is-on", b.dataset.mode === m));
+      hiwRender(); hiwStart();
+    };
+
+    const hiwToggleBtns = Array.from(root.querySelectorAll<HTMLButtonElement>(".toggle__btn"));
+    const onHiwToggle = (e: Event) => hiwSetMode((e.currentTarget as HTMLElement).dataset.mode || "app");
+    hiwToggleBtns.forEach((b) => b.addEventListener("click", onHiwToggle));
+    const hiwSteps = hq("#steps");
+    const hiwTrack = hq("#tlTrack");
+    const onHiwSteps = (e: Event) => { const s = (e.target as HTMLElement).closest<HTMLElement>(".step"); if (s) hiwJump(Number(s.dataset.i)); };
+    const onHiwTrack = (e: Event) => { const n = (e.target as HTMLElement).closest<HTMLElement>(".tl__node"); if (n) hiwJump(Number(n.dataset.i)); };
+    if (hiwSteps) hiwSteps.addEventListener("click", onHiwSteps);
+    if (hiwTrack) hiwTrack.addEventListener("click", onHiwTrack);
+    if (hq("#stack")) { hiwRender(); hiwStart(); }
 
     // forms -> /api/leads
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -560,12 +614,16 @@ export default function AuroraHome() {
 
     return () => {
       window.clearTimeout(offTimer); window.clearTimeout(t1); window.clearTimeout(t2); window.clearTimeout(popTimer);
+      window.clearInterval(hiwTimer);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("scroll", scrollDepth);
       window.removeEventListener("resize", onScroll);
       window.removeEventListener("load", check);
       window.removeEventListener("keydown", onKey);
       qs.forEach((b) => b.removeEventListener("click", onQ));
+      hiwToggleBtns.forEach((b) => b.removeEventListener("click", onHiwToggle));
+      if (hiwSteps) hiwSteps.removeEventListener("click", onHiwSteps);
+      if (hiwTrack) hiwTrack.removeEventListener("click", onHiwTrack);
       if (cf) { cf.removeEventListener("submit", onContact); cf.removeEventListener("input", onContactInput); }
       if (af) af.removeEventListener("submit", onAudit);
       if (closeBtn) closeBtn.removeEventListener("click", closePopup);

@@ -6,13 +6,16 @@ Two things in one repo:
 
 1. **The marketing site** — roilabs.in, a Next.js app on Vercel. Positions ROI
    Labs as an **AI-native paid-media agency**: "Paid media, measured in revenue.
-   Scaled by AI." The homepage sells a system of **5 agents** (Scout, Forge,
-   Pilot, Frame, Signal) running a **loop** (Audit → Creative → Launch → Optimize).
+   Scaled by AI." The homepage sells an **AI-native engine** running a **loop**
+   (Audit → Creative → Launch → Optimize) across four disciplines — *research &
+   intelligence · creative production · media buying & landing pages · measurement
+   & attribution*. (Named agents — Scout/Forge/Pilot/Frame/Signal — were retired
+   from customer-facing copy; they survive only as internal engine/DB roles.)
 
 2. **The engine** (new) — the *real* backend that makes that promise true on a
-   real brand's Google + Meta ad accounts. It runs the 5-agent loop, governs
+   real brand's Google + Meta ad accounts. It runs that loop, governs
    every action behind a safety gate, and logs every decision. The goal is a
-   **real, documented case study** proving the 5 steps the website claims.
+   **real, documented case study** proving the steps the website claims.
 
 ## The core objective
 
@@ -23,7 +26,7 @@ Two things in one repo:
 ## Use case
 
 - An operator connects a brand's Google + Meta accounts.
-- Scout audits them and produces a ranked opportunity map (Step 1).
+- The research & intelligence layer audits them and produces a ranked opportunity map (Step 1).
 - The engine proposes creative, launches, and optimizes — every spend-affecting
   action gated behind human approval and a spend cap.
 - The `/engine` dashboard shows it all; the audit log becomes the case study.

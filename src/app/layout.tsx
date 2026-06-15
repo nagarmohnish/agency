@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     template: "%s | ROI Labs",
   },
   description:
-    "ROI Labs is the AI-native paid media agency. AI agents draft and test creative at a volume no human team can match; senior operators own the strategy and the number that matters — revenue. We run Meta and Google end-to-end.",
+    "ROI Labs is the AI-native paid media agency. AI drafts and tests creative at a volume no human team can match; senior operators own the strategy and the number that matters for each funnel — revenue, installs, or leads. We run Meta and Google end-to-end.",
   keywords: ["paid ads", "Meta ads", "Google ads", "performance marketing", "paid social", "PPC agency", "ROI"],
   authors: [{ name: "ROI Labs" }],
   creator: "ROI Labs",
@@ -87,14 +87,14 @@ export const metadata: Metadata = {
     siteName: "ROI Labs",
     title: "ROI Labs | AI-Native Paid Media Agency",
     description:
-      "ROI Labs is the AI-native paid media agency. AI agents draft and test creative at a volume no human team can match; senior operators own the strategy and the number that matters — revenue. We run Meta and Google end-to-end.",
+      "ROI Labs is the AI-native paid media agency. AI drafts and tests creative at a volume no human team can match; senior operators own the strategy and the number that matters for each funnel — revenue, installs, or leads. We run Meta and Google end-to-end.",
     images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "ROI Labs — Performance Marketing Agency" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "ROI Labs | AI-Native Paid Media Agency",
     description:
-      "ROI Labs is the AI-native paid media agency. AI agents draft and test creative at a volume no human team can match; senior operators own the strategy and the number that matters — revenue. We run Meta and Google end-to-end.",
+      "ROI Labs is the AI-native paid media agency. AI drafts and tests creative at a volume no human team can match; senior operators own the strategy and the number that matters for each funnel — revenue, installs, or leads. We run Meta and Google end-to-end.",
     images: ["/og-image.png"],
   },
   icons: {

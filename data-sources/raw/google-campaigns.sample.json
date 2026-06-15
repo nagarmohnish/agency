@@ -1,0 +1,7 @@
+[
+  { "externalId": "19283746501", "name": "Search · Brand · bof", "status": "ENABLED", "objective": "SEARCH", "dailyBudgetCents": 250000 },
+  { "externalId": "19283746502", "name": "Search · Kundli & Horoscope · tof", "status": "ENABLED", "objective": "SEARCH", "dailyBudgetCents": 400000 },
+  { "externalId": "19283746503", "name": "PMax · Gemstones", "status": "ENABLED", "objective": "PERFORMANCE_MAX", "dailyBudgetCents": 500000 },
+  { "externalId": "19283746504", "name": "Shopping · Gemstones Catalog", "status": "ENABLED", "objective": "SHOPPING", "dailyBudgetCents": 300000 },
+  { "externalId": "19283746505", "name": "Display · Remarketing · bof", "status": "PAUSED", "objective": "DISPLAY", "dailyBudgetCents": 120000 }
+]

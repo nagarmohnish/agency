@@ -1,168 +1,84 @@
 "use client";
 
-// The ops cockpit at /engine. Token-gated (paste ENGINE_ADMIN_TOKEN once, held
-// in sessionStorage, sent as a Bearer header). Sidebar layout, a 7/14/30-day
-// range toggle, donut + trend charts, and KPI cards. Read-heavy; the only writes
-// are approvals + Run, both re-entering the governance gate server-side.
+// ROI Engine — the operator cockpit, "Atlas / Terminal" adaptive theme.
+// Light = Atlas (indigo, white panels), Dark = Terminal (amber, near-black).
+// Atlas frame (sidebar + topbar + Scout rail) holding Terminal sections (sync
+// ticker, divided KPI strip, chart↔anomaly split, campaign table) + a live clock
+// and ⌘K command palette. Theme persists to localStorage. Analytics views compute
+// from daily facts (demo); engine ops views keep their existing live/demo wiring.
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { DEMO } from "./demo";
+import { generateDataset } from "./v2/demo-data";
+import { useEngineState } from "./v2/state";
+import { DateRangePicker, Filters, GranularityToggle } from "./v2/controls";
+import { Overview, Ticker, ScoutRail, EngineRuns, GoogleSection, MetaSection, ShopifySection } from "./v2/views";
+import { useApi, Runs, Activity, Approvals } from "./v2/ops";
+import type { Lens } from "./v2/types";
 
 const TOKEN_KEY = "roi_engine_token";
-type Tab = "overview" | "runs" | "audit" | "campaigns" | "segments" | "revenue" | "activity" | "approvals";
+const THEME_KEY = "roi_engine_theme";
 
-// chart palette (on-brand: yellow lead, ink, golds, neutrals)
-const PALETTE = ["#FACC15", "#1b1a16", "#a87f00", "#d97706", "#9a8f6a", "#c9bfa3"];
-
-// ---- helpers ---------------------------------------------------------------
-
-function money(cents: number | null | undefined, cur = "INR") {
-  if (cents == null) return "—";
-  return new Intl.NumberFormat(undefined, { style: "currency", currency: cur, maximumFractionDigits: 0 }).format(cents / 100);
+type View = "overview" | "google" | "meta" | "shopify" | "runs" | "activity" | "approvals";
+const ANALYTICS: View[] = ["overview", "google", "meta", "shopify"];
+// All tabs, in sidebar order — also the set of valid ?view= deep-link values.
+const ALL_VIEWS: View[] = ["overview", "google", "meta", "shopify", "runs", "activity", "approvals"];
+// Read a shareable tab from the URL (?view=runs); null if absent/invalid.
+function viewFromUrl(): View | null {
+  if (typeof window === "undefined") return null;
+  const v = new URLSearchParams(window.location.search).get("view");
+  return v && (ALL_VIEWS as string[]).includes(v) ? (v as View) : null;
 }
-const num = (n: number | null | undefined) => (n == null ? "—" : new Intl.NumberFormat().format(Math.round(n)));
-const pct = (r: number | null | undefined) => (r == null ? "—" : `${(r * 100).toFixed(2)}%`);
-const x = (r: number | null | undefined) => (r == null ? "—" : `${r.toFixed(2)}×`);
-const ago = (iso: string) => {
-  const s = (Date.now() - new Date(iso).getTime()) / 1000;
-  if (s < 60) return `${Math.floor(s)}s ago`;
-  if (s < 3600) return `${Math.floor(s / 60)}m ago`;
-  if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
-  return new Date(iso).toLocaleDateString();
-};
-function duration(start: string, end: string | null): string {
-  if (!end) return "—";
-  const s = Math.max(0, (new Date(end).getTime() - new Date(start).getTime()) / 1000);
-  return s < 60 ? `${s.toFixed(0)}s` : `${(s / 60).toFixed(1)}m`;
-}
-
-function useApi(token: string) {
-  return useCallback(
-    async (path: string, init?: RequestInit) => {
-      const res = await fetch(path, {
-        ...init,
-        headers: { ...(init?.headers || {}), Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      });
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(json.error || res.statusText);
-      return json;
-    },
-    [token]
-  );
-}
-type Call = (path: string, init?: RequestInit) => Promise<Record<string, unknown>>;
-
-function useLoad<T>(fn: () => Promise<T>, deps: React.DependencyList) {
-  const [data, setData] = useState<T | null>(null);
-  const [err, setErr] = useState("");
-  const [loading, setLoading] = useState(true);
-  const reload = useCallback(() => {
-    setLoading(true);
-    setErr("");
-    fn().then(setData).catch((e) => setErr(e instanceof Error ? e.message : String(e))).finally(() => setLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps);
-  useEffect(reload, [reload]);
-  return { data, err, loading, reload };
-}
-
-// ---- charts ----------------------------------------------------------------
-
-function Donut({ data }: { data: { label: string; value: number }[] }) {
-  const total = data.reduce((s, d) => s + d.value, 0) || 1;
-  const R = 42, C = 2 * Math.PI * R;
-  let offset = 0;
-  return (
-    <div className="donutwrap">
-      <svg viewBox="0 0 100 100" className="donut">
-        <circle cx="50" cy="50" r={R} fill="none" stroke="var(--line)" strokeWidth="13" />
-        {data.map((d, i) => {
-          const len = (d.value / total) * C;
-          const seg = (
-            <circle key={i} cx="50" cy="50" r={R} fill="none" stroke={PALETTE[i % PALETTE.length]} strokeWidth="13"
-              strokeDasharray={`${len} ${C - len}`} strokeDashoffset={-offset} transform="rotate(-90 50 50)" />
-          );
-          offset += len;
-          return seg;
-        })}
-      </svg>
-      <ul className="legend">
-        {data.map((d, i) => (
-          <li key={i}>
-            <span className="sw" style={{ background: PALETTE[i % PALETTE.length] }} />
-            <span className="ll">{d.label}</span>
-            <span className="lv">{Math.round((d.value / total) * 100)}%</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-interface Daily { date: string; spendCents: number; conversions: number; revenueCents: number }
-function TrendLine({ daily }: { daily: Daily[] }) {
-  if (daily.length < 2) return <div className="empty">Not enough daily data for a trend.</div>;
-  const W = 680, H = 150, P = 10;
-  const sMax = Math.max(...daily.map((d) => d.spendCents), 1);
-  const cMax = Math.max(...daily.map((d) => d.conversions), 1);
-  const xAt = (i: number) => P + (i / (daily.length - 1)) * (W - 2 * P);
-  const yS = (v: number) => H - P - (v / sMax) * (H - 2 * P);
-  const yC = (v: number) => H - P - (v / cMax) * (H - 2 * P);
-  const path = (key: "spendCents" | "conversions", y: (v: number) => number) =>
-    daily.map((d, i) => `${i ? "L" : "M"}${xAt(i).toFixed(1)} ${y(d[key]).toFixed(1)}`).join(" ");
-  return (
-    <div>
-      <div className="trendlegend">
-        <span><i className="sw" style={{ background: "#FACC15" }} /> Spend</span>
-        <span><i className="sw" style={{ background: "#1b1a16" }} /> Conversions</span>
-      </div>
-      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="trend">
-        <path d={path("spendCents", yS)} fill="none" stroke="#FACC15" strokeWidth="2.5" strokeLinejoin="round" />
-        <path d={path("conversions", yC)} fill="none" stroke="#1b1a16" strokeWidth="2" strokeLinejoin="round" strokeDasharray="4 3" />
-      </svg>
-      <div className="trendaxis"><span>{daily[0].date.slice(5)}</span><span>{daily[daily.length - 1].date.slice(5)}</span></div>
-    </div>
-  );
-}
-
-// ---- root: gate or cockpit -------------------------------------------------
+const NAV: { id: View; label: string; group: "main" | "sources" | "ops" }[] = [
+  { id: "overview", label: "Overview", group: "main" },
+  { id: "google", label: "Google", group: "sources" },
+  { id: "meta", label: "Meta", group: "sources" },
+  { id: "shopify", label: "Shopify", group: "sources" },
+  { id: "runs", label: "Runs", group: "ops" },
+  { id: "activity", label: "Activity", group: "ops" },
+  { id: "approvals", label: "Approvals", group: "ops" },
+];
+const TITLE: Record<View, string> = { overview: "Overview", google: "Google", meta: "Meta", shopify: "Shopify", runs: "Runs", activity: "Activity log", approvals: "Approvals" };
+const LENSES: { id: Lens; label: string }[] = [{ id: "blended", label: "Blended" }, { id: "shopify", label: "Last-click" }, { id: "platform", label: "Platform" }];
 
 export default function Dashboard() {
   const [token, setToken] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const [today, setToday] = useState<string>("");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   useEffect(() => {
     try { setToken(sessionStorage.getItem(TOKEN_KEY)); } catch { /* ignore */ }
+    try { const t = localStorage.getItem(THEME_KEY); if (t === "dark" || t === "light") setTheme(t); } catch { /* ignore */ }
+    setToday(new Date().toISOString().slice(0, 10));
     setReady(true);
   }, []);
-  if (!ready) return <div className="eng" />;
-  if (!token) return <Gate onAuth={(t) => setToken(t)} />;
-  return <Cockpit token={token} onSignOut={() => { try { sessionStorage.removeItem(TOKEN_KEY); } catch { /* ignore */ } setToken(null); }} />;
+  const toggleTheme = useCallback(() => setTheme((t) => { const n = t === "dark" ? "light" : "dark"; try { localStorage.setItem(THEME_KEY, n); } catch { /* ignore */ } return n; }), []);
+  const themeCls = theme === "dark" ? "dark" : "";
+
+  if (!ready || !today) return <div className={`eng ${themeCls}`} />;
+  if (DEMO) return <Cockpit token="demo" today={today} theme={theme} toggleTheme={toggleTheme} onSignOut={() => {}} />;
+  if (!token) return <Gate themeCls={themeCls} onAuth={setToken} />;
+  return <Cockpit token={token} today={today} theme={theme} toggleTheme={toggleTheme} onSignOut={() => { try { sessionStorage.removeItem(TOKEN_KEY); } catch {} setToken(null); }} />;
 }
 
-function Gate({ onAuth }: { onAuth: (t: string) => void }) {
+export function Gate({ themeCls, onAuth }: { themeCls: string; onAuth: (t: string) => void }) {
   const [value, setValue] = useState("");
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const t = value.trim();
-    if (!t) return;
+    const t = value.trim(); if (!t) return;
     setBusy(true); setErr("");
     try {
       const res = await fetch("/api/engine/status", { headers: { Authorization: `Bearer ${t}` } });
-      if (res.status === 401 || res.status === 503) {
-        const j = await res.json().catch(() => ({}));
-        throw new Error(j.error || "Invalid token");
-      }
-      sessionStorage.setItem(TOKEN_KEY, t);
-      onAuth(t);
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Failed");
-    } finally { setBusy(false); }
+      if (res.status === 401 || res.status === 503) { const j = await res.json().catch(() => ({})); throw new Error(j.error || "Invalid token"); }
+      sessionStorage.setItem(TOKEN_KEY, t); onAuth(t);
+    } catch (e) { setErr(e instanceof Error ? e.message : "Failed"); } finally { setBusy(false); }
   };
   return (
-    <div className="eng gate">
+    <div className={`eng gate ${themeCls}`}>
       <form className="gatebox" onSubmit={submit}>
-        <div className="logo">ROI Labs <span>Engine</span></div>
+        <div className="logo">ROI <span>Engine</span></div>
         <p className="sub">Paste your admin token to access the cockpit.</p>
         <input type="password" placeholder="ENGINE_ADMIN_TOKEN" value={value} onChange={(e) => setValue(e.target.value)} autoFocus />
         {err && <div className="err">{err}</div>}
@@ -172,480 +88,210 @@ function Gate({ onAuth }: { onAuth: (t: string) => void }) {
   );
 }
 
-// ---- cockpit ---------------------------------------------------------------
+function LiveClock() {
+  const [t, setT] = useState("");
+  useEffect(() => {
+    const p = (n: number) => String(n).padStart(2, "0");
+    const tick = () => { const d = new Date(); setT(`${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`); };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+  return <span className="clock">{t}</span>;
+}
 
-const NAV: { id: Tab; label: string; sub?: string }[] = [
-  { id: "overview", label: "Overview" },
-  { id: "runs", label: "Runs", sub: "fetched + analyzed" },
-  { id: "audit", label: "Audit", sub: "Scout" },
-  { id: "campaigns", label: "Campaigns", sub: "Pilot" },
-  { id: "segments", label: "Segments", sub: "source · age · gender" },
-  { id: "revenue", label: "Revenue", sub: "Shopify truth" },
-  { id: "activity", label: "Activity log", sub: "Signal" },
-  { id: "approvals", label: "Approvals" },
+const DEFAULT_INTEGRATIONS = [
+  { source: "google", status: "connected" }, { source: "shopify", status: "connected" }, { source: "meta", status: "in_progress" },
 ];
-const RANGED: Tab[] = ["overview", "campaigns", "segments", "revenue"];
 
-function Cockpit({ token, onSignOut }: { token: string; onSignOut: () => void }) {
+function Cockpit({ token, today, theme, toggleTheme, onSignOut }: { token: string; today: string; theme: "light" | "dark"; toggleTheme: () => void; onSignOut: () => void }) {
+  const es = useEngineState(today);
   const call = useApi(token);
-  const [tab, setTab] = useState<Tab>("overview");
+  const ds = useMemo(() => (DEMO ? generateDataset(today) : null), [today]);
+  const [view, setView] = useState<View>("overview");
+  const didInitView = useRef(false);
   const [pending, setPending] = useState<number | null>(null);
-  const [days, setDays] = useState<7 | 14 | 30>(30);
-  const current = NAV.find((n) => n.id === tab);
+  const [cmd, setCmd] = useState(false);
+  const [dismissed, setDismissed] = useState<Set<string>>(new Set());
+
+  // pending approvals count for the sidebar badge + Scout rail (ops wiring)
+  useEffect(() => {
+    let live = true;
+    call("/api/engine/status").then((d) => { if (live && typeof d.pendingApprovals === "number") setPending(d.pendingApprovals as number); }).catch(() => {});
+    return () => { live = false; };
+  }, [call]);
+
+  // Deep-link the active tab to the URL (?view=runs etc.) so every tab is
+  // shareable. First run reads the initial tab from the URL; later runs keep
+  // the URL in sync via replaceState (no history spam, static-export safe).
+  useEffect(() => {
+    if (!didInitView.current) {
+      didInitView.current = true;
+      const fromUrl = viewFromUrl();
+      if (fromUrl && fromUrl !== view) { setView(fromUrl); return; }
+    }
+    const params = new URLSearchParams(window.location.search);
+    if (view === "overview") params.delete("view"); else params.set("view", view);
+    const qs = params.toString();
+    window.history.replaceState(null, "", window.location.pathname + (qs ? "?" + qs : "") + window.location.hash);
+  }, [view]);
+
+  // Back/forward between shared tab links.
+  useEffect(() => {
+    const onPop = () => setView(viewFromUrl() ?? "overview");
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+
+  // ⌘K palette + esc
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const k = (e.key || "").toLowerCase();
+      if ((e.metaKey || e.ctrlKey) && k === "k") { e.preventDefault(); setCmd((c) => !c); }
+      if (e.key === "Escape") setCmd(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
+
+  const goto = (v: string) => setView(v as View);
+  const dismiss = (id: string) => setDismissed((s) => new Set(s).add(id));
+  const isAnalytics = ANALYTICS.includes(view);
+  const isOverview = view === "overview";
+  const integrations = ds?.integrations ?? DEFAULT_INTEGRATIONS;
+  const vp = { ds: ds!, state: es.state, demo: DEMO, goto, pending };
+
+  const commands = [
+    { ic: "₹", label: "Switch lens → Shopify truth", run: () => { es.setLens("shopify"); setCmd(false); } },
+    { ic: "G", label: "Open Google · performance", run: () => { setView("google"); setCmd(false); } },
+    { ic: "S", label: "Open Shopify · revenue", run: () => { setView("shopify"); setCmd(false); } },
+    { ic: "⚑", label: "Review pending approvals", run: () => { setView("approvals"); setCmd(false); } },
+    { ic: "◐", label: "Toggle dark / light mode", run: () => { toggleTheme(); } },
+  ];
+
+  const awaiting = (
+    <div className="empty big">Live analytics requires the daily-fact pipeline, which isn’t wired yet. The full analytics layer is exercisable in demo mode (build with <code>NEXT_PUBLIC_ENGINE_DEMO=1</code>). Engine ops views below work against the live backend.</div>
+  );
 
   return (
-    <div className="eng shell">
+    <div className={`eng shell ${theme === "dark" ? "dark" : ""}`}>
       <aside className="sidebar">
-        <div className="brandwrap">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/roi-logo-dark.png" alt="ROI Labs" className="brandlogo" />
-          <span className="brandtag">Engine</span>
-        </div>
+        <div className="brandwrap"><span className="wordmark"><b className="roi">ROI</b> <span className="eng-word">Engine</span></span></div>
         <nav className="snav">
-          {NAV.map((n) => (
-            <button key={n.id} className={tab === n.id ? "on" : ""} onClick={() => setTab(n.id)}>
-              <span>{n.label}</span>
-              {n.id === "approvals" && pending ? <span className="badge">{pending}</span> : n.sub ? <em>{n.sub}</em> : null}
-            </button>
-          ))}
+          {NAV.filter((n) => n.group === "main").map((n) => <NavBtn key={n.id} n={n} view={view} setView={setView} />)}
+          <div className="navdiv">Sources</div>
+          {NAV.filter((n) => n.group === "sources").map((n) => <NavBtn key={n.id} n={n} view={view} setView={setView} />)}
+          <div className="navdiv">Engine</div>
+          {NAV.filter((n) => n.group === "ops").map((n) => <NavBtn key={n.id} n={n} view={view} setView={setView} pending={pending} />)}
+          <div style={{ flex: 1 }} />
+          <div className="userchip"><div><div className="username">The Astro Time</div><div className="userplan">Growth plan</div></div></div>
         </nav>
-        <button className="signout" onClick={onSignOut}>Sign out</button>
+        {!DEMO && <button className="signout" onClick={onSignOut}>Sign out</button>}
       </aside>
 
       <div className="main">
         <header className="topbar">
-          <h1>{current?.label}</h1>
-          {RANGED.includes(tab) && (
-            <div className="rangetoggle" role="group" aria-label="Date range">
-              {([7, 14, 30] as const).map((d) => (
-                <button key={d} className={days === d ? "on" : ""} onClick={() => setDays(d)}>{d}d</button>
-              ))}
-            </div>
-          )}
-        </header>
-        <main className="content">
-          {tab === "overview" && <Overview call={call} days={days} onPending={setPending} goto={setTab} />}
-          {tab === "runs" && <Runs call={call} />}
-          {tab === "audit" && <Audit call={call} />}
-          {tab === "campaigns" && <Campaigns call={call} days={days} />}
-          {tab === "segments" && <Segments call={call} days={days} />}
-          {tab === "revenue" && <Revenue call={call} days={days} />}
-          {tab === "activity" && <Activity call={call} />}
-          {tab === "approvals" && <Approvals call={call} onPending={setPending} />}
-        </main>
-      </div>
-    </div>
-  );
-}
-
-// ---- Overview --------------------------------------------------------------
-
-interface Kpis { impressions: number; clicks: number; spendCents: number; conversions: number; revenueCents: number; roas: number | null; cacCents: number | null; ctr: number | null }
-
-function Overview({ call, days, onPending, goto }: { call: Call; days: number; onPending: (n: number) => void; goto: (t: Tab) => void }) {
-  const status = useLoad(() => call("/api/engine/status"), [call]);
-  const camp = useLoad(() => call(`/api/engine/campaigns?days=${days}`), [call, days]);
-  const [running, setRunning] = useState(false);
-  const [runMsg, setRunMsg] = useState("");
-
-  useEffect(() => {
-    const d = status.data as Record<string, unknown> | null;
-    if (d && typeof d.pendingApprovals === "number") onPending(d.pendingApprovals as number);
-  }, [status.data, onPending]);
-
-  const runAudit = async () => {
-    setRunning(true); setRunMsg("");
-    try {
-      const r = await call("/api/engine/run", { method: "POST", body: JSON.stringify({ step: "audit" }) });
-      setRunMsg(`✓ Audit complete (run ${String(r.runId).slice(0, 8)}). Open the Audit tab.`);
-      status.reload();
-    } catch (e) {
-      setRunMsg(`✕ ${e instanceof Error ? e.message : String(e)}`);
-    } finally { setRunning(false); }
-  };
-
-  if (status.loading) return <Loading />;
-  if (status.err) return <ErrBox msg={status.err} retry={status.reload} />;
-  const d = status.data as Record<string, unknown>;
-  const account = d.account as { name: string; autonomy: string; dailySpendCapCents: number };
-  const safety = d.safety as { dryRun: boolean; globalDailyCapCents: number };
-  const connections = (d.connections || {}) as Record<string, { ok: boolean; detail: string }>;
-  const actions = (d.recentActions || []) as ActionRow[];
-  const cd = camp.data as { currency?: string; combined?: Kpis; daily?: Daily[] } | null;
-  const cur = cd?.currency || "INR";
-  const k = cd?.combined;
-
-  return (
-    <div className="stack">
-      <div className="badges">
-        <span className={`chip ${safety.dryRun ? "warn" : "ok"}`}>{safety.dryRun ? "DRY RUN" : "LIVE"}</span>
-        <span className="chip">{account.autonomy}</span>
-        <span className="chip">cap {money(Math.min(account.dailySpendCapCents, safety.globalDailyCapCents || account.dailySpendCapCents), cur)}/day</span>
-        <button className="primary sm" onClick={runAudit} disabled={running}>{running ? "Running audit…" : "Run audit"}</button>
-        {runMsg && <span className="runmsg">{runMsg}</span>}
-      </div>
-
-      {camp.loading ? <Loading note="Pulling performance…" /> : k ? (
-        <>
-          <div className="kpis">
-            <Kpi label={`Revenue · ${days}d`} value={money(k.revenueCents, cur)} big />
-            <Kpi label="Spend" value={money(k.spendCents, cur)} />
-            <Kpi label="ROAS" value={x(k.roas)} />
-            <Kpi label="CAC" value={money(k.cacCents, cur)} />
-            <Kpi label="Conversions" value={num(k.conversions)} />
-            <Kpi label="CTR" value={pct(k.ctr)} />
-          </div>
-          <Card title="Spend & conversions trend">
-            <TrendLine daily={cd?.daily || []} />
-          </Card>
-        </>
-      ) : camp.err ? <ErrBox msg={camp.err} /> : null}
-
-      <div className="grid2">
-        <Card title="Connections">
-          {Object.keys(connections).length === 0 && <Empty>No platforms configured yet.</Empty>}
-          {Object.entries(connections).map(([p, c]) => (
-            <div key={p} className="connrow"><span className={`dot ${c.ok ? "ok" : "bad"}`} /><b>{p}</b><span className="detail">{c.detail}</span></div>
-          ))}
-        </Card>
-        <Card title="Recent activity" action={{ label: "View all", onClick: () => goto("activity") }}>
-          {actions.length === 0 && <Empty>Nothing yet. Run an audit.</Empty>}
-          <ul className="mini">
-            {actions.slice(0, 6).map((a) => (
-              <li key={a.id}><span className={`tag ${a.status}`}>{a.status}</span><span className="agent">{a.agent}</span><span className="sum">{a.summary}</span><span className="t">{ago(a.created_at)}</span></li>
+          <h1>{TITLE[view]}</h1>
+          <div className="intgrp">
+            {integrations.map((it) => (
+              <span key={it.source} className="intchip" title={`${it.source} · ${it.status === "connected" ? "synced" : "connecting"}`}>
+                <BrandIcon source={it.source} />
+                <span className={`intdot ${it.status === "connected" ? "ok" : "wait"}`} />
+              </span>
             ))}
-          </ul>
-        </Card>
-      </div>
-    </div>
-  );
-}
-
-// ---- Audit -----------------------------------------------------------------
-
-interface Opportunity { title: string; detail: string; impact: string; effort: string; owner: string }
-interface AuditRun { score: number | null; summary: string | null; opportunities: Opportunity[]; created_at: string }
-
-function Audit({ call }: { call: Call }) {
-  const { data, err, loading } = useLoad(() => call("/api/engine/audits"), [call]);
-  if (loading) return <Loading />;
-  if (err) return <ErrBox msg={err} />;
-  const audit = (data?.audit as AuditRun | null) ?? null;
-  if (!audit) return <Empty big>No audit yet. Overview → “Run audit”.</Empty>;
-  const score = audit.score ?? 0;
-  return (
-    <div className="stack">
-      <div className="audithead">
-        <div className={`score s${score >= 70 ? "hi" : score >= 40 ? "mid" : "lo"}`}><b>{score}</b><span>/100 health</span></div>
-        <div className="auditsum"><p className="lbl">Scout — opportunity map · {ago(audit.created_at)}</p><p>{audit.summary}</p></div>
-      </div>
-      <div className="opps">
-        {(audit.opportunities || []).map((o, i) => (
-          <div key={i} className="opp">
-            <div className="opptop"><span className="oppn">{i + 1}</span><h4>{o.title}</h4><span className={`chip imp-${o.impact}`}>impact {o.impact}</span><span className="chip">effort {o.effort}</span><span className="chip owner">{o.owner}</span></div>
-            <p>{o.detail}</p>
           </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ---- Runs ------------------------------------------------------------------
-
-interface RunRow { id: string; step: string; agent: string | null; model: string | null; status: string; summary: string | null; input_tokens: number; output_tokens: number; started_at: string; finished_at: string | null; fetches: ActionRow[]; mutations: ActionRow[]; audit: AuditRun | null }
-
-function Runs({ call }: { call: Call }) {
-  const { data, err, loading, reload } = useLoad(() => call("/api/engine/runs?limit=10"), [call]);
-  if (loading) return <Loading />;
-  if (err) return <ErrBox msg={err} retry={reload} />;
-  const runs = (data?.runs || []) as RunRow[];
-  if (runs.length === 0) return <Empty big>No runs yet. Overview → “Run audit”.</Empty>;
-  return (
-    <div className="runs">
-      {runs.map((r) => (
-        <div key={r.id} className="run">
-          <div className="runhead">
-            <span className="runstep">{r.step}</span>
-            {r.agent && <span className="chip owner">{r.agent}</span>}
-            <span className={`tag ${r.status === "done" ? "executed" : r.status === "error" ? "failed" : "proposed"}`}>{r.status}</span>
-            <span className="runmeta">{ago(r.started_at)} · {duration(r.started_at, r.finished_at)} · {num(r.input_tokens + r.output_tokens)} tokens{r.model ? ` · ${r.model}` : ""}</span>
-          </div>
-          <div className="runcols">
-            <div className="runcol">
-              <h5>What we fetched</h5>
-              {r.fetches.length === 0 ? <p className="muted">No reads logged.</p> : (
-                <ul className="fetchlist">{r.fetches.map((f) => <li key={f.id}><span className="kind">{f.kind}</span> {f.summary}</li>)}</ul>
-              )}
-              {r.mutations.length > 0 && (<><h5 style={{ marginTop: 12 }}>Proposed changes</h5><ul className="fetchlist">{r.mutations.map((m) => <li key={m.id}><span className={`tag ${m.status}`}>{m.status}</span> {m.summary}</li>)}</ul></>)}
+          <div className="tb-spacer" />
+          {isAnalytics && (
+            <div className="lensseg" role="group" aria-label="Attribution lens">
+              {LENSES.map((l) => <button key={l.id} className={es.state.lens === l.id ? "on" : ""} onClick={() => es.setLens(l.id)}>{l.label}</button>)}
             </div>
-            <div className="runcol">
-              <h5>What we concluded</h5>
-              {r.audit ? (
-                <>
-                  <div className="concl"><span className={`miniscore s${(r.audit.score ?? 0) >= 70 ? "hi" : (r.audit.score ?? 0) >= 40 ? "mid" : "lo"}`}>{r.audit.score ?? "—"}/100</span><span className="muted">{(r.audit.opportunities || []).length} opportunities</span></div>
-                  <ol className="opplist">{(r.audit.opportunities || []).map((o, i) => <li key={i}><b>{o.title}</b> <span className={`chip imp-${o.impact} sm`}>{o.impact}</span> <span className="chip sm owner">{o.owner}</span></li>)}</ol>
-                </>
-              ) : <p className="muted">No structured output.</p>}
-            </div>
-          </div>
-          {r.summary && <details className="reasoning"><summary>Agent narrative</summary><pre>{r.summary}</pre></details>}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ---- Campaigns -------------------------------------------------------------
-
-interface Campaign { externalId: string; name: string; status: string; objective?: string; dailyBudgetCents?: number }
-
-function Campaigns({ call, days }: { call: Call; days: number }) {
-  const { data, err, loading } = useLoad(() => call(`/api/engine/campaigns?days=${days}`), [call, days]);
-  if (loading) return <Loading note="Pulling live campaign data…" />;
-  if (err) return <ErrBox msg={err} />;
-  if (!data) return null;
-  const cur = (data.currency as string) || "INR";
-  const combined = data.combined as Kpis;
-  const platforms = (data.platforms || {}) as Record<string, { campaigns: Campaign[]; kpis: Kpis; error?: string }>;
-  return (
-    <div className="stack">
-      <div className="kpis">
-        <Kpi label="Revenue" value={money(combined.revenueCents, cur)} big />
-        <Kpi label="Spend" value={money(combined.spendCents, cur)} />
-        <Kpi label="ROAS" value={x(combined.roas)} />
-        <Kpi label="CAC" value={money(combined.cacCents, cur)} />
-        <Kpi label="Conversions" value={num(combined.conversions)} />
-        <Kpi label="CTR" value={pct(combined.ctr)} />
-      </div>
-      {Object.entries(platforms).map(([p, pl]) => (
-        <div key={p} className="platsec">
-          <div className="plathead"><h3>{p}</h3><div className="platkpis"><span>rev {money(pl.kpis.revenueCents, cur)}</span><span>spend {money(pl.kpis.spendCents, cur)}</span><span>ROAS {x(pl.kpis.roas)}</span><span>CAC {money(pl.kpis.cacCents, cur)}</span></div></div>
-          {pl.error && <div className="err">{pl.error}</div>}
-          {!pl.error && pl.campaigns.length === 0 && <Empty>No campaigns.</Empty>}
-          {pl.campaigns.length > 0 && (
-            <table className="tbl"><thead><tr><th>Campaign</th><th>Status</th><th>Objective</th><th className="r">Daily budget</th></tr></thead>
-              <tbody>{pl.campaigns.map((c) => <tr key={c.externalId}><td>{c.name}</td><td><span className={`tag ${c.status.toLowerCase()}`}>{c.status}</span></td><td>{c.objective || "—"}</td><td className="r">{c.dailyBudgetCents ? money(c.dailyBudgetCents, cur) : "—"}</td></tr>)}</tbody>
-            </table>
           )}
-        </div>
-      ))}
-    </div>
-  );
-}
+          {isAnalytics && <DateRangePicker today={today} es={es} />}
+          <LiveClock />
+          <button className="cmdbtn" onClick={() => setCmd(true)} aria-label="Open command palette">⌕<span className="cmdkbd">⌘K</span></button>
+          <button className="themebtn" onClick={toggleTheme} title="Toggle theme"><span className="ti">{theme === "dark" ? "☀" : "☾"}</span>{theme === "dark" ? "Light" : "Dark"}</button>
+        </header>
 
-// ---- Segments --------------------------------------------------------------
-
-interface Seg { label: string; impressions: number; clicks: number; spendCents: number; conversions: number; cacCents: number | null; ctr: number | null }
-interface SegCampaign { id: string; name: string; spendCents: number; gender: Seg[]; age: Seg[] }
-interface PlatformSeg { error?: string; network: Seg[]; gender: Seg[]; age: Seg[]; campaigns: SegCampaign[] }
-
-function maxSpend(rows: Seg[]) { return rows.reduce((m, r) => Math.max(m, r.spendCents), 0) || 1; }
-
-function SegTable({ rows, cur, kind }: { rows: Seg[]; cur: string; kind: "traffic" | "demo" }) {
-  if (rows.length === 0) return <Empty>No data for this dimension.</Empty>;
-  const peak = maxSpend(rows);
-  return (
-    <table className="tbl segtbl">
-      <thead><tr><th>{kind === "traffic" ? "Source" : "Segment"}</th>{kind === "traffic" && <th className="r">Impr.</th>}<th className="r">Clicks</th><th className="r">Spend</th><th className="r">Conv.</th><th className="r">CAC</th><th className="share">Spend</th></tr></thead>
-      <tbody>{rows.map((s) => <tr key={s.label}><td><b>{s.label}</b></td>{kind === "traffic" && <td className="r">{num(s.impressions)}</td>}<td className="r">{num(s.clicks)}</td><td className="r">{money(s.spendCents, cur)}</td><td className="r">{num(s.conversions)}</td><td className="r">{money(s.cacCents, cur)}</td><td className="share"><span className="bar"><i style={{ width: `${(s.spendCents / peak) * 100}%` }} /></span></td></tr>)}</tbody>
-    </table>
-  );
-}
-
-function Segments({ call, days }: { call: Call; days: number }) {
-  const { data, err, loading, reload } = useLoad(() => call(`/api/engine/breakdowns?days=${days}`), [call, days]);
-  if (loading) return <Loading note="Pulling traffic-source, age & gender…" />;
-  if (err) return <ErrBox msg={err} retry={reload} />;
-  if (!data) return null;
-  const cur = (data.currency as string) || "INR";
-  const platforms = (data.platforms || {}) as Record<string, PlatformSeg>;
-  return (
-    <div className="stack">
-      {Object.entries(platforms).map(([p, pl]) => (
-        <div key={p} className="segplat">
-          <h3 className="segplathead">{p}</h3>
-          {pl.error && <div className="err">{pl.error}</div>}
-
-          <Card title="Traffic sources" subtitle="where the traffic comes from">
-            <div className="srcgrid">
-              {pl.network.some((n) => n.spendCents > 0) && <Donut data={pl.network.filter((n) => n.spendCents > 0).map((n) => ({ label: n.label, value: n.spendCents }))} />}
-              <SegTable rows={pl.network} cur={cur} kind="traffic" />
-            </div>
-          </Card>
-
-          <div className="grid2">
-            <Card title="By gender" subtitle="spend & CAC"><SegTable rows={pl.gender} cur={cur} kind="demo" /></Card>
-            <Card title="By age" subtitle="spend & CAC"><SegTable rows={pl.age} cur={cur} kind="demo" /></Card>
+        {isAnalytics && ds && <Ticker ds={ds} state={es.state} />}
+        {isAnalytics && ds && (
+          <div className="controlbar">
+            <GranularityToggle value={es.state.granularity} onChange={es.setGranularity} />
+            <Filters ds={ds} state={es.state} es={es} />
           </div>
-
-          <Card title="Campaign-level age & gender" subtitle={`top ${pl.campaigns.length} by spend with demographic data`}>
-            {pl.campaigns.length === 0 ? (
-              <Empty>No campaign-level demographic data (common for App / Performance Max campaigns).</Empty>
-            ) : (
-              <div className="segcamps">
-                {pl.campaigns.map((c) => (
-                  <div key={c.id} className="segcamp">
-                    <div className="segcamptop"><b>{c.name}</b><span className="muted">{money(c.spendCents, cur)}</span></div>
-                    <div className="grid2"><div><div className="minihdr">Gender</div><SegTable rows={c.gender} cur={cur} kind="demo" /></div><div><div className="minihdr">Age</div><SegTable rows={c.age} cur={cur} kind="demo" /></div></div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Card>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ---- Revenue (Shopify source of truth + reconciliation) --------------------
-
-interface ShopRev { currency: string; days: number; orders: number; revenueCents: number; aovCents: number | null; daily: { date: string; orders: number; revenueCents: number }[] }
-
-function RevTrend({ daily }: { daily: { date: string; revenueCents: number }[] }) {
-  if (daily.length < 2) return <div className="empty">Not enough daily data for a trend.</div>;
-  const W = 680, H = 150, P = 10;
-  const max = Math.max(...daily.map((d) => d.revenueCents), 1);
-  const xAt = (i: number) => P + (i / (daily.length - 1)) * (W - 2 * P);
-  const y = (v: number) => H - P - (v / max) * (H - 2 * P);
-  const path = daily.map((d, i) => `${i ? "L" : "M"}${xAt(i).toFixed(1)} ${y(d.revenueCents).toFixed(1)}`).join(" ");
-  return (
-    <div>
-      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="trend"><path d={path} fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinejoin="round" /></svg>
-      <div className="trendaxis"><span>{daily[0].date.slice(5)}</span><span>{daily[daily.length - 1].date.slice(5)}</span></div>
-    </div>
-  );
-}
-
-function Revenue({ call, days }: { call: Call; days: number }) {
-  const { data, err, loading, reload } = useLoad(() => call(`/api/engine/revenue?days=${days}`), [call, days]);
-  if (loading) return <Loading note="Pulling Shopify orders…" />;
-  if (err) return <ErrBox msg={err} retry={reload} />;
-  if (!data) return null;
-  if (data.configured === false) return <Empty big>Shopify not connected. Add SHOPIFY_STORE_DOMAIN + SHOPIFY_ADMIN_TOKEN to .env.local (see ENGINE.md).</Empty>;
-  const s = data.shopify as ShopRev;
-  const cur = s.currency || "INR";
-  const meta = data.metaReported as { revenueCents: number; conversions: number } | null;
-  const disc = data.discrepancyPct as number | null;
-  return (
-    <div className="stack">
-      <div className="kpis">
-        <Kpi label={`Shopify revenue · ${days}d`} value={money(s.revenueCents, cur)} big />
-        <Kpi label="Orders" value={num(s.orders)} />
-        <Kpi label="Avg order value" value={money(s.aovCents, cur)} />
-      </div>
-      {meta ? (
-        <Card title="Revenue reconciliation" subtitle="Meta-reported purchase value vs actual store revenue">
-          <div className="recon">
-            <div><div className="kpil">Meta-reported</div><div className="kpiv">{money(meta.revenueCents, cur)}</div></div>
-            <div><div className="kpil">Shopify actual</div><div className="kpiv">{money(s.revenueCents, cur)}</div></div>
-            <div><div className="kpil">Discrepancy</div><div className={`kpiv ${disc != null && Math.abs(disc) > 0.15 ? "warn-t" : ""}`}>{disc == null ? "—" : `${disc > 0 ? "+" : ""}${(disc * 100).toFixed(0)}%`}</div></div>
-          </div>
-          <p className="muted recnote">Meta counts purchases on click/view windows and can over- or under-count vs the store&apos;s real orders. Shopify is the source of truth for &ldquo;measured in revenue.&rdquo;</p>
-        </Card>
-      ) : (
-        <Card title="Revenue reconciliation" subtitle="connect Meta to compare"><p className="muted">Once Meta is connected, this compares its reported purchase value against actual Shopify revenue.</p></Card>
-      )}
-      <Card title="Revenue trend" subtitle={`daily, last ${days} days`}><RevTrend daily={s.daily} /></Card>
-
-      <Card title="Daily orders & revenue" subtitle={`${s.daily.length} days with orders`}>
-        {s.daily.length === 0 ? <Empty>No orders in this window.</Empty> : (
-          <table className="tbl">
-            <thead><tr><th>Date</th><th className="r">Orders</th><th className="r">Revenue</th><th className="r">AOV</th></tr></thead>
-            <tbody>
-              {[...s.daily].reverse().map((d) => (
-                <tr key={d.date}>
-                  <td>{d.date}</td>
-                  <td className="r">{num(d.orders)}</td>
-                  <td className="r">{money(d.revenueCents, cur)}</td>
-                  <td className="r">{d.orders > 0 ? money(Math.round(d.revenueCents / d.orders), cur) : "—"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         )}
-      </Card>
-    </div>
-  );
-}
 
-// ---- Activity log ----------------------------------------------------------
+        {isOverview && ds ? (
+          <div className="obody">
+            <div className="omain"><Overview {...vp} /></div>
+            <ScoutRail ds={ds} state={es.state} dismissed={dismissed} onDismiss={dismiss} goto={goto} pending={pending} />
+          </div>
+        ) : (
+          <main className="content">
+            {isAnalytics && !ds ? awaiting : (
+              <>
+                {view === "google" && <GoogleSection {...vp} />}
+                {view === "meta" && <MetaSection {...vp} />}
+                {view === "shopify" && <ShopifySection {...vp} />}
+                {view === "runs" && (ds ? <EngineRuns {...vp} /> : <Runs call={call} />)}
+                {view === "activity" && <Activity call={call} />}
+                {view === "approvals" && <Approvals call={call} onPending={setPending} />}
+              </>
+            )}
+          </main>
+        )}
+      </div>
 
-interface ActionRow { id: string; agent: string; kind: string; platform: string | null; summary: string; rationale: string | null; status: string; estimated_spend_cents: number; dry_run: boolean; created_at: string }
-
-function Activity({ call }: { call: Call }) {
-  const { data, err, loading, reload } = useLoad(() => call("/api/engine/status"), [call]);
-  if (loading) return <Loading />;
-  if (err) return <ErrBox msg={err} retry={reload} />;
-  const actions = (data?.recentActions || []) as ActionRow[];
-  if (actions.length === 0) return <Empty big>No actions logged yet.</Empty>;
-  return (
-    <div>
-      <p className="lbl">Append-only audit trail — every decision, before it acts. This is the case study.</p>
-      <div className="log">
-        {actions.map((a) => (
-          <div key={a.id} className="logrow">
-            <span className={`tag ${a.status}`}>{a.status}</span>
-            <div className="logbody">
-              <div className="logtop"><b>{a.agent}</b><span className="kind">{a.kind}</span>{a.platform && <span className="plat">{a.platform}</span>}{a.dry_run && <span className="chip warn sm">simulated</span>}{a.estimated_spend_cents > 0 && <span className="chip sm">~{money(a.estimated_spend_cents)}/day</span>}<span className="t">{ago(a.created_at)}</span></div>
-              <p className="sum">{a.summary}</p>
-              {a.rationale && <p className="rat">{a.rationale}</p>}
+      {cmd && (
+        <div className="cmdoverlay" onClick={() => setCmd(false)}>
+          <div className="cmdbox" onClick={(e) => e.stopPropagation()}>
+            <div className="cmdhead"><span className="q">⌕</span><span className="hl">Run a command<span className="cmdcaret">_</span></span><span className="cmdesc">esc</span></div>
+            <div className="cmdbody">
+              <div className="cmdgroup">Suggested</div>
+              {commands.map((c, i) => (
+                <button key={i} className="cmditem" onClick={c.run}><span className="ic">{c.ic}</span>{c.label}{i === 0 && <span className="k">↵</span>}</button>
+              ))}
             </div>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
 
-// ---- Approvals -------------------------------------------------------------
+// real brand marks for the integration chips (inline SVG, theme-agnostic)
+function BrandIcon({ source }: { source: string }) {
+  const s = source.toLowerCase();
+  if (s === "google") return (
+    <svg className="intlogo" viewBox="0 0 24 24" role="img" aria-label="Google">
+      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+      <path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.83z" />
+      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.83C6.71 7.31 9.14 5.38 12 5.38z" />
+    </svg>
+  );
+  if (s === "meta") return (
+    <svg className="intlogo" viewBox="0 0 24 24" role="img" aria-label="Meta">
+      <path fill="#0082FB" d="M6.915 4.03c-1.968 0-3.683 1.28-4.871 3.113C.704 9.208 0 11.883 0 14.449c0 .706.07 1.369.21 1.973a6.624 6.624 0 0 0 .265.86 5.297 5.297 0 0 0 .371.761c.696 1.159 1.818 1.927 3.593 1.927 1.497 0 2.633-.671 3.965-2.444.76-1.012 1.144-1.626 2.663-4.32l.756-1.339.186-.325c.061.1.121.196.183.3l2.152 3.595c.724 1.21 1.665 2.556 2.47 3.314 1.046.987 1.992 1.22 3.06 1.22 1.075 0 1.876-.355 2.455-.843a3.743 3.743 0 0 0 .81-.973c.542-.939.861-2.127.861-3.745 0-2.72-.681-5.357-2.084-7.45-1.282-1.912-2.957-2.93-4.716-2.93-1.047 0-2.088.467-3.053 1.308-.652.57-1.257 1.29-1.82 2.05-.69-.875-1.335-1.547-1.958-2.056-1.182-.966-2.315-1.303-3.454-1.303zm10.16 2.053c1.147 0 2.188.758 2.992 1.999 1.132 1.748 1.647 4.195 1.647 6.4 0 1.548-.368 2.9-1.839 2.9-.58 0-1.027-.23-1.664-1.004-.496-.601-1.343-1.878-2.832-4.358l-.617-1.028a44.908 44.908 0 0 0-1.255-1.98c.07-.109.141-.224.211-.327 1.12-1.667 2.118-2.602 3.157-2.602zm-10.201.553c1.073 0 1.957.498 2.972 1.61-.323.464-.645.949-.974 1.475-.822 1.31-1.566 2.668-2.318 3.978-1.522 2.652-2.066 3.245-2.928 3.245-.69 0-1.196-.397-1.495-1.36a5.692 5.692 0 0 1-.241-1.71c0-2.034.565-4.197 1.39-5.566.74-1.23 1.652-1.738 2.594-1.738z" />
+    </svg>
+  );
+  if (s === "shopify") return (
+    <svg className="intlogo" viewBox="0 0 256 292" role="img" aria-label="Shopify">
+      <path fill="#95BF47" d="M223.774 57.34c-.201-1.46-1.48-2.268-2.537-2.357-1.055-.088-23.383-1.743-23.383-1.743s-15.507-15.395-17.209-17.099c-1.703-1.703-5.029-1.185-6.32-.805-.19.056-3.388 1.043-8.678 2.68-5.18-14.906-14.322-28.604-30.405-28.604-.444 0-.901.018-1.358.044C129.31 3.407 123.644.779 118.75.779c-37.465 0-55.364 46.835-60.976 70.635-14.558 4.511-24.9 7.718-26.221 8.133-8.126 2.549-8.383 2.805-9.45 10.462C21.3 95.806.038 260.235.038 260.235l165.678 31.042 89.77-19.42S223.973 58.8 223.775 57.34zM156.49 40.848l-14.019 4.339c.005-.988.01-1.96.01-3.023 0-9.264-1.286-16.723-3.349-22.636 8.287 1.04 13.806 10.469 17.358 21.32zm-27.638-19.483c2.304 5.773 3.802 14.058 3.802 25.238 0 .572-.005 1.095-.01 1.624-9.117 2.824-19.024 5.89-28.953 8.966 5.575-21.516 16.025-31.908 25.161-35.828zm-11.131-10.537c1.617 0 3.246.549 4.805 1.622-12.007 5.65-24.877 19.88-30.312 48.297l-22.886 7.088C75.694 46.16 90.81 10.828 117.72 10.828z" />
+      <path fill="#5E8E3E" d="M221.237 54.983c-1.055-.088-23.383-1.743-23.383-1.743s-15.507-15.395-17.209-17.099c-.637-.634-1.496-.959-2.394-1.099l-12.527 255.246 89.762-19.418S223.972 58.8 223.774 57.34c-.201-1.46-1.48-2.268-2.537-2.357z" />
+      <path fill="#FFF" d="M135.242 104.585l-11.069 32.926s-9.698-5.176-21.586-5.176c-17.428 0-18.305 10.937-18.305 13.693 0 15.038 39.2 20.8 39.2 56.024 0 27.713-17.577 45.558-41.277 45.558-28.44 0-42.984-17.7-42.984-17.7l7.615-25.16s14.95 12.835 27.565 12.835c8.243 0 11.596-6.49 11.596-11.232 0-19.616-32.16-20.491-32.16-52.724 0-27.129 19.472-53.382 58.778-53.382 15.145 0 22.627 4.338 22.627 4.338z" />
+    </svg>
+  );
+  return <span className="intbadge">{source[0].toUpperCase()}</span>;
+}
 
-function Approvals({ call, onPending }: { call: Call; onPending: (n: number) => void }) {
-  const { data, err, loading, reload } = useLoad(() => call("/api/engine/approvals"), [call]);
-  const [busy, setBusy] = useState<string | null>(null);
-  const pend = (data?.pending || []) as ActionRow[];
-  useEffect(() => { if (data) onPending(pend.length); }, [data, pend.length, onPending]);
-  const decide = async (id: string, decision: "approved" | "rejected") => {
-    setBusy(id);
-    try { await call("/api/engine/approvals", { method: "POST", body: JSON.stringify({ actionId: id, decision, approvedBy: "operator" }) }); reload(); }
-    catch (e) { alert(e instanceof Error ? e.message : String(e)); }
-    finally { setBusy(null); }
-  };
-  if (loading) return <Loading />;
-  if (err) return <ErrBox msg={err} retry={reload} />;
-  if (pend.length === 0) return <Empty big>Nothing awaiting approval. 👍</Empty>;
+const BRAND_NAV = new Set(["google", "meta", "shopify"]);
+
+function NavBtn({ n, view, setView, pending }: { n: { id: View; label: string }; view: View; setView: (v: View) => void; pending?: number | null }) {
+  const brand = BRAND_NAV.has(n.id);
   return (
-    <div>
-      <p className="lbl">Spend-increasing changes wait here for sign-off. Approving executes through the gate.</p>
-      <div className="log">
-        {pend.map((a) => (
-          <div key={a.id} className="logrow approval">
-            <div className="logbody">
-              <div className="logtop"><b>{a.agent}</b><span className="kind">{a.kind}</span>{a.platform && <span className="plat">{a.platform}</span>}{a.estimated_spend_cents > 0 && <span className="chip warn sm">~{money(a.estimated_spend_cents)}/day</span>}</div>
-              <p className="sum">{a.summary}</p>{a.rationale && <p className="rat">{a.rationale}</p>}
-            </div>
-            <div className="actions"><button className="primary" disabled={busy === a.id} onClick={() => decide(a.id, "approved")}>Approve</button><button className="ghost" disabled={busy === a.id} onClick={() => decide(a.id, "rejected")}>Reject</button></div>
-          </div>
-        ))}
-      </div>
-    </div>
+    <button className={view === n.id ? "on" : ""} onClick={() => setView(n.id)}>
+      <span className="navlabel">{brand && <span className="navicon"><BrandIcon source={n.id} /></span>}{n.label}</span>
+      {n.id === "approvals" && pending ? <span className="badge">{pending}</span> : null}
+    </button>
   );
 }
-
-// ---- shared bits -----------------------------------------------------------
-
-function Card({ title, subtitle, action, children }: { title: string; subtitle?: string; action?: { label: string; onClick: () => void }; children: React.ReactNode }) {
-  return (
-    <section className="card">
-      <div className="cardhead"><div><h3>{title}</h3>{subtitle && <span className="cardsub">{subtitle}</span>}</div>{action && <button className="link" onClick={action.onClick}>{action.label}</button>}</div>
-      {children}
-    </section>
-  );
-}
-function Kpi({ label, value, big }: { label: string; value: string; big?: boolean }) {
-  return <div className={`kpi ${big ? "kpibig" : ""}`}><div className="kpiv">{value}</div><div className="kpil">{label}</div></div>;
-}
-function Loading({ note }: { note?: string }) { return <div className="state"><div className="spinner" /><p>{note || "Loading…"}</p></div>; }
-function ErrBox({ msg, retry }: { msg: string; retry?: () => void }) { return <div className="state err"><p>{msg}</p>{retry && <button className="ghost" onClick={retry}>Retry</button>}</div>; }
-function Empty({ children, big }: { children: React.ReactNode; big?: boolean }) { return <div className={`empty ${big ? "big" : ""}`}>{children}</div>; }

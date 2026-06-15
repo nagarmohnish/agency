@@ -17,7 +17,7 @@ export default function Navbar() {
   }, []);
 
   // Aurora pages ship their own nav; hide the global one there.
-  if (pathname === "/" || pathname === "/demo" || pathname === "/demos" || pathname === "/stellar" || pathname?.startsWith("/audit") || pathname?.startsWith("/discord") || pathname?.startsWith("/engine")) return null;
+  if (pathname === "/" || pathname === "/demo" || pathname === "/demos" || pathname === "/stellar" || pathname?.startsWith("/audit") || pathname?.startsWith("/discord") || pathname?.startsWith("/engine") || pathname?.startsWith("/integrations")) return null;
 
   const navLinks = [
     { href: "/#services", label: "Services" },

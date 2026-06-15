@@ -1,0 +1,6 @@
+[
+  { "entityType": "campaign", "externalId": "19283746501", "date": "2026-06-09", "impressions": 3980, "clicks": 458, "spendCents": 100760, "conversions": 39, "conversionValueCents": 644800 },
+  { "entityType": "campaign", "externalId": "19283746501", "date": "2026-06-10", "impressions": 4120, "clicks": 474, "spendCents": 104280, "conversions": 40, "conversionValueCents": 667300 },
+  { "entityType": "campaign", "externalId": "19283746503", "date": "2026-06-10", "impressions": 21840, "clicks": 655, "spendCents": 281600, "conversions": 31, "conversionValueCents": 957400 },
+  { "entityType": "campaign", "externalId": "19283746504", "date": "2026-06-10", "impressions": 9120, "clicks": 237, "spendCents": 85300, "conversions": 10, "conversionValueCents": 273000 }
+]

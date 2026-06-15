@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ROI Labs — Brand Kit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{ --y:#FACC15; --ink:#1A1710; --paper:#FCFBF7; --line:#ECE7DA; }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Manrope",system-ui,sans-serif;line-height:1.55;}
+  .wrap{max-width:1040px;margin:0 auto;padding:48px 28px 80px;}
+  header{display:flex;align-items:center;gap:18px;border-bottom:1px solid var(--line);padding-bottom:24px;margin-bottom:36px;}
+  header .mark{font-family:"Space Grotesk",sans-serif;font-weight:800;font-size:30px;letter-spacing:-.02em;}
+  header .mark .y{color:var(--y);}
+  header p{margin:0;color:#6A6456;font-size:14px;}
+  h2{font-family:"Sora",sans-serif;font-weight:700;font-size:13px;letter-spacing:.13em;text-transform:uppercase;color:#8A6D00;margin:44px 0 14px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;}
+  .sw{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;box-shadow:0 1px 2px rgba(60,48,20,.04);}
+  .sw .chip{height:74px;}
+  .sw .meta{padding:9px 11px;}
+  .sw .nm{font-size:12.5px;font-weight:600;}
+  .sw .hx{font-family:"JetBrains Mono",monospace;font-size:11px;color:#6A6456;text-transform:uppercase;}
+  .logos{display:flex;gap:18px;flex-wrap:wrap;}
+  .logobox{flex:1 1 300px;border:1px solid var(--line);border-radius:14px;padding:30px;display:flex;align-items:center;justify-content:center;min-height:150px;}
+  .logobox img{max-height:74px;width:auto;}
+  .ondark{background:#1A1710;border-color:#2C2820;}
+  .onindigo{background:#1E1B4B;border-color:#1E1B4B;}
+  .type div{margin:6px 0;}
+  .t-display{font-family:"Sora",sans-serif;font-weight:800;font-size:34px;letter-spacing:-.02em;}
+  .t-displayui{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:26px;}
+  .t-body{font-family:"Manrope",sans-serif;font-size:17px;}
+  .t-bodyui{font-family:"Hanken Grotesk",sans-serif;font-size:17px;}
+  .t-mono{font-family:"JetBrains Mono",monospace;font-size:15px;}
+  .lbl{font-size:11px;color:#9C968A;font-family:"JetBrains Mono",monospace;}
+  .note{background:#FFF7D6;border:1px solid #F0DFA0;border-radius:10px;padding:12px 14px;font-size:13px;margin-top:10px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="mark"><span class="y">ROI</span> Labs</div>
+    <p>Brand kit — authoritative colors, type & logo.<br>Generated from production (roilabs.in + ROI Engine).</p>
+  </header>
+
+  <h2>Logo</h2>
+  <div class="logos">
+    <div class="logobox"><img src="logos/roi-labs--light-bg.png" alt="ROI Labs on light"></div>
+    <div class="logobox ondark"><img src="logos/roi-labs--dark-bg.png" alt="ROI Labs on dark"></div>
+    <div class="logobox onindigo"><img src="logos/roi-labs--dark-bg.png" alt="ROI Labs on indigo sidebar"></div>
+  </div>
+  <div class="note"><b>Rule:</b> “ROI” is always brand yellow <code>#FACC15</code>. “LABS” is black on light backgrounds, white on dark. Keep clear space ≥ the height of the “O”.</div>
+
+  <h2>Brand core</h2>
+  <div class="grid" id="core"></div>
+  <div class="note"><b>Accessibility:</b> brand yellow is never used as text on white. For yellow text on light, use Gold Text <code>#8A6D00</code>.</div>
+
+  <h2>Aurora — marketing site</h2>
+  <div class="grid" id="aurora"></div>
+
+  <h2>Atlas — Engine light</h2>
+  <div class="grid" id="atlas"></div>
+
+  <h2>Terminal — Engine dark</h2>
+  <div class="grid" id="terminal"></div>
+
+  <h2>Typography</h2>
+  <div class="type">
+    <div class="lbl">Sora 800 — display / headlines</div><div class="t-display">Measured in revenue.</div>
+    <div class="lbl">Space Grotesk 700 — product display / KPI</div><div class="t-displayui">₹4.82L revenue · 3.1× MER</div>
+    <div class="lbl">Manrope — marketing body</div><div class="t-body">AI-native paid media, judged against Shopify truth.</div>
+    <div class="lbl">Hanken Grotesk — product UI</div><div class="t-bodyui">Spend, conversions, and revenue in one cockpit.</div>
+    <div class="lbl">JetBrains Mono — data / numbers</div><div class="t-mono">CTR 2.41%  CPA ₹318  ROAS 4.07</div>
+  </div>
+</div>
+
+<script>
+  const sets = {
+    core: [["Brand Yellow","#FACC15"],["Yellow Deep","#EFC00A"],["Yellow Highlight","#FFE05A"],["Gold Text","#8A6D00"]],
+    aurora: [["Background","#FCFBF7"],["Surface 2","#FBF6E6"],["Ink","#1A1710"],["Muted","#6A6456"],["Line","#ECE7DA"],["Green","#1E9E6A"],["Error","#CC4A3F"]],
+    atlas: [["Background","#F4F5F7"],["Panel","#FFFFFF"],["Sidebar","#1E1B4B"],["Ink","#15171C"],["Accent","#4F46E5"],["Accent Tint","#EEF0FE"],["Positive","#16A34A"],["Negative","#DC2626"],["Warning","#B45309"]],
+    terminal: [["Background","#08090A"],["Panel","#0C0D0F"],["Panel 2","#101113"],["Ink","#E6E7E9"],["Accent","#FACC15"],["Border","#17181B"]]
+  };
+  for (const [id, arr] of Object.entries(sets)) {
+    document.getElementById(id).innerHTML = arr.map(([nm,hx]) =>
+      `<div class="sw"><div class="chip" style="background:${hx}"></div><div class="meta"><div class="nm">${nm}</div><div class="hx">${hx}</div></div></div>`
+    ).join("");
+  }
+</script>
+</body>
+</html>

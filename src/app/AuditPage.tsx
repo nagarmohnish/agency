@@ -76,7 +76,7 @@ export default function AuditPage() {
       <div className="navwrap">
         <nav>
           <div className="nv">
-            <a href="/" className="brand">{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/roi-logo-light.png" alt="ROI Labs" /></a>
+            <a href="/" className="brand">{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/roi-logo-dark.png" alt="ROI Labs" /></a>
             <div className="nv-links"><a href="/">Home</a><a href="/#process">How it works</a><a href="/#plans">Plans</a></div>
             <a href="/#contact" className="btn btn-pri">Talk to us</a>
           </div>

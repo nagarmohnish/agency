@@ -11,7 +11,7 @@ const DESIGNS = [
     title: "ROI Labs — Homepage",
     tag: "Aurora Light · live",
     href: "/",
-    desc: "The current homepage design (live on roilabs.in): AI-native positioning, the agent orbit system, plans, FAQ, and the lead popup.",
+    desc: "The current homepage design (live on roilabs.in): AI-native positioning, the auto-playing 'how it works' section, plans, FAQ, and the lead popup.",
   },
   {
     title: "Stellar.ai — Hero",

@@ -1,0 +1,8 @@
+[
+  { "dimension": "network", "label": "Google Search", "campaignId": "19283746501", "campaignName": "Search · Brand · bof", "impressions": 112400, "clicks": 12880, "spendCents": 2854000, "conversions": 1094, "conversionValueCents": 18265000 },
+  { "dimension": "network", "label": "Performance Max", "campaignId": "19283746503", "campaignName": "PMax · Gemstones", "impressions": 612000, "clicks": 18400, "spendCents": 9180000, "conversions": 874, "conversionValueCents": 27200000 },
+  { "dimension": "age", "label": "25–34", "campaignId": "19283746503", "campaignName": "PMax · Gemstones", "impressions": 208080, "clicks": 6256, "spendCents": 3121200, "conversions": 297, "conversionValueCents": 9248000 },
+  { "dimension": "age", "label": "35–44", "campaignId": "19283746503", "campaignName": "PMax · Gemstones", "impressions": 159120, "clicks": 4784, "spendCents": 2386800, "conversions": 227, "conversionValueCents": 7072000 },
+  { "dimension": "gender", "label": "Female", "campaignId": "19283746503", "campaignName": "PMax · Gemstones", "impressions": 330480, "clicks": 9936, "spendCents": 4957200, "conversions": 472, "conversionValueCents": 14688000 },
+  { "dimension": "gender", "label": "Male", "campaignId": "19283746503", "campaignName": "PMax · Gemstones", "impressions": 244800, "clicks": 7360, "spendCents": 3672000, "conversions": 350, "conversionValueCents": 10880000 }
+]

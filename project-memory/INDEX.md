@@ -18,6 +18,13 @@ code and stays true across sessions and contributors.
 | [FILE-MAP.md](FILE-MAP.md) | Every engine file and what it's responsible for |
 | [CONTEXT.md](CONTEXT.md) | External references: research findings, API constraints, credentials state |
 
+## Strategic layer (the "why" + chronology + roadmap)
+
+Higher-level narrative lives in [`../vision/`](../vision/README.md):
+- [vision/VISION.md](../vision/VISION.md) — product vision, thesis, design philosophy, north star.
+- [vision/CHRONOLOGY.md](../vision/CHRONOLOGY.md) — dated journey of everything built, with rationale.
+- [vision/ROADMAP.md](../vision/ROADMAP.md) — what we're targeting next (active round **R1**).
+
 ## Canonical specs (the real source for these topics)
 
 These live at the repo root and are referenced — don't duplicate them here:

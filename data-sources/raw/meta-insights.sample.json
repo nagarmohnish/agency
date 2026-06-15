@@ -1,0 +1,13 @@
+{
+  "_status": "PENDING — Meta Marketing API access not yet granted; no live data.",
+  "_shapeWhenConnected": {
+    "campaigns": "CampaignSummary[]  (id, name, status, objective, daily_budget)",
+    "metricsDaily": "MetricRow[]  (per campaign, daily: impressions, clicks, spend, purchase conversions + value)",
+    "breakdowns": "BreakdownRow[]  (range-aggregate; network=publisher_platform {Facebook|Instagram|Audience Network}, age, gender)"
+  },
+  "_notExtracted": ["reach", "frequency", "video_views (thruplays/3s)", "device", "geo", "placement detail beyond publisher_platform"],
+  "_exampleMetricRowOnConnect": {
+    "entityType": "campaign", "externalId": "120210000000000000", "date": "2026-06-10",
+    "impressions": 0, "clicks": 0, "spendCents": 0, "conversions": 0, "conversionValueCents": 0
+  }
+}
