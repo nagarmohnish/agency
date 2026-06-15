@@ -6,10 +6,10 @@ const STAGE = process.argv[2] || "/tmp/gh-pages-stage";
 
 fs.mkdirSync(STAGE, { recursive: true });
 
-const home = fs.readFileSync(path.join(ROOT, "roi-labs-home.html"), "utf8")
+const home = fs.readFileSync(path.join(ROOT, "design/pages/roi-labs-home.html"), "utf8")
   .replace(/href="roi-labs-about\.html"/g, 'href="about.html"');
 
-const about = fs.readFileSync(path.join(ROOT, "roi-labs-about.html"), "utf8")
+const about = fs.readFileSync(path.join(ROOT, "design/pages/roi-labs-about.html"), "utf8")
   .replace(/href="roi-labs-home\.html#contact"/g, 'href="./#contact"')
   .replace(/href="roi-labs-home\.html#platforms"/g, 'href="./#platforms"')
   .replace(/href="roi-labs-home\.html"/g, 'href="./"');

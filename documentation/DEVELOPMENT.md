@@ -5,8 +5,8 @@ The live site (**https://roilabs.in**) is this Next.js app on Vercel. The
 homepage is the **Aurora Light** design. This is the loop for changing it
 safely and shipping.
 
-> Heads-up: `roi-labs-home.html` at the repo root is **not** the live site —
-> it's a throwaway standalone export and is git/Vercel-ignored. Don't edit it
+> Heads-up: `design/pages/roi-labs-home.html` is **not** the live site —
+> it's a throwaway standalone export (Vercel-ignored). Don't edit it
 > expecting changes to go live. Edit the files below.
 
 ---
@@ -15,11 +15,11 @@ safely and shipping.
 
 | File | What it controls |
 |------|------------------|
-| [`src/app/AuroraHome.tsx`](src/app/AuroraHome.tsx) | **Hero, copy, all section markup** (the `HTML` string), plus the scroll-reveal / count-up motion and the contact form → `/api/leads`. Edit copy and structure here. |
-| [`src/app/aurora.css`](src/app/aurora.css) | **All homepage styling**, scoped under `.aurora`. Colors, spacing, the orbit, responsive rules. |
-| [`src/app/page.tsx`](src/app/page.tsx) | Homepage `<title>` / SEO metadata. |
-| [`src/app/layout.tsx`](src/app/layout.tsx) | Site-wide fonts (Sora/Manrope) + default metadata. |
-| [`public/roi-logo-light.png`](public/roi-logo-light.png) | The nav logo. |
+| [`src/app/AuroraHome.tsx`](../src/app/AuroraHome.tsx) | **Hero, copy, all section markup** (the `HTML` string), plus the scroll-reveal / count-up motion and the contact form → `/api/leads`. Edit copy and structure here. |
+| [`src/app/aurora.css`](../src/app/aurora.css) | **All homepage styling**, scoped under `.aurora`. Colors, spacing, the orbit, responsive rules. |
+| [`src/app/page.tsx`](../src/app/page.tsx) | Homepage `<title>` / SEO metadata. |
+| [`src/app/layout.tsx`](../src/app/layout.tsx) | Site-wide fonts (Sora/Manrope) + default metadata. |
+| [`public/roi-logo-light.png`](../public/roi-logo-light.png) | The nav logo. |
 
 The global `Navbar` / `Footer` are intentionally **hidden on `/`** (the Aurora
 page ships its own) — see the `pathname === "/"` guards in

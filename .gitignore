@@ -16,7 +16,7 @@
 # next.js
 /.next/
 /out/
-roi-labs-site.zip
+design/archive/roi-labs-site.zip
 
 # production
 /build
@@ -59,6 +59,9 @@ next-env.d.ts
 nul
 skills-lock.json
 images (*).jpg
+# python bytecode cache (from the standalone-HTML generator scripts)
+__pycache__/
+*.pyc
 # large media — don't commit screen recordings to git
 *.mp4
 *.mov
@@ -66,6 +69,6 @@ images (*).jpg
 # scratch / local-only working media (WhatsApp exports, screen recordings)
 demo assets/
 # stale standalone export (regenerable)
-/roi-engine-dashboard.html
+design/pages/roi-engine-dashboard.html
 # confidential business/legal material — never commit (note: pre-existing docs/* remain in history)
 /docs/

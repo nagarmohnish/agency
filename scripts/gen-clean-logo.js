@@ -13,7 +13,7 @@ const fs = require("fs");
 const sharp = require("sharp");
 
 const SRC = "c:/Library/Projects/agency/public/roi-logo.png";
-const OUT = "c:/Library/Projects/agency/roi-labs-logo.png";
+const OUT = "c:/Library/Projects/agency/design/logos/roi-labs-logo.png";
 const SCALE = 16;          // 144 → 2304 wide
 const ALPHA_THRESHOLD = 96; // pixels with source alpha > this become opaque
 const YELLOW = { r: 0xFA, g: 0xCC, b: 0x15 };

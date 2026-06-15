@@ -29,7 +29,7 @@ not done.
 - **Two things in this repo:** the marketing site (roilabs.in) and the **engine**
   (the real 5-agent ad-ops backend + `/engine` dashboard). See `project-memory/OVERVIEW.md`.
 - **Deploy is NOT automatic on git push.** Marketing site ships via
-  `npm run deploy` (or `npx vercel@latest --prod --yes`). See `DEVELOPMENT.md`.
+  `npm run deploy` (or `npx vercel@latest --prod --yes`). See `documentation/DEVELOPMENT.md`.
 - **Two Supabase projects:** marketing leads (`gaulosvlnynoxgdjelgm`) and the
   engine (`Revenue_tech` / `xcszgeypiehclulltzoh`). Engine env points at `Revenue_tech`.
 - **Engine safety defaults to "spend nothing":** `ENGINE_DRY_RUN=true`, global
@@ -39,6 +39,6 @@ not done.
 - Verify builds with `npm run verify` before claiming a change works.
 
 ## Canonical specs
-- `ARCHITECTURE.md` — engine data flow + dashboard screens.
-- `ENGINE.md` — operator guide + credential connection steps.
-- `DEVELOPMENT.md` — marketing-site edit→verify→deploy loop.
+- `documentation/ARCHITECTURE.md` — engine data flow + dashboard screens.
+- `documentation/ENGINE.md` — operator guide + credential connection steps.
+- `documentation/DEVELOPMENT.md` — marketing-site edit→verify→deploy loop.

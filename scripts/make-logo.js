@@ -10,6 +10,6 @@ const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http
 
 sharp(Buffer.from(svg))
   .png({ compressionLevel: 9 })
-  .toFile("roi-labs-logo-wordmark.png")
-  .then((i) => console.log("wrote roi-labs-logo-wordmark.png", i.width + "x" + i.height, (i.size / 1024).toFixed(1) + "KB"))
+  .toFile("design/logos/roi-labs-logo-wordmark.png")
+  .then((i) => console.log("wrote design/logos/roi-labs-logo-wordmark.png", i.width + "x" + i.height, (i.size / 1024).toFixed(1) + "KB"))
   .catch((e) => { console.error(e); process.exit(1); });

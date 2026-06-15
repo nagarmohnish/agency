@@ -2,7 +2,7 @@
 # Pulls the fully-rendered markup from the dev server (saved to build-home.html),
 # inlines aurora.css (fonts switched to a Google Fonts link), inlines the logo
 # as base64, and appends standalone vanilla JS (reveal, FAQ accordion, audit
-# prefill, client-only contact success). Output: roi-labs-new-design.html
+# prefill, client-only contact success). Output: design/pages/roi-labs-new-design.html
 import base64
 
 rendered = open("build-home.html", encoding="utf-8").read()
@@ -17,8 +17,8 @@ if spos != -1:
     markup = markup[:spos]
 
 # inline both logo variants as data URIs so the file is fully portable
-b64d = base64.b64encode(open("roi-logo-dark.png", "rb").read()).decode()
-b64l = base64.b64encode(open("roi-logo-light.png", "rb").read()).decode()
+b64d = base64.b64encode(open("design/logos/roi-logo-dark.png", "rb").read()).decode()
+b64l = base64.b64encode(open("design/logos/roi-logo-light.png", "rb").read()).decode()
 markup = markup.replace("/roi-logo-dark.png", "data:image/png;base64," + b64d)
 markup = markup.replace("/roi-logo-light.png", "data:image/png;base64," + b64l)
 # the single file has no /audit route — point its audit link at the real tool
@@ -78,5 +78,5 @@ head = (
 )
 
 out = head + '<div class="aurora" id="top">' + markup + '</div>\n<script>\n' + JS + '\n</script>\n</body>\n</html>\n'
-open("roi-labs-new-design.html", "w", encoding="utf-8").write(out)
-print("wrote roi-labs-new-design.html", len(out), "bytes; markup", len(markup))
+open("design/pages/roi-labs-new-design.html", "w", encoding="utf-8").write(out)
+print("wrote design/pages/roi-labs-new-design.html", len(out), "bytes; markup", len(markup))

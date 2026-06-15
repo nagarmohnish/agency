@@ -220,8 +220,8 @@ ${sharedScript}
 </html>
 `;
 
-const homePath = path.join(ROOT, "roi-labs-home.html");
-const aboutPath = path.join(ROOT, "roi-labs-about.html");
+const homePath = path.join(ROOT, "design/pages/roi-labs-home.html");
+const aboutPath = path.join(ROOT, "design/pages/roi-labs-about.html");
 fs.writeFileSync(homePath, homeHtml);
 fs.writeFileSync(aboutPath, aboutHtml);
 console.log("Wrote", homePath, `(${(homeHtml.length / 1024).toFixed(1)} KB)`);
