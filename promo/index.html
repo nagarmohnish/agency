@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #0a0a0a; }
+</style>
+</helmet>
+<div id="promo-root" data-screen-label="00s" style="position:fixed; inset:0; overflow:hidden;">
+  <x-import component-from-global-scope="RoiPromo" from="./roi-promo.jsx" hint-size="100%,100%"></x-import>
+</div>
+
+<template id="__bundler_thumbnail">
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="104" fill="#1a1730"></rect>
+  <rect x="120" y="300" width="58" height="92" rx="10" fill="#5b57f0"></rect>
+  <rect x="200" y="250" width="58" height="142" rx="10" fill="#a9a6f4"></rect>
+  <rect x="280" y="200" width="58" height="192" rx="10" fill="#5b57f0"></rect>
+  <text x="256" y="170" font-family="Hanken Grotesk, sans-serif" font-size="92" font-weight="800" text-anchor="middle" fill="#f0563f">ROI</text>
+</svg>
+</template></x-dc>
+</body>
+</html>
