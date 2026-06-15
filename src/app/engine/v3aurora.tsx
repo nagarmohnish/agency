@@ -127,25 +127,26 @@ function AreaChart({ s }: { s: ReturnType<typeof buildSeries> }) {
 }
 
 // ── source marks (original, trademark-safe) ──
+// Transparent multicolor brand marks — read cleanly on the dark sidebar and on white cards.
 function SourceIcon({ name, size = 22 }: { name: string; size?: number }) {
   if (name === "google") return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" strokeWidth={3} strokeLinecap="round">
-      <path d="M6.7 6.7A7.5 7.5 0 0 1 17.3 6.7" stroke="#EA4335" />
-      <path d="M17.3 6.7A7.5 7.5 0 0 1 17.3 17.3" stroke="#4285F4" />
-      <path d="M17.3 17.3A7.5 7.5 0 0 1 6.7 17.3" stroke="#34A853" />
-      <path d="M6.7 17.3A7.5 7.5 0 0 1 6.7 6.7" stroke="#FBBC05" />
-      <path d="M12 12h5.5" stroke="#4285F4" strokeWidth={3} />
+    <svg width={size} height={size} viewBox="0 0 24 24" role="img" aria-label="Google" style={{ display: "block", flex: "none" }}>
+      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+      <path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.83z" />
+      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.83C6.71 7.31 9.14 5.38 12 5.38z" />
     </svg>
   );
   if (name === "meta") return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <path d="M4 12c0-2.3 1.4-4.2 3.4-4.2 2.5 0 3.9 4.2 4.6 4.2s2.1-4.2 4.6-4.2c2 0 3.4 1.9 3.4 4.2s-1.4 4.2-3.4 4.2c-2.5 0-3.9-4.2-4.6-4.2s-2.1 4.2-4.6 4.2C5.4 16.2 4 14.3 4 12Z" stroke="#0866FF" strokeWidth={2.4} strokeLinejoin="round" />
+    <svg width={size} height={size} viewBox="0 0 24 24" role="img" aria-label="Meta" style={{ display: "block", flex: "none" }}>
+      <path fill="#0082FB" d="M6.915 4.03c-1.968 0-3.683 1.28-4.871 3.113C.704 9.208 0 11.883 0 14.449c0 .706.07 1.369.21 1.973a6.624 6.624 0 0 0 .265.86 5.297 5.297 0 0 0 .371.761c.696 1.159 1.818 1.927 3.593 1.927 1.497 0 2.633-.671 3.965-2.444.76-1.012 1.144-1.626 2.663-4.32l.756-1.339.186-.325c.061.1.121.196.183.3l2.152 3.595c.724 1.21 1.665 2.556 2.47 3.314 1.046.987 1.992 1.22 3.06 1.22 1.075 0 1.876-.355 2.455-.843a3.743 3.743 0 0 0 .81-.973c.542-.939.861-2.127.861-3.745 0-2.72-.681-5.357-2.084-7.45-1.282-1.912-2.957-2.93-4.716-2.93-1.047 0-2.088.467-3.053 1.308-.652.57-1.257 1.29-1.82 2.05-.69-.875-1.335-1.547-1.958-2.056-1.182-.966-2.315-1.303-3.454-1.303zm10.16 2.053c1.147 0 2.188.758 2.992 1.999 1.132 1.748 1.647 4.195 1.647 6.4 0 1.548-.368 2.9-1.839 2.9-.58 0-1.027-.23-1.664-1.004-.496-.601-1.343-1.878-2.832-4.358l-.617-1.028a44.908 44.908 0 0 0-1.255-1.98c.07-.109.141-.224.211-.327 1.12-1.667 2.118-2.602 3.157-2.602zm-10.201.553c1.073 0 1.957.498 2.972 1.61-.323.464-.645.949-.974 1.475-.822 1.31-1.566 2.668-2.318 3.978-1.522 2.652-2.066 3.245-2.928 3.245-.69 0-1.196-.397-1.495-1.36a5.692 5.692 0 0 1-.241-1.71c0-2.034.565-4.197 1.39-5.566.74-1.23 1.652-1.738 2.594-1.738z" />
     </svg>
   );
   if (name === "shopify") return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <path d="M6.4 7.6h11.2l.8 12a1 1 0 0 1-1 1.05H6.6a1 1 0 0 1-1-1.05l.8-12Z" fill="#95BF47" />
-      <path d="M9 7.6V6.6a3 3 0 0 1 6 0v1" fill="none" stroke="#4C7A2E" strokeWidth={1.7} strokeLinecap="round" />
+    <svg width={size} height={size} viewBox="0 0 256 292" role="img" aria-label="Shopify" style={{ display: "block", flex: "none" }}>
+      <path fill="#95BF47" d="M223.774 57.34c-.201-1.46-1.48-2.268-2.537-2.357-1.055-.088-23.383-1.743-23.383-1.743s-15.507-15.395-17.209-17.099c-1.703-1.703-5.029-1.185-6.32-.805-.19.056-3.388 1.043-8.678 2.68-5.18-14.906-14.322-28.604-30.405-28.604-.444 0-.901.018-1.358.044C129.31 3.407 123.644.779 118.75.779c-37.465 0-55.364 46.835-60.976 70.635-14.558 4.511-24.9 7.718-26.221 8.133-8.126 2.549-8.383 2.805-9.45 10.462C21.3 95.806.038 260.235.038 260.235l165.678 31.042 89.77-19.42S223.973 58.8 223.775 57.34zM156.49 40.848l-14.019 4.339c.005-.988.01-1.96.01-3.023 0-9.264-1.286-16.723-3.349-22.636 8.287 1.04 13.806 10.469 17.358 21.32zm-27.638-19.483c2.304 5.773 3.802 14.058 3.802 25.238 0 .572-.005 1.095-.01 1.624-9.117 2.824-19.024 5.89-28.953 8.966 5.575-21.516 16.025-31.908 25.161-35.828zm-11.131-10.537c1.617 0 3.246.549 4.805 1.622-12.007 5.65-24.877 19.88-30.312 48.297l-22.886 7.088C75.694 46.16 90.81 10.828 117.72 10.828z" />
+      <path fill="#5E8E3E" d="M221.237 54.983c-1.055-.088-23.383-1.743-23.383-1.743s-15.507-15.395-17.209-17.099c-.637-.634-1.496-.959-2.394-1.099l-12.527 255.246 89.762-19.418S223.972 58.8 223.774 57.34c-.201-1.46-1.48-2.268-2.537-2.357z" />
+      <path fill="#FFF" d="M135.242 104.585l-11.069 32.926s-9.698-5.176-21.586-5.176c-17.428 0-18.305 10.937-18.305 13.693 0 15.038 39.2 20.8 39.2 56.024 0 27.713-17.577 45.558-41.277 45.558-28.44 0-42.984-17.7-42.984-17.7l7.615-25.16s14.95 12.835 27.565 12.835c8.243 0 11.596-6.49 11.596-11.232 0-19.616-32.16-20.491-32.16-52.724 0-27.129 19.472-53.382 58.778-53.382 15.145 0 22.627 4.338 22.627 4.338z" />
     </svg>
   );
   return null;
@@ -438,7 +439,7 @@ export default function EngineAurora({ client = "The Astro Time", shopDomain = "
       {/* SIDEBAR */}
       <aside style={{ width: "248px", flex: "none", display: "flex", flexDirection: "column", height: "100vh", background: "#1A1710" }}>
         <div style={{ padding: "20px 16px 16px" }}>
-          <div style={{ display: "flex", alignItems: "baseline", gap: "7px" }}>
+          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", gap: "7px" }}>
             <span style={{ font: "800 20px/1 'Sora'", letterSpacing: "-.01em", color: "#FACC15" }}>ROI</span>
             <span style={{ font: "600 20px/1 'Sora'", letterSpacing: "-.01em", color: "#FFFFFF" }}>Engine</span>
           </div>
@@ -549,40 +550,33 @@ export default function EngineAurora({ client = "The Astro Time", shopDomain = "
               <div style={SECTION}>
                 <div style={{ ...CARD, borderRadius: "18px", padding: "24px 26px", display: "grid", gridTemplateColumns: "1fr 1.3fr", gap: "30px", alignItems: "stretch" }}>
                   <div style={{ display: "flex", flexDirection: "column" }}>
-                    <div style={MONO_CAP}>Two funnels · one cockpit · {rw}</div>
-                    <div style={{ marginTop: "18px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+                    <div style={MONO_CAP}>Two funnels · {rw}</div>
+                    <div style={{ marginTop: "20px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
                       <div>
                         <div style={{ font: "600 10.5px 'JetBrains Mono'", color: "#9C968A", textTransform: "uppercase", letterSpacing: ".06em" }}>Store · Meta → Shopify</div>
-                        <div style={{ font: "600 32px/1 'Sora'", color: "#1A1710", letterSpacing: "-.02em", marginTop: "7px", fontVariantNumeric: "tabular-nums" }}>{inr(4280000 * F)}</div>
-                        <div style={{ font: "500 12px 'Manrope'", color: "#6A6456", marginTop: "4px" }}>Store revenue (Shopify net)</div>
-                        <div style={{ marginTop: "9px" }}><span style={{ font: "600 11px 'JetBrains Mono'", color: "#16794E", background: "#EAF6EF", padding: "4px 9px", borderRadius: "7px" }}>ROAS 3.22×</span></div>
+                        <div style={{ font: "600 33px/1 'Sora'", color: "#1A1710", letterSpacing: "-.02em", marginTop: "8px", fontVariantNumeric: "tabular-nums" }}>{inr(4280000 * F)}</div>
+                        <div style={{ font: "500 12px 'Manrope'", color: "#6A6456", marginTop: "5px" }}>Store revenue · <span style={{ color: "#16794E", fontWeight: 600 }}>ROAS 3.22×</span></div>
                       </div>
                       <div>
                         <div style={{ font: "600 10.5px 'JetBrains Mono'", color: "#9C968A", textTransform: "uppercase", letterSpacing: ".06em" }}>App · Google</div>
-                        <div style={{ font: "600 32px/1 'Sora'", color: "#1A1710", letterSpacing: "-.02em", marginTop: "7px", fontVariantNumeric: "tabular-nums" }}>{kfmt(18400 * F)}</div>
-                        <div style={{ font: "500 12px 'Manrope'", color: "#6A6456", marginTop: "4px" }}>App installs</div>
-                        <div style={{ marginTop: "9px", display: "flex", gap: "6px", flexWrap: "wrap" }}><span style={{ font: "600 11px 'JetBrains Mono'", color: "#AA7C09", background: "#FBF1D2", padding: "4px 9px", borderRadius: "7px" }}>CPI ₹34.8</span><span style={{ font: "600 11px 'JetBrains Mono'", color: "#6A6456", background: "#F0EBDD", padding: "4px 9px", borderRadius: "7px" }}>no revenue → ROAS n/a</span></div>
+                        <div style={{ font: "600 33px/1 'Sora'", color: "#1A1710", letterSpacing: "-.02em", marginTop: "8px", fontVariantNumeric: "tabular-nums" }}>{kfmt(18400 * F)}</div>
+                        <div style={{ font: "500 12px 'Manrope'", color: "#6A6456", marginTop: "5px" }}>App installs · <span style={{ color: "#AA7C09", fontWeight: 600 }}>CPI ₹34.8</span></div>
                       </div>
                     </div>
-                    <div style={{ marginTop: "auto", paddingTop: "20px", display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "10px" }}>
-                      {([
-                        ["Total ad spend", inr(1620000 * F), "#1A1710", "Google + Meta"],
-                        ["Blended MER", "2.64×", "#1A1710", "rev ÷ total spend"],
-                        ["Store MER", "3.22×", "#AA7C09", "rev ÷ Meta spend"],
-                        ["Meta ROAS *", "3.22×", "#1A1710", "platform · modeled"],
-                      ] as [string, string, string, string][]).map(([l, v, c, cap]) => (
-                        <div key={l} style={{ background: "#FBF6E6", border: "1px solid #ECE7DA", borderRadius: "12px", padding: "11px 12px" }}>
-                          <div style={{ font: "500 9.5px 'JetBrains Mono'", color: l.endsWith("*") ? gold : "#9C968A", textTransform: "uppercase", letterSpacing: ".05em" }}>{l}</div>
-                          <div style={{ font: "600 21px/1.1 'Sora'", color: c, marginTop: "3px" }}>{v}</div>
-                          <div style={{ font: "500 9px 'JetBrains Mono'", color: "#B3AC9A", marginTop: "3px" }}>{cap}</div>
-                        </div>
-                      ))}
+                    <div style={{ marginTop: "auto", paddingTop: "20px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                      <div style={{ background: "#FBF6E6", border: "1px solid #ECE7DA", borderRadius: "12px", padding: "12px 14px" }}>
+                        <div style={{ font: "500 10px 'JetBrains Mono'", color: "#9C968A", textTransform: "uppercase", letterSpacing: ".06em" }}>Total ad spend</div>
+                        <div style={{ font: "600 22px/1.1 'Sora'", color: "#1A1710", marginTop: "4px" }}>{inr(1620000 * F)}</div>
+                      </div>
+                      <div style={{ background: "#FBF6E6", border: "1px solid #ECE7DA", borderRadius: "12px", padding: "12px 14px" }}>
+                        <div style={{ font: "500 10px 'JetBrains Mono'", color: "#9C968A", textTransform: "uppercase", letterSpacing: ".06em" }}>Blended MER</div>
+                        <div style={{ font: "600 22px/1.1 'Sora'", color: "#1A1710", marginTop: "4px" }}>2.64×</div>
+                      </div>
                     </div>
                   </div>
                   <div style={{ borderLeft: "1px solid #F1ECDF", paddingLeft: "26px", display: "flex", flexDirection: "column" }}>
                     <Legend items={[{ c: "#AA7C09", t: "Store revenue" }, { c: "#B0A892", t: "Total spend" }]} />
                     <div style={{ flex: 1, display: "flex", alignItems: "flex-end", marginTop: "6px" }}><AreaChart s={s} /></div>
-                    <div style={{ font: "500 10.5px 'Manrope'", color: "#B3AC9A", marginTop: "8px" }}>Chart tracks store revenue vs all-channel spend — app-install spend is in spend, not in revenue.</div>
                   </div>
                 </div>
 
@@ -621,7 +615,7 @@ export default function EngineAurora({ client = "The Astro Time", shopDomain = "
                   {funnels.map((f, i) => (
                     <div key={i} style={{ ...CARD, padding: "20px" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                        <span style={{ width: "30px", height: "30px", borderRadius: "8px", background: f.chipBg, display: "flex", alignItems: "center", justifyContent: "center", flex: "none" }}><SourceIcon name={f.icon} size={18} /></span>
+                        <SourceIcon name={f.icon} size={30} />
                         <div><div style={{ font: "600 14px 'Sora'", color: "#1A1710" }}>{f.title}</div><div style={{ font: "500 11.5px 'Manrope'", color: "#9C968A" }}>{f.path}</div></div>
                       </div>
                       <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "12px", marginTop: "18px" }}>

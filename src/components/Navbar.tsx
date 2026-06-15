@@ -20,9 +20,11 @@ export default function Navbar() {
   if (pathname === "/" || pathname === "/demo" || pathname === "/demos" || pathname === "/stellar" || pathname?.startsWith("/audit") || pathname?.startsWith("/discord") || pathname?.startsWith("/engine") || pathname?.startsWith("/integrations")) return null;
 
   const navLinks = [
-    { href: "/#services", label: "Services" },
-    { href: "/#how-we-work", label: "How we work" },
-    { href: "/about", label: "About" },
+    { href: "/#process", label: "How it works" },
+    { href: "/integrations", label: "Integrations" },
+    { href: "/audit", label: "Free audit" },
+    { href: "/#plans", label: "Plans" },
+    { href: "/#faq", label: "FAQ" },
   ];
 
   return (

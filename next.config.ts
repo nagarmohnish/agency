@@ -11,6 +11,9 @@ const isStaticExport = process.env.NEXT_BUILD_MODE === "export";
 const basePath = process.env.NEXT_BASE_PATH || "";
 
 const nextConfig: NextConfig = {
+  // Hide the Next.js dev-tools floating indicator (the "N" button) in `next dev`.
+  // It never ships to production/static-export anyway.
+  devIndicators: false,
   ...(isStaticExport
     ? {
         output: "export",

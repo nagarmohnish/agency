@@ -38,6 +38,7 @@
 .aurora .ig-logo{width:46px;height:46px;border-radius:13px;background:var(--surface);border:1px solid var(--line);
   display:grid;place-items:center;flex:none;box-shadow:0 1px 2px rgba(60,48,20,.05);}
 .aurora .ig-logo svg{display:block;}
+.aurora .ig-logo img{width:28px;height:28px;object-fit:contain;display:block;}
 .aurora .ig-nm{font-family:var(--disp);font-weight:700;font-size:18.5px;letter-spacing:-.01em;color:var(--ink);}
 .aurora .ig-desc{font-size:13.5px;line-height:1.55;color:var(--muted);flex:1;margin:0;}
 

@@ -26,7 +26,7 @@ const HTML = `
   <nav>
     <div class="nv">
       <a href="#top" class="brand"><img src="${BP}/roi-logo-dark.png" alt="ROI Labs" /></a>
-      <div class="nv-links"><a href="#process">How it works</a><a href="/integrations">Integrations</a><a href="/audit">Free audit</a><a href="#plans">Plans</a><a href="#faq">FAQ</a></div>
+      <div class="nv-links"><a href="/#process">How it works</a><a href="/integrations">Integrations</a><a href="/audit">Free audit</a><a href="/#plans">Plans</a><a href="/#faq">FAQ</a></div>
       <a href="#contact" class="btn btn-pri">Book your audit</a>
     </div>
   </nav>
@@ -44,16 +44,6 @@ const HTML = `
     <div class="agencyline" data-reveal>
       <p class="q">Running an agency?</p>
       <p class="a">We white-label the whole engine for your clients. <a href="#plans">See agency plans →</a></p>
-    </div>
-  </div>
-</section>
-
-<section style="padding-top:10px;">
-  <div class="wrap">
-    <div class="broken" data-reveal>
-      <p class="ey">Why AI-native</p>
-      <h2>The agency model is broken. <span class="grad">We thought so too.</span></h2>
-      <p>Most shops ship ten ads a month, hand your account to a junior buyer, and report on metrics that never reach your P&amp;L. AI changed what's possible — so we built the agency around it. AI produces and tests creative at a volume no human team can match; senior operators own the strategy and the number that pays the bills for each funnel — revenue for stores, cost-per-install for apps, cost-per-lead for lead-gen.</p>
     </div>
   </div>
 </section>
@@ -95,22 +85,6 @@ const HTML = `
         <div class="tl__main" id="tlMain"></div>
         <div class="tl__stats" id="tlStats"></div>
       </div>
-    </div>
-  </div>
-</section>
-
-<section>
-  <div class="wrap">
-    <div class="audit" data-reveal>
-      <p class="ey o" style="color:var(--yellow)">Free audit</p>
-      <h2>How much is your paid media leaving on the table?</h2>
-      <p>Drop your site and we'll send back an honest read on your Meta and Google accounts, your creative, and your tracking — plus the highest-leverage fixes.</p>
-      <form class="auditform" id="auditForm" novalidate>
-        <input id="auditUrl" type="text" placeholder="yourcompany.com" aria-label="Your website" />
-        <button type="submit" class="btn btn-pri btn-lg">Run a free audit →</button>
-      </form>
-      <p class="fine">Free, no commitment. A clear read within 24 hours.</p>
-      <p class="asent" id="auditSent">✓ Great — drop your email in the form below and we'll send your audit.</p>
     </div>
   </div>
 </section>
@@ -209,7 +183,7 @@ const HTML = `
   <div class="wrap">
     <div class="fgrid">
       <div class="fbrand">
-        <img src="${BP}/roi-logo-dark.png" alt="ROI Labs" />
+        <img src="${BP}/roi-logo-light.png" alt="ROI Labs" />
         <p class="ft">AI-native paid media for growth brands on Meta &amp; Google. Measured by the outcome that matters — revenue, installs, or leads.</p>
         <div class="fsoc"><a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">${LINKEDIN}</a><a href="https://x.com" target="_blank" rel="noopener noreferrer" aria-label="X">${XICON}</a></div>
       </div>
@@ -252,6 +226,8 @@ const HTML = `
       </form>
     </div>
     <div class="mR">
+      <div class="mR-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <span class="mR-live" aria-hidden="true"><b></b>Scaling now</span>
       <h4>Join growth brands scaling on <span class="hl">Meta &amp; Google</span></h4>
       <p class="mrp">AI-run paid media, measured by the outcome that matters — not platform-reported vanity metrics.</p>
       <div class="chips"><span>DTC</span><span>B2B SaaS</span><span>Ecommerce</span><span>Subscription</span><span>Marketplaces</span><span>Lead-gen</span></div>
