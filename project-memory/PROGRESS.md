@@ -4,6 +4,20 @@ Convert relative dates to absolute. Newest changelog entry on top.
 
 ## Changelog
 
+### 2026-06-15 · Cleaned working tree + pushed master to GitHub (nagarmohnish/agency)
+Reviewed the whole working tree, cleaned scratch, and pushed the session's work. Commit **73184d9**
+(`02a5220..73184d9 master`, author Mohnish Nagar <mohnish238@gmail.com>, pushed with the
+**nagarmohnish** token — active CLI account is the lh2 one which is denied). 68 files, +9636/−1043.
+**Excluded as scratch/confidential** (added to `.gitignore`): `demo assets/` (WhatsApp exports + a
+24MB mp4), `roi-engine-dashboard.html` (stale standalone export), `docs/` (going forward); removed
+unused `public/roi-engine-logo.png`. Verified no secrets staged (`.env.local` ignored; only
+`.env.example` tracked).
+**⚠ Note:** `docs/` holds confidential business/legal material and the repo is **public**. Flagged to
+the user, who chose to handle it themselves. The new commit did not add to it and `docs/` is now
+gitignored so nothing new lands there; pre-existing files remain in tree + history. (Full removal
+would need repo→private — may pause the free GitHub **Pages** demo — or a history rewrite + force-push.)
+Per user: **left as-is.** Future sessions: do not add anything under `docs/`.
+
 ### 2026-06-15 · Aurora-themed cockpit variant (roilabs.in look) at /engine/aurora
 Per user "a version of this dashboard in the roilabs theme (same as the landing page)". Generated
 **`src/app/engine/v3aurora.tsx`** from `v3.tsx` via a scripted palette+font remap (no hand-rewrite):
