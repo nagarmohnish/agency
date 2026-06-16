@@ -1,7 +1,7 @@
 "use client";
 
 // ROI Engine — redesigned cockpit (Claude Design handoff "ROI Engine.dc.html").
-// Atlas light palette: white panels on #F4F5F7, deep-indigo #1E1B4B sidebar,
+// Atlas light palette: white panels on #F4F5F7, white sidebar (light-themed),
 // indigo #4F46E5 working accent, brand yellow reserved for the mark.
 // Honest two-funnel framing: Google = app/video installs (no purchase revenue, so
 // no ROAS), Meta → Shopify = the revenue+ROAS funnel, Shopify = source of truth.
@@ -192,11 +192,40 @@ const MONO_CAP: CSSProperties = { font: "600 11px/1 'JetBrains Mono'", letterSpa
 
 interface Kpi { label: string; value: string; delta: string; source: string; deltaStyle: CSSProperties; spark: { arr: number[]; color: string }; est?: boolean }
 
+// The Astro Time brand mark — purple zodiac wheel (12 sign glyphs + central star).
+function AstroMark({ size = 22 }: { size?: number }) {
+  const glyphs = ["♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓"];
+  const cx = 50, cy = 50, R = 40;
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" role="img" aria-label="The Astro Time" style={{ display: "block", borderRadius: "50%", flex: "none" }}>
+      <defs>
+        <radialGradient id="astroMark" cx="50%" cy="30%" r="78%">
+          <stop offset="0%" stopColor="#8E6CF2" />
+          <stop offset="55%" stopColor="#5A33C8" />
+          <stop offset="100%" stopColor="#36197F" />
+        </radialGradient>
+      </defs>
+      <circle cx={cx} cy={cy} r="50" fill="url(#astroMark)" />
+      <circle cx={cx} cy={cy} r="45.5" fill="none" stroke="rgba(255,255,255,.8)" strokeWidth="1.3" />
+      {glyphs.map((g, i) => {
+        const a = (i / 12) * Math.PI * 2;
+        return <text key={i} x={cx + R * Math.sin(a)} y={cy - R * Math.cos(a)} fill="#fff" fontSize="9.5" textAnchor="middle" dominantBaseline="central" fontFamily="serif">{g}</text>;
+      })}
+      <circle cx={cx} cy={cy} r="20.5" fill="none" stroke="rgba(255,255,255,.85)" strokeWidth="1.3" />
+      <g fill="#fff">
+        <path d="M50 31 L52.6 47.4 L69 50 L52.6 52.6 L50 69 L47.4 52.6 L31 50 L47.4 47.4 Z" />
+        <path d="M50 38 L51.4 48.6 L62 50 L51.4 51.4 L50 62 L48.6 51.4 L38 50 L48.6 48.6 Z" transform="rotate(45 50 50)" />
+      </g>
+    </svg>
+  );
+}
+
 export default function EngineV3({ client = "The Astro Time", shopDomain = "theastrotime.myshopify.com", defaultView = "overview", onSignOut }: { client?: string; shopDomain?: string; defaultView?: Page; onSignOut?: () => void } = {}) {
   const [page, setPage] = useState<Page>(defaultView);
   const [range, setRange] = useState<Range>("28d");
   const [approvals, setApprovals] = useState<string[]>(["a1", "a2", "a3"]);
   const [accountOpen, setAccountOpen] = useState(false);
+  const [openSec, setOpenSec] = useState<{ overview: boolean; sources: boolean; engine: boolean }>({ overview: true, sources: true, engine: true });
   const signOut = () => { if (onSignOut) onSignOut(); else if (typeof window !== "undefined") window.location.assign("/engine?login=1"); };
 
   const F = factorFor(range);
@@ -242,10 +271,17 @@ export default function EngineV3({ client = "The Astro Time", shopDomain = "thea
   // nav
   const navBtn = (active: boolean, extra?: CSSProperties): CSSProperties => ({
     display: "flex", alignItems: "center", gap: "11px", padding: "9px 11px", borderRadius: "9px", cursor: "pointer", border: "none", width: "100%", font: "550 13.5px/1 'Hanken Grotesk'",
-    ...(active ? { background: "#F4F4FB", color: "#312C72" } : { background: "transparent", color: "#C9C7E6" }), ...extra,
+    ...(active ? { background: "#F4F4FB", color: "#312C72" } : { background: "transparent", color: "#5B5F6B" }), ...extra,
   });
   const sourceNav: { id: Page; label: string }[] = [{ id: "google", label: "Google" }, { id: "meta", label: "Meta" }, { id: "shopify", label: "Shopify" }];
   const engineNav: { id: Page; label: string; badge?: string }[] = [{ id: "runs", label: "Runs" }, { id: "activity", label: "Activity" }, { id: "approvals", label: "Approvals", badge: approvals.length ? String(approvals.length) : "" }];
+
+  // sidebar = 3 collapsible primary sections (headers carry no icon; items keep theirs)
+  const sections: { key: "overview" | "sources" | "engine"; label: string; iconKind: "nav" | "source"; items: { id: Page; label: string; badge?: string }[] }[] = [
+    { key: "overview", label: "Overview", iconKind: "nav", items: [{ id: "overview", label: "Overview" }] },
+    { key: "sources", label: "Sources", iconKind: "source", items: sourceNav },
+    { key: "engine", label: "Engine", iconKind: "nav", items: engineNav },
+  ];
 
   const META: Record<Page, { title: string; tag: string; sub: string }> = {
     overview: { title: "Overview", tag: "Blended", sub: client },
@@ -428,7 +464,6 @@ export default function EngineV3({ client = "The Astro Time", shopDomain = "thea
   const shOrdDaily = daily(0x51F9 ^ s.n, s.n, 0.2);
 
   const kpis = kpiSets[page];
-  const clientInitial = client.slice(0, 1).toUpperCase();
 
   // ── render ──
   return (
@@ -436,47 +471,50 @@ export default function EngineV3({ client = "The Astro Time", shopDomain = "thea
       <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}} .v3main::-webkit-scrollbar{width:10px;height:10px}.v3main::-webkit-scrollbar-thumb{background:#D9DBE2;border-radius:8px;border:3px solid #F4F5F7}.v3main::-webkit-scrollbar-track{background:transparent}`}</style>
 
       {/* SIDEBAR */}
-      <aside style={{ width: "248px", flex: "none", display: "flex", flexDirection: "column", height: "100vh", background: "#1E1B4B" }}>
+      <aside style={{ width: "248px", flex: "none", display: "flex", flexDirection: "column", height: "100vh", background: "#FFFFFF", borderRight: "1px solid #ECEDF1" }}>
         <div style={{ padding: "20px 16px 16px" }}>
           <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", gap: "7px" }}>
-            <span style={{ font: "800 20px/1 'Space Grotesk'", letterSpacing: "-.01em", color: "#FACC15" }}>ROI</span>
-            <span style={{ font: "600 20px/1 'Space Grotesk'", letterSpacing: "-.01em", color: "#FFFFFF" }}>Engine</span>
+            <span style={{ font: "800 20px/1 'Space Grotesk'", letterSpacing: "-.01em", color: gold }}>ROI</span>
+            <span style={{ font: "600 20px/1 'Space Grotesk'", letterSpacing: "-.01em", color: "#15171C" }}>Engine</span>
           </div>
         </div>
 
         <div style={{ padding: "4px 12px 0", flex: 1, overflowY: "auto" }}>
-          <button style={navBtn(page === "overview")} onClick={() => setPage("overview")}>
-            <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "18px", height: "18px", flex: "none" }}><NavIcon name="overview" /></span>
-            <span style={{ flex: 1, textAlign: "left" }}>Overview</span>
-          </button>
-
-          <div style={{ font: "600 10px/1 'JetBrains Mono'", letterSpacing: ".12em", color: "#5E5A8C", textTransform: "uppercase", padding: "18px 11px 9px" }}>Sources</div>
-          <nav style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
-            {sourceNav.map((it) => (
-              <button key={it.id} style={navBtn(page === it.id, { color: page === it.id ? "#312C72" : "#E8E7F4", fontWeight: page === it.id ? 600 : 550 })} onClick={() => setPage(it.id)}>
-                <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "22px", height: "22px", flex: "none" }}><SourceIcon name={it.id} /></span>
-                <span style={{ flex: 1, textAlign: "left" }}>{it.label}</span>
-              </button>
-            ))}
-          </nav>
-
-          <div style={{ font: "600 10px/1 'JetBrains Mono'", letterSpacing: ".12em", color: "#5E5A8C", textTransform: "uppercase", padding: "18px 11px 9px" }}>Engine</div>
-          <nav style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
-            {engineNav.map((it) => (
-              <button key={it.id} style={navBtn(page === it.id, { color: page === it.id ? "#312C72" : "#E8E7F4", fontWeight: page === it.id ? 600 : 550 })} onClick={() => setPage(it.id)}>
-                <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "18px", height: "18px", flex: "none" }}><NavIcon name={it.id} /></span>
-                <span style={{ flex: 1, textAlign: "left" }}>{it.label}</span>
-                {it.badge ? <span style={{ font: "700 11px 'JetBrains Mono'", color: "#fff", background: "#4F46E5", minWidth: "22px", height: "20px", padding: "0 6px", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center" }}>{it.badge}</span> : null}
-              </button>
-            ))}
-          </nav>
+          {sections.map((sec) => {
+            const open = openSec[sec.key];
+            return (
+              <div key={sec.key} style={{ marginBottom: "2px" }}>
+                <button
+                  onClick={() => setOpenSec((o) => ({ ...o, [sec.key]: !o[sec.key] }))}
+                  aria-expanded={open}
+                  style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", border: "none", background: "transparent", cursor: "pointer", padding: "16px 11px 8px", font: "600 10px/1 'JetBrains Mono'", letterSpacing: ".12em", color: "#8A8F9A", textTransform: "uppercase" }}
+                >
+                  <span>{sec.label}</span>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#B4B8C0" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" style={{ transform: open ? "rotate(0deg)" : "rotate(-90deg)", transition: "transform .18s", flex: "none" }}><path d="M6 9l6 6 6-6" /></svg>
+                </button>
+                {open && (
+                  <nav style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                    {sec.items.map((it) => (
+                      <button key={it.id} style={navBtn(page === it.id, { color: page === it.id ? "#312C72" : "#5B5F6B", fontWeight: page === it.id ? 600 : 550 })} onClick={() => setPage(it.id)}>
+                        <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: sec.iconKind === "source" ? "22px" : "18px", height: sec.iconKind === "source" ? "22px" : "18px", flex: "none" }}>
+                          {sec.iconKind === "source" ? <SourceIcon name={it.id} /> : <NavIcon name={it.id} />}
+                        </span>
+                        <span style={{ flex: 1, textAlign: "left" }}>{it.label}</span>
+                        {it.badge ? <span style={{ font: "700 11px 'JetBrains Mono'", color: "#fff", background: "#4F46E5", minWidth: "22px", height: "20px", padding: "0 6px", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center" }}>{it.badge}</span> : null}
+                      </button>
+                    ))}
+                  </nav>
+                )}
+              </div>
+            );
+          })}
         </div>
 
-        <div style={{ padding: "12px 14px 16px", borderTop: "1px solid rgba(255,255,255,.08)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 10px", background: "rgba(255,255,255,.04)", borderRadius: "10px", marginBottom: "11px" }}>
+        <div style={{ padding: "12px 14px 16px", borderTop: "1px solid #ECEDF1" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 10px", background: "#F6F7FB", borderRadius: "10px", marginBottom: "11px" }}>
             <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#34D399", boxShadow: "0 0 0 3px rgba(52,211,153,.18)", animation: "pulse 2.4s ease-in-out infinite", flex: "none" }} />
-            <span style={{ flex: 1, font: "600 11.5px 'Hanken Grotesk'", color: "#C9C7E6" }}>Engine active</span>
-            <span style={{ font: "500 10px 'JetBrains Mono'", color: "#8C89B4" }}>cap ₹6K/day</span>
+            <span style={{ flex: 1, font: "600 11.5px 'Hanken Grotesk'", color: "#4A4E58" }}>Engine active</span>
+            <span style={{ font: "500 10px 'JetBrains Mono'", color: "#9CA0A8" }}>cap ₹6K/day</span>
           </div>
           <div style={{ position: "relative" }}>
             {accountOpen && <div onClick={() => setAccountOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 40 }} />}
@@ -494,7 +532,7 @@ export default function EngineV3({ client = "The Astro Time", shopDomain = "thea
                 <MenuItem icon="logout" label="Log out" danger onClick={() => { setAccountOpen(false); signOut(); }} />
               </div>
             )}
-            <button onClick={() => setAccountOpen((o) => !o)} aria-label="Account menu" title="Account" style={{ display: "inline-flex", padding: "3px", borderRadius: "50%", border: "none", cursor: "pointer", background: accountOpen ? "rgba(255,255,255,.12)" : "transparent" }}>
+            <button onClick={() => setAccountOpen((o) => !o)} aria-label="Account menu" title="Account" style={{ display: "inline-flex", padding: "3px", borderRadius: "50%", border: "none", cursor: "pointer", background: accountOpen ? "rgba(15,17,28,.06)" : "transparent" }}>
               <Avatar size={34} />
             </button>
           </div>
@@ -514,7 +552,7 @@ export default function EngineV3({ client = "The Astro Time", shopDomain = "thea
 
           <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end", gap: "10px" }}>
             <button style={{ display: "flex", alignItems: "center", gap: "9px", background: "#fff", border: "1px solid #ECEDF1", borderRadius: "10px", padding: "7px 11px", cursor: "pointer", boxShadow: "0 1px 2px rgba(20,22,28,.05)" }}>
-              <span style={{ width: "22px", height: "22px", borderRadius: "6px", background: "linear-gradient(135deg,#4F46E5,#7C73F0)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", font: "700 11px 'Space Grotesk'", flex: "none" }}>{clientInitial}</span>
+              <AstroMark size={22} />
               <span style={{ textAlign: "left", lineHeight: 1.15 }}>
                 <span style={{ display: "block", font: "600 12.5px 'Hanken Grotesk'", color: "#15171C" }}>{client}</span>
                 <span style={{ display: "block", font: "500 10px 'JetBrains Mono'", color: "#9CA0A8" }}>{shopDomain}</span>
@@ -583,6 +621,23 @@ export default function EngineV3({ client = "The Astro Time", shopDomain = "thea
                   {kpis.map((kp, i) => <KpiCard key={i} kp={kp} idx={i} />)}
                 </div>
 
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                  {funnels.map((f, i) => (
+                    <div key={i} style={{ ...CARD, padding: "20px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        <SourceIcon name={f.icon} size={30} />
+                        <div><div style={{ font: "600 14px 'Space Grotesk'", color: "#15171C" }}>{f.title}</div><div style={{ font: "500 11.5px 'Hanken Grotesk'", color: "#9CA0A8" }}>{f.path}</div></div>
+                      </div>
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "12px", marginTop: "18px" }}>
+                        {f.stats.map((st, j) => (
+                          <div key={j}><div style={{ font: "600 21px/1.05 'Space Grotesk'", color: "#15171C", fontVariantNumeric: "tabular-nums" }}>{st.v}</div><div style={{ font: "500 11px 'Hanken Grotesk'", color: "#9CA0A8", marginTop: "3px" }}>{st.l}</div></div>
+                        ))}
+                      </div>
+                      <div style={{ marginTop: "16px", paddingTop: "13px", borderTop: "1px solid #F2F3F6", font: "500 11.5px 'Hanken Grotesk'", color: f.noteColor }}>{f.note}</div>
+                    </div>
+                  ))}
+                </div>
+
                 <div style={{ ...CARD, padding: "20px 22px" }}>
                   <CardHead title="Where spend goes vs what it returns" note={rw} />
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "28px", marginTop: "18px" }}>
@@ -608,23 +663,6 @@ export default function EngineV3({ client = "The Astro Time", shopDomain = "thea
                     </div>
                   </div>
                   <div style={{ marginTop: "16px", paddingTop: "13px", borderTop: "1px solid #F2F3F6", font: "500 11.5px 'Hanken Grotesk'", color: "#6B7280" }}>Google takes 40% of spend toward installs (no store revenue); Meta drives 74% of store revenue. Blended MER mixes both — see Store MER for the store-only number.</div>
-                </div>
-
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-                  {funnels.map((f, i) => (
-                    <div key={i} style={{ ...CARD, padding: "20px" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                        <SourceIcon name={f.icon} size={30} />
-                        <div><div style={{ font: "600 14px 'Space Grotesk'", color: "#15171C" }}>{f.title}</div><div style={{ font: "500 11.5px 'Hanken Grotesk'", color: "#9CA0A8" }}>{f.path}</div></div>
-                      </div>
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "12px", marginTop: "18px" }}>
-                        {f.stats.map((st, j) => (
-                          <div key={j}><div style={{ font: "600 21px/1.05 'Space Grotesk'", color: "#15171C", fontVariantNumeric: "tabular-nums" }}>{st.v}</div><div style={{ font: "500 11px 'Hanken Grotesk'", color: "#9CA0A8", marginTop: "3px" }}>{st.l}</div></div>
-                        ))}
-                      </div>
-                      <div style={{ marginTop: "16px", paddingTop: "13px", borderTop: "1px solid #F2F3F6", font: "500 11.5px 'Hanken Grotesk'", color: f.noteColor }}>{f.note}</div>
-                    </div>
-                  ))}
                 </div>
 
                 <div style={{ ...CARD, padding: "18px 20px" }}>

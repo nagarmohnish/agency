@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
+import { unstable_cache } from "next/cache";
 import Shell from "./Shell";
+import { getCockpitData, type CockpitData } from "@/lib/engine/cockpit-data";
 import "./engine.css";
 
 export const metadata: Metadata = {
@@ -12,6 +14,22 @@ export const viewport: Viewport = {
   themeColor: "#FFFFFF",
 };
 
-export default function EnginePage() {
-  return <Shell />;
+// Pull real source data (Shopify + Google) once and cache for 10 min so we don't
+// hammer the ad/commerce APIs on every load. Falls back to null (→ the cockpit's
+// built-in modeled estimates) when the engine isn't connected (static demo / CI).
+const loadCockpit = unstable_cache(
+  async (): Promise<CockpitData | null> => {
+    try {
+      return await getCockpitData();
+    } catch {
+      return null;
+    }
+  },
+  ["engine-cockpit-data-v1"],
+  { revalidate: 600 }
+);
+
+export default async function EnginePage() {
+  const cockpit = await loadCockpit();
+  return <Shell cockpit={cockpit} />;
 }

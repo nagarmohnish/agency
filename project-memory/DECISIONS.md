@@ -244,3 +244,95 @@ links (`../` prefix), the 5 legacy generator scripts that read/write these files
 `npm run` pipeline), and `.gitignore`/`.vercelignore` patterns. The live Next build (`src/`, `public/`)
 references none of the moved files, so `npm run verify` is unaffected. The root logos are *source* art
 for the standalone generators; the app uses the separate `public/roi-logo-*.png` copies.
+
+### D19 · Adopt the engine_design_new handoff as the cockpit (v5) (2026-06-16)
+The `/engine` cockpit's design is now the **`engine_design_new/design_handoff_roi_engine`** Claude
+Design handoff — a "Dutask-style" friendly, rounded, card-based look (navy ink `#1B2440`, indigo
+accent `#4F5BD5`, gold ROI mark, Poppins + DM Mono, a 3-zone chrome: 76px icon rail + 296px secondary
+panel + 70px top bar). Implemented as a **new self-contained component `src/app/engine/v5.tsx`**;
+`Shell.tsx` renders it for the default (atlas) cockpit. **Product content, metrics, and IA are
+unchanged** — only the look. **Why a new component, not editing v3:** the chrome is structurally
+different (3 zones vs v3's single sidebar), so a clean rewrite is safer and keeps **v3/v3aurora as
+legacy** (still importable; `/engine/aurora` stays on v3aurora for now). The earlier `/engine/v4`
+"ROI Studio" (D-less exploration) was my own guess at this direction; v5 is the official handoff and
+supersedes it. **Real Google/Meta/Shopify logos** (`public/logos/`) replace the handoff's lettermark
+placeholders, per the handoff README. Extends the two-funnel honesty (D17) and named-agent-in-engine
+framing (D16) — copy is verbatim from the handoff.
+
+### D20 · Cockpit shows real data via a server aggregator; subscriptions are a primary stream (2026-06-16)
+The v5 cockpit reads **real** source data (Shopify revenue-truth + Google Ads spend) through a single
+server aggregator **`getCockpitData()`** (`src/lib/engine/cockpit-data.ts`), fetched in `page.tsx` with
+`unstable_cache(revalidate:600)` and passed down `Shell → EngineV5`. **Why server-side, not client:**
+the existing `/api/engine/*` routes are admin-token gated; rendering server-side lets us call the
+connectors directly (env credentials, no token in the browser) and keeps `/engine` ISR (10-min fresh).
+On any failure (no creds / static export / CI) it falls back to **modeled estimates**, so the Pages
+demo still works. **Estimations are explicit:** Meta (pending Marketing API) and **subscriptions** are
+modeled and badged **EST**; live sources are badged **LIVE** — honoring the "fill estimations" ask
+without implying we measure what we can't. **Revenue model widened:** total revenue = Shopify one-time
+purchases **+ recurring app-purchase subscriptions** (Stripe/PayPal/Razorpay/UPI), reflecting the real
+business (the user's ask). The date-range toggle drives all metrics from the daily series (one fetch,
+three windows). NB the real Google account is store search/PMax with micro-conversions (no app
+installs), so the Overview was reframed from the handoff's "app vs store funnels" to "revenue streams +
+ad-spend driver" to stay honest to live data. Extends D19 (the v5 design) and D17 (two-funnel honesty).
+
+### D21 · Tickets/approvals = Jira-style board with granular permissions (2026-06-16)
+The cockpit gets a **Jira-style Tickets board** (replacing the static Approvals screen) for the
+propose→approve→execute flow, governed by a **granular permission model**. Full spec:
+**`documentation/TICKETS.md`**. Key choices:
+- **Two user types, one system:** Operators (ROI Labs in managed mode, or the client's ad-ops human
+  in standalone) **create** tickets from engine insights; Approvers (client decision-makers / admin)
+  **sign off**; Viewers consume analytics. Same board for both modes — only who holds which role
+  changes. The client's core experience is analytics+reporting; tickets are the change-control layer.
+- **Granular access (chosen over simple roles):** atomic **permissions** (`tickets.create`,
+  `approve.budget|creative|campaign|tracking`, `actions.execute`, `members.manage`, …), optionally
+  **channel-scoped** (meta/google/shopify/subscriptions). **Roles = preset bundles** (Admin /
+  Operator / Viewer) **+ per-member grants** (e.g. a finance lead = Viewer + `approve.budget`).
+  **Why granular:** lets different client stakeholders approve only their domain (budget vs creative)
+  without giving broad access — "not much change in access between stakeholders, but clearly
+  manageable." A ticket's **type** dictates the required `approve.*` permission. Operators can't
+  approve their own spend (separation of duties).
+- **Flow:** insight → ticket (Open) → submit (Awaiting approval) → Approve/Reject/Request-changes
+  (cap-checked) → execute → Done; every step audit-logged on the ticket. Mirrors the engine's
+  existing gated-mutation model. Board columns: Open · Awaiting approval · Approved · Done.
+- **Demo-first build:** seeded members + tickets + a **"View as role"** switcher (no real auth yet);
+  live wiring (member-from-auth, server-side `can()` re-checks, tickets↔`engine_actions`) is a later
+  phase. Extends D2 (governance gate) and D3 (audit log as the case study).
+
+### D22 · Section-aware panel + Runs as a step-runner + GA4/demographics on Overview (2026-06-16)
+Three product directions for the v5 cockpit (first partly built, others spec'd):
+- **Section-aware secondary panel (BUILT):** the 296px panel is contextual to the active rail section —
+  Approvals shows ticket views / type-filters / team (wired to a board `tfilter`), Runs shows the loop +
+  recent runs, Activity shows the agents, Overview/Sources show connected sources + engine spend (store
+  card pinned on top). Flat nav, but each section gets its own relevant menu.
+- **Runs = an operator step-runner (SPEC'd, not built):** the loop's four steps run differently.
+  **Audit** → on demand, the model analyzes the **current DB data + inputs** → analytics/opportunity
+  report. **Creative** → generates **AI creatives (images/variants)**. **Launch** → NOT one-click; an
+  **operator action that only happens post-approval** (a Launch ticket must clear the granular gate,
+  D21). **Optimize** → automated / after results land. So Audit+Creative are generative (engine agents +
+  Anthropic / image-gen), Launch is gated execution, Optimize is automated — maps the loop onto the
+  approval gate (D2/D21). Backend-touching → demo-UI first (run buttons + progress + result preview).
+- **GA4-type data + demographics on Overview (SPEC'd):** surface GA4 metrics (sessions, conversion rate,
+  funnel) + **age/gender/network demographics** + filters — already exposed via `/api/engine/breakdowns`
+  and GA4. Extend `cockpit-data.ts` to aggregate (real where the connector provides it, est otherwise,
+  per D20's LIVE/EST convention).
+
+### D23 · Runs scoped to Audit + Creative; login = centered single-card (2026-06-16)
+Refines D22's loop and revisits the auth screen, both at the user's request:
+- **Runs = Audit + Creative only.** Removed **Launch** and **Optimize** as runnable steps. Rationale: a
+  "run" is an *autonomous, operator-triggered* generative action — only Audit (analyze current data →
+  opportunities) and Creative (generate AI variants) qualify. **Launch** is a human action that only
+  happens *post-approval* (a gated ticket, D21); **Optimize** is automated/continuous — neither is a "run"
+  you trigger, so both leave the Runs surface. The four agents still exist for ticket authorship + the
+  audit log; only the *runnable loop* narrowed. Applied across the engine (step cards, panel loop,
+  subtitle, run history, the Overview engine-bar copy).
+  - **Landing page deliberately left at 4 stages:** the marketing "How it works" funnel still shows
+    Research → Creative → Launch → Optimize — that is the *agency service* story (the team does launch +
+    optimize), distinct from the engine's autonomous loop. Mirror it down to 2 steps only on request.
+- **Login = centered single-card** (replaced the split-screen + animated cockpit preview from D19). One
+  dark card: logo+wordmark, Continue-with-Google, email/password (field icons + show/hide), and a
+  **Sign in ⇄ Create account** toggle (signup adds Full Name + a Terms checkbox). Real-auth path unchanged
+  — demo enters the cockpit; operators reach the **admin-token gate** via the "Operator?" link.
+- **GA4/demographics on Overview = BUILT** (was SPEC'd in D22): a self-contained `Ga4Audience` block —
+  GA4 KPIs, age/gender demographics, acquisition channels, device tap-to-filter, All/New/Returning segment
+  chips — frontend-first with modeled data that reacts to the date range + filters; live GA4 connector
+  later (still per D20's LIVE/EST convention).

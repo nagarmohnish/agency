@@ -32,6 +32,7 @@ These live in [`../documentation/`](../documentation/) and are referenced — do
 - [ARCHITECTURE.md](../documentation/ARCHITECTURE.md) — data flow + the dashboard screens
 - [ENGINE.md](../documentation/ENGINE.md) — operator guide + the connection (credential) steps
 - [DEVELOPMENT.md](../documentation/DEVELOPMENT.md) — the marketing-site edit→verify→deploy loop
+- [TICKETS.md](../documentation/TICKETS.md) — Tickets/Approvals (Jira-style) board + granular access model (D21)
 
 ## One-line state
 

@@ -30,6 +30,13 @@ Keep this in sync when files are added/moved/removed.
   - `tools.ts` — tool schemas (read + `propose_mutation` + `submit_audit`) + dispatcher.
   - `orchestrator.ts` — manual Claude tool-loop with caching + token accounting.
 
+- `cockpit-data.ts` — **server aggregator for the v5 cockpit** (D20). `getCockpitData()` pulls REAL
+  Shopify (getRevenue) + Google (getMetrics) once over the max window, derives 7D/28D/90D aggregates
+  from the daily series, and fills **estimations** for Meta + recurring **subscriptions**
+  (Stripe/PayPal/Razorpay/UPI). Returns `CockpitData` (per-range `RangeData` with `live`/`estimated`
+  flags). Consumed by `engine/page.tsx` (`unstable_cache`, revalidate 600 → `/engine` ISR) → `Shell`
+  → `EngineV5`. Falls back to modeled data on failure (static demo / CI).
+
 ## API routes — `src/app/api/engine/`
 - `run/route.ts` — POST, kicks off a loop step (v1: `audit`).
 - `status/route.ts` — GET, account + connection pings + recent actions + pending count.
@@ -44,19 +51,30 @@ Keep this in sync when files are added/moved/removed.
 - `page.tsx` — route + metadata (title "ROI Engine", noindex) + `viewport.themeColor
   = #FFFFFF`. **Now renders `Shell`** (was `Dashboard`).
 - **`Shell.tsx`** — current route entry: demo → cockpit; **`?login=1` previews the sign-in**;
-  live → `Login` token gate (posts to `/api/engine/status`) → cockpit. (D15)
-- **`Login.tsx`** — the **sign-in screen**: split layout (left = logo + "measured in revenue" +
-  Continue-with-Google/email + admin-token path; right = an **animated cockpit preview**).
+  live → `Login` token gate (posts to `/api/engine/status`) → cockpit. **Renders `EngineV5`** for the
+  default (atlas) cockpit and `EngineAurora` for `variant="aurora"`. (D15, D19)
+- **`Login.tsx`** — the **sign-in screen**, rewritten to the **engine_design_new** dark split-screen
+  (D19): left = gold ROI Engine wordmark + 54px "measured in revenue" headline + Continue-with-Google/
+  email + admin-token path; right = animated dark cockpit preview. Poppins + `#4F5BD5` accent.
 - **`v3aurora.tsx`** — **roilabs.in (Aurora) themed** variant of the cockpit at route
   `/engine/aurora`. **Generated** from `v3.tsx` by `scripts/make-aurora-theme.mjs` (palette+font
   remap: gold accent, warm neutrals, Sora/Manrope). Don't hand-edit — edit `v3.tsx` then re-run
   the script. Selected via `Shell`'s `variant="aurora"` prop.
-- **`v3.tsx`** — the **redesigned cockpit** (Claude Design "ROI Engine.dc.html" handoff,
-  D15). One self-contained client component, inline styles (Atlas indigo shell). 7 pages:
-  Overview · Google · Meta · Shopify · Runs · Activity · Approvals; GA4-style date toggle;
-  honest two-funnel framing; **function-label agents** (RI/CP/MB/LP/MA, D16 amendment); logo
-  lockup (`/roi-engine-logo.png`) + account dropdown (Profile/Settings/Help/Log out);
-  dummy "The Astro Time" data in ₹. **This is the live look.**
+- **`v5.tsx`** (`EngineV5`) — **THE LIVE COCKPIT** (D19). Implements the **engine_design_new**
+  "Dutask-style" handoff: 3-zone chrome (76px icon rail + 296px secondary panel with **real
+  Google/Meta/Shopify logos** + 70px top bar), navy ink / indigo `#4F5BD5` accent / gold ROI mark,
+  Poppins + DM Mono. Pages (`page` state): Overview (two-funnel hero, KPI sparklines, source cards,
+  spend-vs-returns, 4 signals, dark engine bar) · Google/Meta/Shopify · Runs (THE LOOP + active run +
+  history) · Activity · Approvals (interactive Approve/Reject → rail badge). Self-contained, inline
+  styles, demo "The Astro Time" data. Rendered by `Shell` (atlas). Real logos from `public/logos/`.
+- **`v3.tsx`** — the **previous cockpit** (Claude Design "ROI Engine.dc.html" handoff, D15). One
+  self-contained client component, inline styles (Atlas indigo shell). 7 pages; GA4-style date toggle;
+  two-funnel framing; function-label agents (D16). **Legacy — superseded by v5 (D19); kept importable.**
+- **`v4/EngineV4.tsx` + `v4/page.tsx`** — **"ROI Studio"** demo: a **Dutask-inspired** (Behance ref)
+  design exploration at route **`/engine/v4`**. Modern PM-dashboard aesthetic (violet accent, rounded
+  cards, kanban Campaign board, task-style Approvals, sparkline stat cards, donut). Same ad-ops demo
+  data as v3, brand-new visual language; **fully self-contained**, not wired to Shell/v3/aurora
+  (2026-06-16). Demo/exploration only.
 - `Dashboard.tsx` — **legacy v2 shell, no longer the route** (kept for reuse; `Gate` is
   exported from here). Token gate / demo bypass; **theme state** (light/dark,
   localStorage-persisted); icon sidebar + user chip; topbar (integration chips · lens
@@ -146,7 +164,8 @@ Keep this in sync when files are added/moved/removed.
 ## Docs & repo layout
 - `documentation/` — project specs (moved from root 2026-06-15, D18): `ARCHITECTURE.md` (data
   flow + screens), `ENGINE.md` (operator guide + credential steps), `DEVELOPMENT.md`
-  (edit→verify→deploy loop), `GITHUB-PAGES.md` (live static-export URLs).
+  (edit→verify→deploy loop), `GITHUB-PAGES.md` (live static-export URLs), **`TICKETS.md`**
+  (Jira-style tickets/approvals board + granular permission model — D21).
 - Root (kept): `README.md`, `CLAUDE.md` (Claude-Code entry), `SECURITY.md` (threat model +
   go-live checklist — GitHub special file), `.env.example` (engine block).
 - `project-memory/` — this alignment layer.

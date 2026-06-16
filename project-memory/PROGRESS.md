@@ -4,6 +4,266 @@ Convert relative dates to absolute. Newest changelog entry on top.
 
 ## Changelog
 
+### 2026-06-17 · Dark mode + header contrast · login gate/user-storage · integrations payments · Login nav · 80/90% zoom
+**Dark mode (cockpit) — D24.** Retrofitted `v5.tsx` with a full light/dark theme. The ~18 colour tokens
+became CSS variables (`THEME_CSS` defines a light set on `.v5root` + a dark set on
+`.v5root[data-theme="dark"]`); ~30 scattered hex literals were mapped to those vars (a parallel workflow
+first classified all 183 colour usages so nothing was missed). Split the overloaded `NAVY` → `--btn`
+(navy buttons/chips/tooltip, lifts in dark) vs new `INK`=`--ink` (primary text, flips); cards get a
+`--card-bd` border in dark for separation. **Sun/moon toggle** in the top bar; theme persists to
+`localStorage` (`v5theme`) + honours `prefers-color-scheme`; `prefers-reduced-motion` respected.
+**Header-contrast fix** (user: "headers too light") — `monoLabel` now uses `--label` (#5E6678 light, vs
+the old washed-out #AAB2C3). Headless-verified Overview + Tickets in both modes, no errors.
+**Login flash fix** (`Shell.tsx`) — gated all render paths on `ready` so the cockpit never flashes before
+the sign-in screen (user-reported).
+**Login user-storage + demo gate** — `Login.tsx` persists the signed-in user to `localStorage`
+(`roi_user`) on Create-account / Sign-in / Continue-with-Google; demo `/engine` now **requires login**
+(Shell gates the cockpit on the stored user), session survives reloads, **sign-out clears it**. Verified
+the full flow (gate → login → cockpit → persist).
+**Landing — Login button** — homepage + `/integrations` nav "Book your audit" pill → **Login** →
+`/engine?login=1` (hero/form/popup audit CTAs kept as conversion).
+**Integrations — payments** — added a **Payments & subscriptions** section to `/integrations` with
+**Stripe, Razorpay, PayPal, UPI** (recurring-revenue partners; mirrors the cockpit subscriptions stream).
+**Default zoom** — cockpit root `zoom:.8` (height/width ÷.8 → `125vh`/`125vw` to fill), login content
+`zoom:.9` via a `.lg-stage` wrapper.
+`npm run verify` clean throughout; local only. **Production deploy still pending the user's target choice
+(roilabs.in marketing vs the engine demo).**
+
+### 2026-06-17 · Login: animated gold-glow backdrop
+Added a subtle animated background to the login (`Login.tsx`, CSS-only): a `.lg-bg` layer behind the card
+with **3 drifting gold/amber glow orbs** (blurred radial gradients, 20–32s float+scale loops), a slow
+rotating **conic light sweep**, and a faint masked **grid** that drifts — all ROI Labs gold at low opacity
+so the card stays readable. Foreground (logo/card/footer) lifted to `zIndex:1`; `prefers-reduced-motion`
+disables all of it. Headless-verified (3 orbs + sheen + grid present, no page errors); `npm run verify`
+clean.
+
+### 2026-06-17 · Login reskinned to the landing-header charcoal + logo fix
+Login (`Login.tsx`) now sits on the **landing-page header colour** — the charcoal-brown of the homepage
+nav capsule (`.nv` = `rgba(26,23,18,.94)` ≈ `#1A1712`), per user ("add the header background colour as
+background for login page"). Background → `radial-gradient(#241e14 → #141009)`; card/fields retinted to the
+warm-charcoal family (`#1e1a12` / `#19150d`, borders `#33301f`/`#34301f`); **primary actions → ROI Labs
+gold** (`#FACC15` on `#1A1712` ink), matching the landing's gold primary button; links/toggles gold.
+**Logo fix** ("logo not visible"): the old `roi-mark.png` was cropped by `objectFit:cover` in a 34×34
+square (only "RO" showed). Now uses the landing header's **`roi-logo-dark.png`** (gold ROI + white LABS,
+built for dark bg) rendered uncropped (`height:38, width:auto`) + a divider + "Engine". Headless-verified:
+logo loads (1080×766, no failed requests), both Sign in / Create account views render, no page errors;
+`npm run verify` clean; `/engine?login=1` 200. Local only.
+
+### 2026-06-16 · Runs scoped to Audit + Creative · login redesign · GA4 Overview built — D23
+**Runs = Audit + Creative only (D23, revises D22's 4-step loop).** Removed **Launch** + **Optimize** from
+the Runs step-runner — they are not autonomous "runs" (Launch = operator action *post-approval*; Optimize =
+automated). `v5.tsx`: `STEPS` → 2 cards (Run audit / Run creative; grid `repeat(2, minmax(0,380px))`); panel
+**THE LOOP** → Audit (done) / Creative (active); Runs subtitle → "Audit → Creative"; dead `LOOP` const
+trimmed; `RUN_HISTORY` + the Overview **engine-bar** reworded to audit/creative ("Creative phase", "Last
+audit … surfaced 3 opportunities"). Headless-verified the Runs screen is pure (no Launch/Optimize text).
+- *Landing page:* the marketing **"How it works"** still shows the full **4-stage service funnel**
+  (Research → Creative → Launch → Optimize) — that is the customer-facing sales narrative (the team does
+  launch + optimize), **left intact pending a call** on whether to mirror the engine's 2-step loop.
+- **Login redesign** (`Login.tsx`) → **centered single-card** (replaced the split-screen cockpit-preview),
+  per a Hookmaster-style reference: ROI Engine logo+wordmark, Continue-with-Google, email/password with
+  field icons + show/hide, **Sign in ⇄ Create account** toggle (Full Name + ToS checkbox on signup),
+  operator admin-token link preserved. Both views headless-verified; no page errors.
+- **GA4 audience on Overview** (closes D22's last frontend item) — new `Ga4Audience` block: GA4 KPI row
+  (Sessions / Active users / Engagement rate / Conversions), **demographics** (age brackets + gender split),
+  **acquisition channels**, **device** tap-to-filter, **segment** chips (All / New / Returning). Reacts to
+  the Overview date range *and* its own filters (verified: Returning → Sessions 86K→31K, Engagement 62%→79%).
+  All modeled; live GA4 connector later.
+- **Member rename:** `tickets.ts` **Rahul Dhali → Ishaan Gupta** (initials RD→IG) everywhere (real name).
+`npm run verify` clean throughout; `/engine` and `/engine?login=1` 200. Local only.
+
+### 2026-06-16 · Runs = interactive step-runner (frontend-first; backend later) — D22
+Built the **Runs step-runner** frontend per D22 (user: "fully functional & interactable frontend first,
+backend later"). `v5.tsx` Runs screen → **THE LOOP · RUN A STEP**: four step cards, each runs per its
+rule —
+- **Audit** [Run audit] → "Auditing…" generating state → **Audit report** (HEALTH 52/100 + 4 typed
+  opportunities with impact chips). Each finding has **Create ticket** → adds an OPEN ticket to the board.
+- **Creative** [Run creative] → "Generating…" → **3 AI creative variants** (placeholder image cards) +
+  **Submit 3 for approval** → adds an AWAITING creative ticket.
+- **Launch** → **[Post-approval →]** (gated, links to the board — launches only after a ticket is
+  approved, per D21).
+- **Optimize** → **[● Automated]** (runs after results).
+Wired to `setTickets`/`viewer` so runs feed the tickets board (closes the loop with D21). All mock data
++ real interactions (`running`/`audit`/`creatives`/`used` state); backend (real agents + Anthropic /
+image-gen) later. `npm run verify` clean (fixed a step-id union type error); headless-verified all four
+behaviors. Local only. Remaining frontend: **GA4 data + demographics + filters on Overview** (next).
+
+### 2026-06-16 · v5 cockpit: section-aware side panel + Overview trims (+ new reqs spec'd)
+**Built this turn (`v5.tsx`):**
+- **Section-aware secondary panel** — the 296px panel now switches content by section (store card stays
+  on top in all): Overview/Sources → CONNECTED SOURCES + ENGINE spend; **Approvals → Tickets menu**
+  (VIEWS: All/My approvals · BY TYPE: Budget/Creative/Campaign/Tracking with counts · TEAM list) that
+  **filters the board** via a `tfilter` state (verified: Creative → only AT-141); Runs → THE LOOP +
+  recent runs; Activity → agents list.
+- **Overview trims** (user requests): removed the **tabs** (Overview/Sources/Runs), the whole **store
+  header** (name + BLENDED + MER bar + source avatars + "View approvals"), and the page-header
+  **AstroTime chip**. The orphaned date-range row left a **blank band** → moved the **7D/28D/90D toggle
+  into the hero card** (top-right by the chart). Rail brand = ROI Labs; store = AstroTime logo
+  (white card); rail icons collapse the panel; chart hover tooltip; real payment logos.
+`/engine` 200, headless-verified, no errors. Local only.
+
+**NEW requirements — spec'd, NOT yet built (see D22):**
+- **Runs as a step-runner:** operator picks a step to run — **Audit** → model generates analytics from
+  current DB data/inputs; **Creative** → generate AI creatives (images); **Launch** → operator action,
+  **post-approval only**; **Optimize** → automated/after. (Involves the engine agents + Anthropic /
+  image-gen — a backend build; demo-UI first.)
+- **GA4-type data + demographics + filters on Overview:** add GA4 metrics (sessions, conversion rate,
+  funnel) + **age/gender/network demographics** (the engine's `/api/engine/breakdowns` + GA4 already
+  expose these) + filters. Wire into `cockpit-data.ts` (real where available, est otherwise).
+
+### 2026-06-16 · Spec'd Tickets/Approvals (Jira-style) + granular access — building next
+Designed the change-control workflow + access model before building (user asked to structure + log it
+first). New canonical spec **`documentation/TICKETS.md`** + decision **D21**. Summary: a **Jira-style
+board** (Open · Awaiting approval · Approved · Done) replaces the static Approvals screen; Operators
+(ROI Labs / the client's ad-ops human) create tickets from engine insights, Approvers (client/admin)
+sign off, Viewers consume analytics — **same board, two modes** (managed agency↔client, or standalone
+single-operator). **Granular permissions** (chosen): atomic capabilities (`tickets.create`,
+`approve.budget|creative|campaign|tracking`, `actions.execute`, `members.manage`, …), optionally
+channel-scoped; **roles = preset bundles** (Admin/Operator/Viewer) **+ per-member grants** (e.g. a
+finance lead = Viewer + budget-approver). Ticket **type** → required `approve.*`. Flow mirrors the
+engine's gated-mutation + audit-log model (D2/D3). **Build is demo-first** (seeded members/tickets +
+a "View as role" switcher; live auth wiring later).
+**BUILT (same session):** `src/app/engine/tickets.ts` (Permission/Role/Ticket types, `ROLE_PERMS`,
+`can()`/`canApprove()`/`effectivePerms()`, `APPROVE_FOR`, seeded MEMBERS [ROI Labs operator + client
+admin + budget-approver + creative-approver + viewer] + 6 SEED_TICKETS across columns/types). `v5.tsx`
+Approvals screen → **Jira board** (`TicketsBoard`): 4 columns (Open · Awaiting approval · Approved ·
+Done), typed ticket cards (key, cap bar, channel logo, reporter→approver avatars), a right **detail
+drawer** with role-gated **Submit / Approve / Reject / Request-changes / Execute** + activity/comments,
+a **"Viewing as" role switcher**, and **+ New ticket** (gated by `tickets.create`). Rail "Approvals"
+title → "Tickets". `npm run verify` clean. **Granular gating headless-verified:** Budget-approver →
+budget ✓ / creative ✗; Viewer → ✗; Operator → ✗ (no self-approve). Local only. NB old `Approvals`
+fn + `APPROVAL_CARDS` left unused (harmless). Next: live wiring (member-from-auth, server `can()`
+re-checks, tickets↔`engine_actions`) + create-from-insight on Overview signals.
+
+### 2026-06-16 · v5 cockpit: real logos (ROI Labs + AstroTime), white store card, collapse-on-rail-icon
+Branding + UX polish on the v5 cockpit:
+- **Rail brand mark** → real **ROI Labs** logo (`public/logos/roi-mark.png` from `brand-kit/logos/
+  roi-labs--mark.png`) on the navy chip — the product brand up top (was a styled "R", briefly AstroTime).
+- **Store** → real **AstroTime** logo (`public/logos/astrotime.png`, the purple zodiac mark) replaces the
+  "AT" avatar in the panel store card + both page-header store chips; **removed the
+  `theastrotime.myshopify.com` URL** from those tabs. Panel **store card background → white** (border +
+  soft shadow, dark text) per request.
+- **Collapsible panel via the rail:** clicking the **active** left-rail nav icon toggles the 296px panel
+  (collapse/expand) — **removed the separate top-bar toggle button** (user: "don't add a separate icon").
+Verified headless (URL gone, active-icon collapse+re-expand, no errors). Local only.
+
+### 2026-06-16 · v5 cockpit: REAL data + subscriptions revenue + interactive range + collapsible panel
+Four-part upgrade turning the v5 cockpit from static demo into a live, interactive tool.
+- **Real data (live):** new server aggregator **`src/lib/engine/cockpit-data.ts`** (`getCockpitData`)
+  pulls REAL **Shopify** (orders/revenue/AOV — the revenue truth) + **Google Ads** (spend/conversions)
+  once over the max window and derives 7D/28D/90D aggregates from the daily series (2 API calls).
+  `page.tsx` fetches it via `unstable_cache` (revalidate 600s → `/engine` is ISR, refreshes every 10m)
+  with a try/catch fallback to modeled estimates (so the static Pages demo / CI still render). Verified:
+  cockpit shows the **real ₹1.88L / 247 orders / ₹760 AOV** (28d) — not the old ₹42.8L placeholder.
+  Wired `page.tsx → Shell(cockpit prop) → EngineV5(cockpit)`.
+- **Subscriptions as a primary revenue source:** Overview now frames **two revenue streams — Shopify
+  one-time purchases + recurring app-purchase subscriptions** (Stripe · PayPal · Razorpay · UPI). Added
+  a Subscriptions source card (MRR/active/provider chips), a Subscription-MRR KPI, and a subscriptions
+  row in "where spend goes → by outcome". **Estimated** (38% of store rev, India-weighted split) until
+  the processors are wired — real Stripe/PayPal logos in `public/logos/`, styled chips for Razorpay/UPI.
+- **Interactive date range:** the 7D/28D/90D toggle now drives **all** metrics + the chart (each range
+  is a real aggregate from the daily series). Verified 28D ₹1.88L → 90D ₹2.16L on click.
+- **Collapsible panel:** the 296px secondary panel toggles via a button in the top bar (`panelOpen`).
+- **LIVE / EST badges** distinguish real (Shopify, Google) from estimated (Meta, subscriptions) data
+  per the user's "fill estimations" ask. Decision **D20**. `npm run verify` clean; headless-verified all
+  four behaviors. NB the real Google account is store search/PMax (not app-installs) — reframed the
+  Overview from "two funnels (app/store)" to "revenue streams + ad spend driver" to match reality.
+
+### 2026-06-16 · v5 cockpit: ROI Labs brand yellow in logo/wordmark (+ Login headline font fix)
+Swapped the handoff's muted gold `#D9A441` → **ROI Labs brand yellow `#FACC15`** (from
+`brand-kit/tokens.json`) via the `GOLD` token in `v5.tsx` + `Login.tsx` — applies to the navy rail "R"
+mark, the "ROI" wordmark (panel + Login + preview), and the Login headline "measured in revenue."
+Bold weight keeps yellow "ROI" legible on the white panel. **Also fixed a real bug:** the Login `<h1>`
+was rendering in a serif (it inherited the marketing site's global `h1` Fraunces rule) — added inline
+`fontFamily: Poppins` so the headline is the correct brand sans. Verified via headless (h1 font =
+Poppins; yellow renders on navy/white/dark). Local only.
+
+### 2026-06-16 · v5 cockpit: production polish — hover feedback + removed irrelevant chrome
+User reported the cockpit felt "unresponsive / broken" — root cause was twofold: (1) a **stale browser
+tab** bound to the dev server that got restarted during the production build (server was healthy;
+verified rendering + nav interactivity Overview→Approvals→Runs + fonts loaded + build passing via
+headless), and (2) **`v5.tsx` had no hover/interaction feedback** (the handoff specified hover states
+everywhere; I'd shipped none), so clicking felt dead even though it worked. Fixes:
+- **Added hover feedback** (CSS classes in the `<style>` block): nav icons (`.v5-nav` bg+accent),
+  source rows (`.v5-src`), cards lift (`.v5-card`), tabs (`.v5-tab`), navy buttons (`.v5-navy`→#28345a),
+  Reject (`.v5-ghost`→red), accent button (`.v5-accent` brightness), topbar icons (`.v5-ic`).
+- **Removed irrelevant/redundant elements:** the duplicate "Engine" rail icon (mapped to Runs like the
+  Runs icon), the "Connect store" dashed placeholder, the "+1" phantom source avatar, the "Signals" tab
+  (no real destination; tabs now Overview/Sources/Runs), and the decorative "⋮" menus on signal cards.
+`npm run verify` clean; headless-verified (no Connect store / +1 / Signals; no console errors). Tell the
+user to **hard-refresh** the stale tab. Local only. http://localhost:3002/engine
+
+### 2026-06-16 · New cockpit design (v5) from engine_design_new handoff — all pages
+Implemented the **`engine_design_new/design_handoff_roi_engine`** Claude Design handoff (a "Dutask-style"
+redesign of the cockpit) as the **new `/engine` look**, across every page. Same product content/IA +
+demo data — new friendly, rounded, card-based aesthetic (navy `#1B2440` ink, indigo `#4F5BD5` accent,
+gold ROI mark, **Poppins + DM Mono**). New file **`src/app/engine/v5.tsx`** (`EngineV5`, self-contained,
+inline styles); **`Shell.tsx` now renders `EngineV5`** for the atlas/default cockpit (was `EngineV3`;
+v3/v3aurora kept as legacy). **`Login.tsx` rewritten** to the handoff's dark split-screen (gold headline
+"measured in revenue", Continue-with-Google/email, admin-token path preserved, animated cockpit preview).
+- **Shared chrome:** 76px icon rail (navy "R", nav + red approvals badge) · 296px secondary panel
+  (ROI Engine wordmark, store card, **CONNECTED SOURCES with real Google/Meta/Shopify logos**, daily-spend
+  card) · 70px top bar (search, synced pill, bell, user).
+- **Screens:** Overview (two-funnel hero + area chart, KPI sparkline cards, two source cards, "where spend
+  goes vs returns", 4 attention signals, dark engine bar), Approvals (amber banner + 3 gated cards with
+  cap meters; Approve/Reject **interactive** — decrements the rail badge), Runs (THE LOOP 4 stages, active
+  Run #142 task rows, run history), Google/Meta/Shopify source pages (KPI cards + breakdown lists, new
+  style), Activity (agent log). Nav via rail + clickable panel sources + Overview tabs (`page` state).
+- **Real logos** from `public/logos/{google.jpg,meta.png,shopify.svg}` (README said swap lettermarks for
+  real logos) — rendered in white rounded chips everywhere a source appears.
+Decision logged as **D19**. `npm run verify` clean (also fixed a pre-existing v4 `Spark fill?: string`→
+`boolean` type error that only surfaced in the full build). All pages headless-verified. Local only.
+Live: **http://localhost:3002/engine** (+ `?login=1` for sign-in). `/engine/aurora` still on legacy v3.
+
+### 2026-06-16 · New "ROI Studio" demo — Dutask-inspired dashboard (route /engine/v4)
+Built a **separate design exploration** of the cockpit from a Behance "Dutask" project-management
+reference (user asked for a separate demo design "on a different localhost"). Modern PM-dashboard
+aesthetic: soft rounded white cards, **violet accent** (`#6C5CE7`), kanban board, task-style
+approvals, sparkline stat cards, donut. Same ad-ops demo data ("The Astro Time"), brand-new visual
+language — **fully isolated, doesn't touch v3/aurora**. New files: `src/app/engine/v4/EngineV4.tsx`
+(self-contained client component, inline styles, Plus Jakarta Sans) + `src/app/engine/v4/page.tsx`
+(route, themeColor `#F5F6FA`). Sections: sidebar (ROI Studio logo, active violet pill, "Engine active"
+promo card), greeting topbar (search/bell/avatar), 4 sparkline stat cards (revenue/ROAS/spend/installs),
+Performance area chart (rev vs spend · 7/28/90 tabs), Spend-by-source donut (Blended MER center),
+**kanban Campaign board** (In review/Live/Optimizing with platform/priority/assignee/progress),
+Approvals task-list (checkbox toggle + Approve), Activity feed + agent-avatar stack. Interactions via
+`useState` (nav, range, approval checkboxes). **Local: http://localhost:3002/engine/v4** (200;
+headless-verified top + bottom). Reference had no extractable specs (Behance is image-only) — built
+from the modern-PM-dashboard genre. Local only; not pushed. NB "different localhost" delivered as an
+isolated route on the same dev server — can run on a dedicated port on request.
+
+### 2026-06-16 · Cockpit sidebar: white + 3 collapsible sections + Astro logo
+`v3.tsx` — reworked the sidebar (supersedes the same-day warm-dark color change below):
+- **Background → white** (`#FFFFFF`, `borderRight #ECEDF1`); flipped all sidebar text to light-theme
+  (inactive nav `#5B5F6B`; section headers `#8A8F9A`;
+  footer text darkened; avatar hover `rgba(15,17,28,.06)`).
+- **3 collapsible primary sections** — Overview · Sources · Engine — each a **text-only header (no
+  icon) + chevron** that toggles a dropdown of its items (`openSec` state, all open by default).
+  Overview → [Overview]; Sources → Google/Meta/Shopify; Engine → Runs/Activity/Approvals. Driven by a
+  new `sections` array (`iconKind` picks NavIcon vs SourceIcon; items keep their icons).
+- **The Astro Time logo**: new `AstroMark` SVG component (purple zodiac wheel — 12 sign glyphs + center
+  star) replaces the generic "T" initial in the topbar account badge (removed unused `clientInitial`).
+  NB: recreated as SVG because the attached image's bytes weren't accessible from chat — swap in the
+  exact PNG later if preferred.
+Regenerated `v3aurora.tsx` (0 residual tokens; aurora sidebar also goes white, astro mark stays
+purple). Both routes 200; verified via headless screenshot. Local only.
+
+### 2026-06-16 · Cockpit: sidebar = roilabs header color + funnel cards moved up
+`v3.tsx` (Overview) — two tweaks per request:
+- **Sidebar background** `#1E1B4B` (deep indigo) → **`#1A1712`**, matching the landing-page header
+  (`.nv` = `rgba(26,23,18,.94)` in `aurora.css`). Updated the palette comment + the aurora remap key
+  (`#1A1712`→`#1A1710`) and regenerated `v3aurora.tsx` (0 residual Atlas tokens; aurora sidebar
+  unchanged at `#1A1710`).
+- **Reordered Overview**: the two **funnel cards** (Store · Meta → Shopify / App · Google) now render
+  **above** "Where spend goes vs what it returns" (was below it), directly under the KPI strip.
+Both `/engine` + `/engine/aurora` 200; verified via headless screenshot. Local only (not pushed).
+
+### 2026-06-15 · Homepage lead popup: 20s timer only (dropped scroll trigger)
+`AuroraHome.tsx` — the lead popup ("Put AI to work on your paid media") was opening after **20s OR
+50% scroll depth**, so scrolling fired it early. Per request, removed the `scrollDepth` trigger (its
+function + the `scroll` listener add/remove) so it now opens **only after 20s**, still once per session
+(`sessionStorage` `roi_popup_shown`); Escape / overlay-click / close-button dismiss unchanged. Local
+only (not pushed). Re-test in a fresh tab/incognito — the timer is per-session.
+
 ### 2026-06-15 · Repo restructure (clean root) + dev-indicator off + push to GitHub
 Tidied the cluttered repo root and pushed the full session's work. **Nothing deleted** — every move
 was `git mv` (history preserved); references updated so nothing breaks.

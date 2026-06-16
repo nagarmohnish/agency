@@ -30,6 +30,10 @@ const L_SF = "/logos/salesforce.png";
 const L_GHL = "/logos/highlevel.jpg";
 const L_PIPE = `<svg width="22" height="22" viewBox="0 0 24 24"><rect width="24" height="24" rx="6.5" fill="#21A84C"/><path fill="#fff" d="M12.6 6.7c-1.3 0-2.3.5-2.9 1.3l-.1-1.1H7.2c0 .6.1 1.2.1 2v9.4h2.6v-3.8c.6.6 1.4.9 2.5.9 2.4 0 4.3-1.8 4.3-4.4 0-2.6-1.7-4.3-4.1-4.3zm-.5 6.5c-1.2 0-2-.9-2-2.2 0-1.3.8-2.1 2-2.1s2 .9 2 2.1c0 1.3-.8 2.2-2 2.2z"/></svg>`;
 const L_AIR = "/logos/airtable.png";
+const L_STRIPE = "/logos/stripe.png";
+const L_PAYPAL = "/logos/paypal.svg";
+const L_RAZORPAY = "/logos/razorpay.png";
+const L_UPI = "/logos/upi.webp";
 
 type Status = "live" | "soon";
 type Integ = { name: string; cat: string; sec: string; desc: string; status: Status; logo: string; feat?: boolean };
@@ -37,6 +41,7 @@ type Integ = { name: string; cat: string; sec: string; desc: string; status: Sta
 const SEC_ADS = "Ad platforms";
 const SEC_REV = "Revenue & e-commerce";
 const SEC_MEAS = "Measurement & CRM";
+const SEC_PAY = "Payments & subscriptions";
 
 const ITEMS: Integ[] = [
   { name: "Google Ads", cat: "Ads platform", sec: SEC_ADS, status: "live", logo: L_GOOGLE,
@@ -69,11 +74,21 @@ const ITEMS: Integ[] = [
     desc: "Deals, pipeline value and commercial activity mapped back to the campaigns that drove them." },
   { name: "Airtable", cat: "Ops", sec: SEC_MEAS, status: "soon", logo: L_AIR,
     desc: "Creative pipelines, approvals and campaign status aligned with the engine's recommendations." },
+
+  { name: "Stripe", cat: "Payments", sec: SEC_PAY, status: "soon", logo: L_STRIPE, feat: true,
+    desc: "Recurring subscription revenue — MRR, active subscribers and churn — read alongside one-time Shopify orders so the engine optimises to blended revenue, not just first purchase." },
+  { name: "Razorpay", cat: "Payments", sec: SEC_PAY, status: "soon", logo: L_RAZORPAY,
+    desc: "India-first cards, netbanking and subscription billing brought in as a primary recurring-revenue source." },
+  { name: "PayPal", cat: "Payments", sec: SEC_PAY, status: "soon", logo: L_PAYPAL,
+    desc: "Global checkout and recurring billing reconciled into the same revenue truth as the store." },
+  { name: "UPI", cat: "Payments", sec: SEC_PAY, status: "soon", logo: L_UPI,
+    desc: "UPI autopay and one-time collections — India's dominant payment rail — tracked as recurring app-purchase revenue." },
 ];
 
 const SECTIONS = [
   { id: SEC_ADS, sub: "Where spend goes" },
   { id: SEC_REV, sub: "Where revenue is measured" },
+  { id: SEC_PAY, sub: "Where recurring revenue comes from" },
   { id: SEC_MEAS, sub: "Where it all gets attributed" },
 ];
 
@@ -133,7 +148,7 @@ export default function Integrations() {
               <a href="/#plans">Plans</a>
               <a href="/#faq">FAQ</a>
             </div>
-            <a href="/#contact" className="btn btn-pri">Book your audit</a>
+            <a href="/engine?login=1" className="btn btn-pri">Login</a>
           </div>
         </nav>
       </div>

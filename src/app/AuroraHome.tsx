@@ -27,7 +27,7 @@ const HTML = `
     <div class="nv">
       <a href="#top" class="brand"><img src="${BP}/roi-logo-dark.png" alt="ROI Labs" /></a>
       <div class="nv-links"><a href="/#process">How it works</a><a href="/integrations">Integrations</a><a href="/audit">Free audit</a><a href="/#plans">Plans</a><a href="/#faq">FAQ</a></div>
-      <a href="#contact" class="btn btn-pri">Book your audit</a>
+      <a href="/engine?login=1" class="btn btn-pri">Login</a>
     </div>
   </nav>
 </div>
@@ -542,7 +542,7 @@ export default function AuroraHome() {
     };
     if (af) af.addEventListener("submit", onAudit);
 
-    // lead popup — opens after 20s OR 50% scroll depth, once per session
+    // lead popup — opens after 20s, once per session
     const overlay = root.querySelector<HTMLElement>("#popup");
     const closeBtn = root.querySelector<HTMLElement>("#popupClose");
     const POP_KEY = "roi_popup_shown";
@@ -557,10 +557,6 @@ export default function AuroraHome() {
       window.clearTimeout(popTimer);
     };
     const closePopup = () => { if (overlay) overlay.classList.remove("open"); };
-    const scrollDepth = () => {
-      const h = document.documentElement;
-      if ((window.scrollY + window.innerHeight) / (h.scrollHeight || 1) >= 0.5) openPopup();
-    };
     try { if (!sessionStorage.getItem(POP_KEY)) popTimer = window.setTimeout(openPopup, 20000); } catch { popTimer = window.setTimeout(openPopup, 20000); }
     if (closeBtn) closeBtn.addEventListener("click", closePopup);
     const onOverlayClick = (e: MouseEvent) => { if (e.target === overlay) closePopup(); };
@@ -583,7 +579,6 @@ export default function AuroraHome() {
     };
     if (pf) pf.addEventListener("submit", onPopup);
 
-    window.addEventListener("scroll", scrollDepth, { passive: true });
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll, { passive: true });
     window.addEventListener("load", check);
@@ -592,7 +587,6 @@ export default function AuroraHome() {
       window.clearTimeout(offTimer); window.clearTimeout(t1); window.clearTimeout(t2); window.clearTimeout(popTimer);
       window.clearInterval(hiwTimer);
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("scroll", scrollDepth);
       window.removeEventListener("resize", onScroll);
       window.removeEventListener("load", check);
       window.removeEventListener("keydown", onKey);

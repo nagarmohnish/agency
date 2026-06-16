@@ -31,7 +31,7 @@ const MAP = {
   "#A5B4FC": "#E8C25C", "#C7CBE8": "#F0D88E", "#DDE0EE": "#F5E6B8", "#7C73F0": "#C99A1F",
   "#CBD0DA": "#CFC8B6", "#94A3B8": "#B0A892",
   // dark sidebar / strip
-  "#1E1B4B": "#1A1710", "#15123A": "#262017",
+  "#1A1712": "#1A1710", "#15123A": "#262017",
   // status (warm-shift)
   "#16A34A": "#1E9E6A", "#DC2626": "#CC4A3F", "#FCEBEA": "#FBEAE6",
 };
