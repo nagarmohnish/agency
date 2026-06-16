@@ -4,10 +4,10 @@
 // engine_design_new/design_handoff_roi_engine (Overview · Approvals · Runs +
 // shared chrome). Friendly, rounded, card-based; navy ink, indigo accent, gold
 // ROI mark. Real Google/Meta/Shopify logos from /public/logos. Self-contained,
-// demo data for "The Astro Time". This is the /engine cockpit.
+// demo data for "Northwind Goods". This is the /engine cockpit.
 import { useState, useEffect, type CSSProperties, type ReactNode } from "react";
 import type { CockpitData, RangeData, RangeKey } from "@/lib/engine/cockpit-data";
-import { SEED_TICKETS, MEMBERS, COLUMNS, TYPE_META, PRIORITY_C, can, canApprove, memberById, effectivePerms, APPROVE_FOR, type Ticket, type Member, type Status } from "./tickets";
+import { SEED_TICKETS, MEMBERS, COLUMNS, TYPE_META, PRIORITY_C, BRAND, can, canApprove, memberById, effectivePerms, APPROVE_FOR, type Ticket, type Member, type Status } from "./tickets";
 
 const BP = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
@@ -132,7 +132,7 @@ const RUN_HISTORY = [
   { id: "#139", av: "CP", avBg: AMBER_SOFT, avFg: AMBER, t: "Creative — 3 UGC variants generated", s: "Creative production · 1d ago", v: "+₹9K" },
 ];
 
-const DISCLAIMER = "* Modeled — not yet from a live connector. Store conversion rate & sessions come from GA4 (the Shopify Admin API exposes orders, not sessions); Meta figures are projected until the Marketing API connection is approved. Live today for The Astro Time: Google Ads (spend · installs · CPI · campaign types) and Shopify (orders · sales · AOV · products · customers). Other values are realistic placeholders.";
+const DISCLAIMER = `* Modeled — not yet from a live connector. Store conversion rate & sessions come from GA4 (the Shopify Admin API exposes orders, not sessions); Meta figures are projected until the Marketing API connection is approved. Live today for ${BRAND.name}: Google Ads (spend · installs · CPI · campaign types) and Shopify (orders · sales · AOV · products · customers). Other values are realistic placeholders.`;
 
 // mini reusable chart pieces
 function MiniSpark({ d }: { d: string }) {
@@ -310,8 +310,10 @@ export default function EngineV5({ onSignOut, cockpit = null, locked = false }: 
   const Panel = (
     <div style={{ width: 296, background: CARD, borderRight: `1px solid ${LINE}`, display: "flex", flexDirection: "column", flexShrink: 0, overflowY: "auto", padding: "26px 20px", zIndex: 2 }}>
       <div style={{ background: CARD, border: `1px solid ${LINE}`, borderRadius: 14, padding: 12, display: "flex", alignItems: "center", gap: 11, cursor: "pointer", boxShadow: "0 1px 2px rgba(27,36,64,.04)" }}>
-        <span style={{ width: 36, height: 36, borderRadius: "50%", overflow: "hidden", flexShrink: 0, display: "flex" }}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={`${BP}/logos/astrotime.png`} alt="" style={{ width: 36, height: 36, objectFit: "cover", display: "block" }} /></span>
-        <div style={{ flex: 1, minWidth: 0 }}><div style={{ color: INK, fontWeight: 600, fontSize: 14 }}>The Astro Time</div></div>
+        {BRAND.logo
+          ? <span style={{ width: 36, height: 36, borderRadius: "50%", overflow: "hidden", flexShrink: 0, display: "flex" }}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={`${BP}/logos/astrotime.png`} alt="" style={{ width: 36, height: 36, objectFit: "cover", display: "block" }} /></span>
+          : <span style={{ width: 36, height: 36, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg,#6c5ce7,#4f5bd5)", color: "#fff", fontWeight: 700, fontSize: 15, fontFamily: FD }}>{BRAND.mono}</span>}
+        <div style={{ flex: 1, minWidth: 0 }}><div style={{ color: INK, fontWeight: 600, fontSize: 14 }}>{BRAND.name}</div></div>
         <span style={{ color: INK3, fontSize: 18, lineHeight: 1 }}>⋮</span>
       </div>
       {page === "approvals" ? ticketsBody : page === "runs" ? runsBody : page === "activity" ? activityBody : sourcesBody}
@@ -319,11 +321,11 @@ export default function EngineV5({ onSignOut, cockpit = null, locked = false }: 
   );
 
   const TITLES: Record<Page, { t: string; tag: string; tagC: string; tagB: string; sub: string }> = {
-    overview: { t: "The Astro Time", tag: "BLENDED", tagC: "#3b5bdb", tagB: "var(--blue-soft)", sub: "" },
+    overview: { t: BRAND.name, tag: "BLENDED", tagC: "#3b5bdb", tagB: "var(--blue-soft)", sub: "" },
     profile: { t: "Profile", tag: "ACCOUNT", tagC: ACCENT, tagB: ACCENT_SOFT, sub: "" },
     google: { t: "Google", tag: "APP · VIDEO", tagC: AMBER, tagB: AMBER_SOFT, sub: "App installs & YouTube · last 28 days" },
     meta: { t: "Meta", tag: "STORE FUNNEL", tagC: "#3b5bdb", tagB: "var(--blue-soft)", sub: "Shopify store purchases · last 28 days" },
-    shopify: { t: "Shopify", tag: "REVENUE TRUTH", tagC: GREEN_TX, tagB: GREEN_SOFT, sub: "theastrotime.myshopify.com · last 28 days" },
+    shopify: { t: "Shopify", tag: "REVENUE TRUTH", tagC: GREEN_TX, tagB: GREEN_SOFT, sub: `${BRAND.slug}.myshopify.com · last 28 days` },
     runs: { t: "Runs", tag: "AGENT LOOP", tagC: "#6c5ce7", tagB: "var(--violet-soft)", sub: "Audit → Creative" },
     activity: { t: "Activity", tag: "AUDIT LOG", tagC: INK6, tagB: "var(--line)", sub: "Every agent decision, logged" },
     approvals: { t: "Tickets", tag: "BOARD", tagC: "#6c5ce7", tagB: "var(--violet-soft)", sub: "Propose → approve → execute · role-gated change control" },
@@ -408,7 +410,7 @@ export default function EngineV5({ onSignOut, cockpit = null, locked = false }: 
 
 // ── LOCKED TEASER (post-login on engine.roilabs.in) ────────────────────────────
 function LockGate({ onSignOut }: { onSignOut?: () => void }) {
-  const book = process.env.NEXT_PUBLIC_BOOK_CALL_URL || "https://roilabs.in/#contact";
+  const book = process.env.NEXT_PUBLIC_BOOK_CALL_URL || "https://calendly.com/mohnish-nagar-roilabs/30min";
   return (
     <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", padding: 24, zIndex: 20 }}>
       <div style={{ ...card, maxWidth: 480, width: "100%", padding: 38, textAlign: "center" }}>
@@ -908,7 +910,7 @@ function DCFG(i: number) { return i === 0 ? "var(--green-soft)" : "var(--green-t
 // ── PROFILE ─────────────────────────────────────────────────────────────────────
 function Profile({ viewer, setViewer, onSignOut }: { viewer: Member; setViewer: (m: Member) => void; onSignOut?: () => void }) {
   const [prefs, setPrefs] = useState({ email: true, approvals: true, digest: false });
-  const email = `${viewer.name.toLowerCase().replace(/ /g, ".")}@${viewer.org === "ROI Labs" ? "roilabs.in" : "theastrotime.com"}`;
+  const email = `${viewer.name.toLowerCase().replace(/ /g, ".")}@${viewer.org === "ROI Labs" ? "roilabs.in" : BRAND.slug + ".com"}`;
   const perms = [...effectivePerms(viewer)];
   const groups: [string, string[]][] = [
     ["Analytics & views", perms.filter((p) => p === "analytics.view" || p === "tickets.view")],
@@ -938,7 +940,7 @@ function Profile({ viewer, setViewer, onSignOut }: { viewer: Member; setViewer: 
 
       <div style={{ ...card, padding: 24, marginBottom: 18 }}>
         <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>Account</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>{field("FULL NAME", viewer.name)}{field("WORK EMAIL", email)}{field("ROLE", viewer.role[0].toUpperCase() + viewer.role.slice(1))}{field("WORKSPACE", "The Astro Time")}</div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>{field("FULL NAME", viewer.name)}{field("WORK EMAIL", email)}{field("ROLE", viewer.role[0].toUpperCase() + viewer.role.slice(1))}{field("WORKSPACE", BRAND.name)}</div>
       </div>
 
       <div style={{ ...card, padding: 24, marginBottom: 18 }}>
@@ -949,7 +951,7 @@ function Profile({ viewer, setViewer, onSignOut }: { viewer: Member; setViewer: 
       </div>
 
       <div style={{ ...card, padding: 24, marginBottom: 18 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}><div style={{ fontSize: 16, fontWeight: 600 }}>Workspace · The Astro Time</div><span style={{ fontSize: 12.5, color: INK4 }}>{MEMBERS.length} members</span></div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}><div style={{ fontSize: 16, fontWeight: 600 }}>Workspace · {BRAND.name}</div><span style={{ fontSize: 12.5, color: INK4 }}>{MEMBERS.length} members</span></div>
         {MEMBERS.map((m, i) => (
           <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 13, padding: "13px 0", borderTop: i ? "1px solid var(--line)" : "none" }}>
             {mav(m, 36)}

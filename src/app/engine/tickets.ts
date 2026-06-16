@@ -32,7 +32,7 @@ export const APPROVE_FOR: Record<TicketType, Permission> = {
 
 export interface Member {
   id: string; name: string; initials: string; color: string;
-  org: "ROI Labs" | "The Astro Time"; title: string;
+  org: string; title: string;
   role: Role; grants?: Permission[]; scope?: Channel[]; // grants + optional channel scope (unset = all)
 }
 
@@ -76,12 +76,18 @@ export const TYPE_META: Record<TicketType, { label: string; c: string; bg: strin
 export const PRIORITY_C: Record<string, string> = { high: "#ef6b6b", med: "#c08a2e", low: "#9aa3b5" };
 
 // ── seeded members ─ ROI Labs operator + a client admin + domain approvers + a viewer ──
+// Demo brand — public (supabase-auth) deploys show a generic dummy so no real
+// client name leaks to anyone who logs in; the internal demo keeps "The Astro Time".
+export const BRAND = process.env.NEXT_PUBLIC_ENGINE_AUTH === "supabase"
+  ? { name: "Northwind Goods", slug: "northwind", mono: "N", logo: false }
+  : { name: "The Astro Time", slug: "theastrotime", mono: "A", logo: true };
+
 export const MEMBERS: Member[] = [
   { id: "op", name: "Ishaan Gupta", initials: "IG", color: "#4F5BD5", org: "ROI Labs", title: "Ad ops · Operator", role: "operator" },
-  { id: "admin", name: "Aanya Rao", initials: "AR", color: "#e07b6b", org: "The Astro Time", title: "Founder · Admin", role: "admin" },
-  { id: "fin", name: "Vikram Shah", initials: "VS", color: "#2bbf7a", org: "The Astro Time", title: "Finance · Budget approver", role: "viewer", grants: ["approve.budget"] },
-  { id: "brand", name: "Neha Kapoor", initials: "NK", color: "#c08a2e", org: "The Astro Time", title: "Brand · Creative approver", role: "viewer", grants: ["approve.creative"] },
-  { id: "view", name: "Arjun Mehta", initials: "AM", color: "#8a92f5", org: "The Astro Time", title: "Growth · Viewer", role: "viewer" },
+  { id: "admin", name: "Aanya Rao", initials: "AR", color: "#e07b6b", org: BRAND.name, title: "Founder · Admin", role: "admin" },
+  { id: "fin", name: "Vikram Shah", initials: "VS", color: "#2bbf7a", org: BRAND.name, title: "Finance · Budget approver", role: "viewer", grants: ["approve.budget"] },
+  { id: "brand", name: "Neha Kapoor", initials: "NK", color: "#c08a2e", org: BRAND.name, title: "Brand · Creative approver", role: "viewer", grants: ["approve.creative"] },
+  { id: "view", name: "Arjun Mehta", initials: "AM", color: "#8a92f5", org: BRAND.name, title: "Growth · Viewer", role: "viewer" },
 ];
 export const memberById = (id: string) => MEMBERS.find((m) => m.id === id) ?? MEMBERS[0];
 
