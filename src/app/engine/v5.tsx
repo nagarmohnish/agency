@@ -371,7 +371,7 @@ export default function EngineV5({ onSignOut, cockpit = null, locked = false }: 
   );
 
   return (
-    <div className="v5root" data-theme={theme} style={{ zoom: 0.8, display: "flex", height: "125vh", width: "125vw", overflow: "hidden", fontFamily: FD, color: INK, background: APP, WebkitFontSmoothing: "antialiased" }}>
+    <div className="v5root" data-theme={locked ? "dark" : theme} style={{ zoom: 0.8, position: "relative", display: "flex", height: "125vh", width: "125vw", overflow: "hidden", fontFamily: FD, color: INK, background: locked ? "radial-gradient(130% 120% at 50% -10%, #241e14 0%, #141009 62%)" : APP, WebkitFontSmoothing: "antialiased" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
         ${THEME_CSS}
         @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(43,191,122,.5)}70%{box-shadow:0 0 0 7px rgba(43,191,122,0)}100%{box-shadow:0 0 0 0 rgba(43,191,122,0)}}
@@ -401,9 +401,9 @@ export default function EngineV5({ onSignOut, cockpit = null, locked = false }: 
             {page === "activity" && <Activity />}
             {page === "profile" && <Profile viewer={viewer} setViewer={setViewer} onSignOut={onSignOut} />}
           </div>
-          {locked && <LockGate onSignOut={onSignOut} />}
         </div>
       </div>
+      {locked && <LockGate onSignOut={onSignOut} />}
     </div>
   );
 }
@@ -412,15 +412,18 @@ export default function EngineV5({ onSignOut, cockpit = null, locked = false }: 
 function LockGate({ onSignOut }: { onSignOut?: () => void }) {
   const book = process.env.NEXT_PUBLIC_BOOK_CALL_URL || "https://calendly.com/mohnish-nagar-roilabs/30min";
   return (
-    <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", padding: 24, zIndex: 20 }}>
-      <div style={{ ...card, maxWidth: 480, width: "100%", padding: 38, textAlign: "center" }}>
-        <div style={{ width: 58, height: 58, borderRadius: 16, background: ACCENT_SOFT, color: ACCENT, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 18px" }}>
+    <div style={{ position: "absolute", inset: 0, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, zIndex: 20, background: "radial-gradient(130% 120% at 50% -10%, rgba(36,30,20,.94) 0%, rgba(20,16,9,.96) 62%)", fontFamily: FD }}>
+      {/* same gold-glow texture as the login screen */}
+      <span style={{ position: "absolute", width: 520, height: 520, left: -120, top: -130, borderRadius: "50%", filter: "blur(72px)", background: "radial-gradient(circle,rgba(250,204,21,.20),transparent 70%)", pointerEvents: "none" }} />
+      <span style={{ position: "absolute", width: 460, height: 460, right: -140, bottom: -120, borderRadius: "50%", filter: "blur(72px)", background: "radial-gradient(circle,rgba(240,160,40,.16),transparent 70%)", pointerEvents: "none" }} />
+      <div style={{ position: "relative", zIndex: 2, width: "min(460px, 100%)", background: "#1e1a12", border: "1px solid #33301f", borderRadius: 22, padding: 38, textAlign: "center", boxShadow: "0 30px 80px rgba(0,0,0,.5)" }}>
+        <div style={{ width: 58, height: 58, borderRadius: 16, background: "rgba(250,204,21,.14)", color: GOLD, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 18px" }}>
           <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
         </div>
-        <div style={{ fontSize: 23, fontWeight: 700, letterSpacing: "-.4px", marginBottom: 11 }}>Your revenue cockpit is ready</div>
-        <div style={{ fontSize: 14.5, color: INK4, lineHeight: 1.6, marginBottom: 26, maxWidth: 380, marginLeft: "auto", marginRight: "auto" }}>Book a 20-minute demo call — we&apos;ll connect your Google, Meta &amp; Shopify and unlock live metrics, approvals and the AI ad-ops engine for your store.</div>
-        <a href={book} target="_blank" rel="noopener noreferrer" className="v5-accent" style={{ display: "inline-flex", alignItems: "center", gap: 9, background: ACCENT, color: "#fff", fontWeight: 600, fontSize: 15, padding: "14px 28px", borderRadius: 13, textDecoration: "none" }}>Book a demo call →</a>
-        {onSignOut && <div style={{ marginTop: 20 }}><button onClick={onSignOut} style={{ background: "none", border: "none", color: INK4, fontSize: 13, cursor: "pointer" }}>Sign out</button></div>}
+        <div style={{ fontSize: 23, fontWeight: 700, letterSpacing: "-.4px", marginBottom: 11, color: "#fff" }}>Your revenue cockpit is ready</div>
+        <div style={{ fontSize: 14.5, color: "rgba(255,255,255,.62)", lineHeight: 1.6, marginBottom: 26, maxWidth: 380, marginLeft: "auto", marginRight: "auto" }}>Book a 20-minute demo call — we&apos;ll connect your Google, Meta &amp; Shopify and unlock live metrics, approvals and the AI ad-ops engine for your store.</div>
+        <a href={book} target="_blank" rel="noopener noreferrer" className="v5-accent" style={{ display: "inline-flex", alignItems: "center", gap: 9, background: GOLD, color: "#1A1712", fontWeight: 700, fontSize: 15, padding: "14px 28px", borderRadius: 13, textDecoration: "none" }}>Book a demo call →</a>
+        {onSignOut && <div style={{ marginTop: 20 }}><button onClick={onSignOut} style={{ background: "none", border: "none", color: "rgba(255,255,255,.5)", fontSize: 13, cursor: "pointer" }}>Sign out</button></div>}
       </div>
     </div>
   );
