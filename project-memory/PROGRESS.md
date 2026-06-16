@@ -4,6 +4,50 @@ Convert relative dates to absolute. Newest changelog entry on top.
 
 ## Changelog
 
+### 2026-06-17 · engine.roilabs.in shipped — brand isolation, Calendly, Google OAuth, redeploy (D25)
+Continuation of the engine.roilabs.in build below — got it production-ready end-to-end.
+- **Env-gated brand (`BRAND` in `tickets.ts`)** so a real client name never shows to public sign-ups:
+  public (supabase) → **"Northwind Goods"** (dummy, gradient monogram, slug `northwind`); internal demo
+  (`DEMO=1`, no auth flag) → **"The Astro Time"** + its logo. `v5.tsx` store card / Overview title /
+  Shopify domain / disclaimer / Profile (workspace + derived email) all read `BRAND.*`; store-card logo is
+  conditional. **Both modes headless-verified** (public: Northwind + monogram + Calendly, no astro;
+  internal: Astro Time + logo).
+- **Calendly**: `LockGate` "Book a demo call" → `NEXT_PUBLIC_BOOK_CALL_URL` default
+  **`https://calendly.com/mohnish-nagar-roilabs/30min`**; opens in a new tab.
+- **Email auth verified working end-to-end** against the live leads Supabase (`gaulosvlnynoxgdjelgm`):
+  signup → instant session → locked teaser (user confirmed "Confirm email" OFF + set Site URL + redirect
+  URLs `engine.roilabs.in/engine` & `localhost:3002/engine`). **Google OAuth** also configured by the user
+  (Google Cloud "Google Auth Platform": create Web client w/ redirect
+  `https://gaulosvlnynoxgdjelgm.supabase.co/auth/v1/callback` → publish; paste into Supabase → Providers →
+  Google) and **tested working** (user logged in via Google).
+- **Redeployed `roi-engine` `--prod`** with all of the above + updated `NEXT_PUBLIC_BOOK_CALL_URL` →
+  Calendly; agency `.vercel` link restored. Code committed + pushed to `nagarmohnish/agency` branch
+  `feat/cockpit-darkmode-login` (2 commits: supabase-auth/teaser, then brand/Calendly).
+- **Remaining (user, one toggle):** Vercel → `roi-engine` → Settings → **Deployment Protection** →
+  disable "Vercel Authentication" → `engine.roilabs.in` goes live (currently 401/404 behind the wall).
+  Optional: delete the headless test user `claude-test-…@example.com` from Supabase → Users.
+
+### 2026-06-17 · engine.roilabs.in — real Supabase accounts + blurred "book a demo call" teaser
+Built the real-auth engine deployment, isolated from roilabs.in. **Code** (committed to
+`nagarmohnish/agency` branch `feat/cockpit-darkmode-login`):
+- `Login.tsx` — real **Supabase auth** (signUp / signInWithPassword / signInWithOAuth google / signOut)
+  behind a `supabaseAuth` prop; busy state + error/confirm handling.
+- `Shell.tsx` — `engineAuthMode()` = `NEXT_PUBLIC_ENGINE_AUTH==="supabase"` **OR** hostname starts with
+  `engine.` → Supabase **session gate**; post-login renders the cockpit **locked**. roilabs.in unaffected.
+- `v5.tsx` — `EngineV5({locked})` → `LockGate`: blurs metrics/sections + overlays a **"Book a demo call"**
+  card (`NEXT_PUBLIC_BOOK_CALL_URL`, default `roilabs.in/#contact`). Both states headless-verified.
+- Auth users live in the **leads Supabase project** `gaulosvlnynoxgdjelgm` (`NEXT_PUBLIC_SUPABASE_*`).
+
+**Infra (done):** new Vercel project **`roi-engine`** (`prj_0gzzlePDEkHcYqY55cNEkClqee2D`, nishmos team),
+separate from `agency`/roilabs.in. Prod env set (`NEXT_PUBLIC_ENGINE_AUTH=supabase`, `…_DEMO=1`,
+`…_SUPABASE_URL/ANON`, `…_BOOK_CALL_URL`). Deployed `--prod`. Domain **`engine.roilabs.in`** added —
+**DNS auto-managed** (roilabs.in on Vercel nameservers, no record to create). `.vercel` link restored to
+`agency` (redeploy roi-engine via `vercel link --yes --project roi-engine` → `vercel --prod` → relink back).
+
+**⏳ Blocked on user (dashboard):** (1) roi-engine **Deployment Protection ON** → 401/404; disable at
+Vercel → roi-engine → Settings → Deployment Protection. (2) **Supabase** (`gaulosvlnynoxgdjelgm`): enable
+Email auth, optionally turn OFF "Confirm email", set Site URL `https://engine.roilabs.in` + redirect `…/engine`.
+
 ### 2026-06-17 · Dark mode + header contrast · login gate/user-storage · integrations payments · Login nav · 80/90% zoom
 **Dark mode (cockpit) — D24.** Retrofitted `v5.tsx` with a full light/dark theme. The ~18 colour tokens
 became CSS variables (`THEME_CSS` defines a light set on `.v5root` + a dark set on
@@ -26,8 +70,15 @@ the full flow (gate → login → cockpit → persist).
 **Stripe, Razorpay, PayPal, UPI** (recurring-revenue partners; mirrors the cockpit subscriptions stream).
 **Default zoom** — cockpit root `zoom:.8` (height/width ÷.8 → `125vh`/`125vw` to fill), login content
 `zoom:.9` via a `.lg-stage` wrapper.
-`npm run verify` clean throughout; local only. **Production deploy still pending the user's target choice
-(roilabs.in marketing vs the engine demo).**
+`npm run verify` clean throughout.
+**Deployed (2026-06-17).** Code committed + pushed to `nagarmohnish/agency` branch
+**`feat/cockpit-darkmode-login`**. Then a **preview** deploy of the `agency` Vercel project with
+`--build-env NEXT_PUBLIC_ENGINE_DEMO=1` →
+**https://agency-fijow8n29-nishmos-projects.vercel.app** (landing + login + full demo cockpit, public,
+no auth wall). ⚠️ The `agency` Vercel project's **production** domain is **roilabs.in** — so this was a
+*preview* (`target:null`) deliberately, to keep the roilabs.in apex untouched per the user. To go live on
+roilabs.in: `vercel deploy --prod`; for a subdomain (e.g. `app.roilabs.in`): add it in the project's
+Domains + a CNAME → `cname.vercel-dns.com`.
 
 ### 2026-06-17 · Login: animated gold-glow backdrop
 Added a subtle animated background to the login (`Login.tsx`, CSS-only): a `.lg-bg` layer behind the card

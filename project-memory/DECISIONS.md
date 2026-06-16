@@ -336,3 +336,34 @@ Refines D22's loop and revisits the auth screen, both at the user's request:
   GA4 KPIs, age/gender demographics, acquisition channels, device tap-to-filter, All/New/Returning segment
   chips — frontend-first with modeled data that reacts to the date range + filters; live GA4 connector
   later (still per D20's LIVE/EST convention).
+
+### D24 · Cockpit dark mode via CSS-variable tokens; 80%/90% default zoom (2026-06-17)
+The v5 cockpit got a full **light/dark theme** + a top-bar **sun/moon toggle** (persisted to `localStorage`
+`v5theme`, honours `prefers-color-scheme`). Implemented by converting the ~18 colour-token consts to **CSS
+variables** (`THEME_CSS` defines a light set on `.v5root` + a dark set on `.v5root[data-theme="dark"]`);
+~30 scattered hex literals were mapped to those vars after a workflow classified all 183 colour usages.
+The overloaded `NAVY` was **split** into `--btn` (navy buttons/chips/tooltip; lifts in dark, keeps white
+text) vs a new `INK`=`--ink` (primary text; flips). Cards get a `--card-bd` border in dark for separation.
+**Header-contrast fix** (user: "headers too light"): `monoLabel` now uses `--label` (#5E6678 light, far
+darker than the old #AAB2C3). Also set a default **80% zoom** on the cockpit root (`height/width ÷.8`) and
+**90%** on the login (`.lg-stage` wrapper) per the user's "make it N% of a Chrome desktop view".
+
+### D25 · engine.roilabs.in = real Supabase accounts + blurred "book a demo call" teaser, on a separate Vercel project (2026-06-17)
+A public, lead-gen front door for the engine — **isolated from the roilabs.in marketing site**.
+- **Auth model:** real **Supabase email + Google accounts** (not the demo localStorage gate, not the
+  admin-token gate). Activated when `NEXT_PUBLIC_ENGINE_AUTH==="supabase"` **or** the host starts with
+  `engine.` (`Shell.engineAuthMode()`). Accounts live in the **leads** Supabase project
+  `gaulosvlnynoxgdjelgm` (that's what `NEXT_PUBLIC_SUPABASE_*` + `getSupabase()` point at).
+- **Post-login = locked teaser:** the cockpit renders **`locked`** → `LockGate` blurs the metrics/sections
+  and overlays a **"Your revenue cockpit is ready → Book a demo call"** card linking to the user's
+  **Calendly** (`NEXT_PUBLIC_BOOK_CALL_URL`, default `calendly.com/mohnish-nagar-roilabs/30min`). This
+  turns sign-ups into demo-call leads rather than giving full access.
+- **Brand isolation (`BRAND` in `tickets.ts`):** public (supabase) deploys show a **dummy company**
+  ("Northwind Goods", monogram, slug `northwind`) so **no real client name leaks to anyone who logs in**;
+  the **internal demo** (`DEMO=1`, no auth flag) keeps the real **"The Astro Time"** + its logo. Every
+  brand spot in `v5.tsx` (store card, Overview title, Shopify domain, disclaimer, Profile) reads `BRAND.*`.
+- **Why a separate Vercel project (`roi-engine`) not the agency project:** one Vercel project serves one
+  production build/env to all its domains, and the agency project's production domain **is roilabs.in**.
+  A separate `roi-engine` project (env `NEXT_PUBLIC_ENGINE_AUTH=supabase`, `…_DEMO=1`, Supabase keys,
+  Calendly) with `engine.roilabs.in` attached keeps roilabs.in 100% untouched. DNS is auto (roilabs.in on
+  Vercel nameservers). **Go-live still needs the user to disable Deployment Protection on `roi-engine`.**

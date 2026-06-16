@@ -61,6 +61,25 @@ Shopify orders. The most defensible version of "measured in revenue, not ROAS."
 - Helper: `scripts/google-oauth.mjs` mints the Google Ads refresh token (loopback
   OAuth flow on localhost:53682).
 
+### engine.roilabs.in deployment (D25, 2026-06-17)
+- **Two Vercel projects, same repo, different env** (under team `nishmos-projects` /
+  `team_scI4Xid4VRlWuh35Sq5Z9AzF`, Vercel CLI authed as `nagarmohnish`):
+  - **`agency`** (`prj_2rQDxonqnO9VAVJFPUgALg6Ao0pj`) → production domain **roilabs.in** (marketing,
+    token-gated engine). The repo's `.vercel` is linked here by default.
+  - **`roi-engine`** (`prj_0gzzlePDEkHcYqY55cNEkClqee2D`) → domain **engine.roilabs.in**; env
+    `NEXT_PUBLIC_ENGINE_AUTH=supabase`, `NEXT_PUBLIC_ENGINE_DEMO=1`, `NEXT_PUBLIC_SUPABASE_URL/ANON`
+    (leads project), `NEXT_PUBLIC_BOOK_CALL_URL=https://calendly.com/mohnish-nagar-roilabs/30min`.
+  - To deploy roi-engine: `vercel link --yes --project roi-engine` → `vercel --prod` → relink back to
+    agency (`.vercel/project.json`). DNS auto (roilabs.in on Vercel nameservers — no records to add).
+- **End-user auth = Supabase `gaulosvlnynoxgdjelgm`** (the *leads* project; browser client
+  `getSupabase()` reads `NEXT_PUBLIC_SUPABASE_URL/ANON`). User did the dashboard config: Email enabled +
+  **Confirm-email OFF**, Site URL `https://engine.roilabs.in`, redirect URLs `…/engine` & `localhost:3002/engine`;
+  **Google** provider on (reuses the existing `GOOGLE_OAUTH_CLIENT_ID/SECRET` Ads client, with the Supabase
+  callback `https://gaulosvlnynoxgdjelgm.supabase.co/auth/v1/callback` added in Google Cloud). The Google
+  client ID/secret live in the **Supabase dashboard**, not app env.
+- ⚠️ **Go-live blocker:** `roi-engine` has Vercel **Deployment Protection** ON (401) — must be disabled in
+  the dashboard before engine.roilabs.in is publicly reachable. (Couldn't be toggled via CLI/token.)
+
 ## Credentials checklist (operator-owned; secrets live in `.env.local`)
 
 | Need | Status |

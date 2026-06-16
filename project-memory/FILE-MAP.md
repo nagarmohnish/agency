@@ -50,12 +50,16 @@ Keep this in sync when files are added/moved/removed.
 ## Dashboard — `src/app/engine/` (ROI Engine)
 - `page.tsx` — route + metadata (title "ROI Engine", noindex) + `viewport.themeColor
   = #FFFFFF`. **Now renders `Shell`** (was `Dashboard`).
-- **`Shell.tsx`** — current route entry: demo → cockpit; **`?login=1` previews the sign-in**;
-  live → `Login` token gate (posts to `/api/engine/status`) → cockpit. **Renders `EngineV5`** for the
-  default (atlas) cockpit and `EngineAurora` for `variant="aurora"`. (D15, D19)
-- **`Login.tsx`** — the **sign-in screen**, rewritten to the **engine_design_new** dark split-screen
-  (D19): left = gold ROI Engine wordmark + 54px "measured in revenue" headline + Continue-with-Google/
-  email + admin-token path; right = animated dark cockpit preview. Poppins + `#4F5BD5` accent.
+- **`Shell.tsx`** — route entry; gates on `ready` first (no cockpit flash). **Three modes (D25):**
+  (1) **Supabase** when `engineAuthMode()` (`NEXT_PUBLIC_ENGINE_AUTH=supabase` OR host `engine.*`) →
+  real Supabase session gate → `EngineV5 locked` (the engine.roilabs.in teaser); (2) **demo**
+  (`DEMO=1`) → `roi_user` localStorage gate → full cockpit; (3) **live** → admin-token gate (posts to
+  `/api/engine/status`). Renders `EngineV5` (atlas) or `EngineAurora` (`variant="aurora"`). (D15, D19, D25)
+- **`Login.tsx`** — the **sign-in screen** = **centered single card** on landing-header charcoal + gold,
+  animated gold-glow backdrop, 90% default zoom (D23 reskin). One card: Continue-with-Google + email/
+  password with a **Sign in ⇄ Create account** toggle. Three auth paths via props: **`supabaseAuth`** →
+  real Supabase signUp/signInWithPassword/signInWithOAuth(google)/signOut (D25); **`demo`** → persists
+  `roi_user` to localStorage; else → admin-token gate (`onSubmitToken`). Poppins + `#4F5BD5`/gold.
 - **`v3aurora.tsx`** — **roilabs.in (Aurora) themed** variant of the cockpit at route
   `/engine/aurora`. **Generated** from `v3.tsx` by `scripts/make-aurora-theme.mjs` (palette+font
   remap: gold accent, warm neutrals, Sora/Manrope). Don't hand-edit — edit `v3.tsx` then re-run
@@ -65,8 +69,14 @@ Keep this in sync when files are added/moved/removed.
   Google/Meta/Shopify logos** + 70px top bar), navy ink / indigo `#4F5BD5` accent / gold ROI mark,
   Poppins + DM Mono. Pages (`page` state): Overview (two-funnel hero, KPI sparklines, source cards,
   spend-vs-returns, 4 signals, dark engine bar) · Google/Meta/Shopify · Runs (THE LOOP + active run +
-  history) · Activity · Approvals (interactive Approve/Reject → rail badge). Self-contained, inline
-  styles, demo "The Astro Time" data. Rendered by `Shell` (atlas). Real logos from `public/logos/`.
+  history) · Activity · Approvals (Tickets board) · Profile · GA4 `Ga4Audience` block. **Full light/dark
+  theme** (CSS-var tokens on `.v5root`, sun/moon toggle, persisted; D24) + 80% default zoom. **`locked`
+  prop → `LockGate`** (blur + "Book a demo call" → Calendly) for the public teaser (D25). Brand is
+  **env-gated via `BRAND`** (imported from `tickets.ts`): dummy "Northwind Goods" on public/supabase
+  deploys, real "The Astro Time" on the internal demo. Inline styles. Rendered by `Shell` (atlas).
+- **`tickets.ts`** — Tickets/Approvals data model + **granular permission helpers** (D21): `Permission`
+  union, `ROLE_PERMS`, `effectivePerms`/`can`/`canApprove`, `MEMBERS`, `SEED_TICKETS`. Also exports
+  **`BRAND`** (D25) — env-gated demo brand (name/slug/mono/logo) used across `v5.tsx`.
 - **`v3.tsx`** — the **previous cockpit** (Claude Design "ROI Engine.dc.html" handoff, D15). One
   self-contained client component, inline styles (Atlas indigo shell). 7 pages; GA4-style date toggle;
   two-funnel framing; function-label agents (D16). **Legacy — superseded by v5 (D19); kept importable.**
