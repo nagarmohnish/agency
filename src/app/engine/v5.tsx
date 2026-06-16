@@ -206,7 +206,7 @@ function PayChip({ id, size = 30 }: { id: string; size?: number }) {
   );
 }
 
-export default function EngineV5({ onSignOut, cockpit = null }: { onSignOut?: () => void; cockpit?: CockpitData | null } = {}) {
+export default function EngineV5({ onSignOut, cockpit = null, locked = false }: { onSignOut?: () => void; cockpit?: CockpitData | null; locked?: boolean } = {}) {
   const [page, setPage] = useState<Page>("overview");
   const [range, setRange] = useState<RangeKey>("28D");
   const [panelOpen, setPanelOpen] = useState(true);
@@ -389,15 +389,36 @@ export default function EngineV5({ onSignOut, cockpit = null }: { onSignOut?: ()
       {panelOpen && Panel}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 0 }}>
         {Topbar}
-        <div className="v5sc" style={{ flex: 1, overflowY: "auto", padding: "24px 28px 40px" }}>
-          {PageHead}
-          {page === "overview" && <Overview D={D} range={range} setRange={setRange} live={live} pending={pending} setPage={setPage} />}
-          {page === "approvals" && <TicketsBoard tickets={tickets} setTickets={setTickets} viewer={viewer} setViewer={setViewer} tfilter={tfilter} />}
-          {page === "runs" && <Runs setPage={setPage} setTickets={setTickets} viewer={viewer} />}
-          {(page === "google" || page === "meta" || page === "shopify") && <SourcePage page={page} />}
-          {page === "activity" && <Activity />}
-          {page === "profile" && <Profile viewer={viewer} setViewer={setViewer} onSignOut={onSignOut} />}
+        <div className="v5sc" style={{ flex: 1, overflowY: locked ? "hidden" : "auto", padding: "24px 28px 40px", position: "relative" }}>
+          <div style={locked ? { filter: "blur(7px)", pointerEvents: "none", userSelect: "none" } : undefined} aria-hidden={locked || undefined}>
+            {PageHead}
+            {page === "overview" && <Overview D={D} range={range} setRange={setRange} live={live} pending={pending} setPage={setPage} />}
+            {page === "approvals" && <TicketsBoard tickets={tickets} setTickets={setTickets} viewer={viewer} setViewer={setViewer} tfilter={tfilter} />}
+            {page === "runs" && <Runs setPage={setPage} setTickets={setTickets} viewer={viewer} />}
+            {(page === "google" || page === "meta" || page === "shopify") && <SourcePage page={page} />}
+            {page === "activity" && <Activity />}
+            {page === "profile" && <Profile viewer={viewer} setViewer={setViewer} onSignOut={onSignOut} />}
+          </div>
+          {locked && <LockGate onSignOut={onSignOut} />}
         </div>
+      </div>
+    </div>
+  );
+}
+
+// ── LOCKED TEASER (post-login on engine.roilabs.in) ────────────────────────────
+function LockGate({ onSignOut }: { onSignOut?: () => void }) {
+  const book = process.env.NEXT_PUBLIC_BOOK_CALL_URL || "https://roilabs.in/#contact";
+  return (
+    <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", padding: 24, zIndex: 20 }}>
+      <div style={{ ...card, maxWidth: 480, width: "100%", padding: 38, textAlign: "center" }}>
+        <div style={{ width: 58, height: 58, borderRadius: 16, background: ACCENT_SOFT, color: ACCENT, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 18px" }}>
+          <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+        </div>
+        <div style={{ fontSize: 23, fontWeight: 700, letterSpacing: "-.4px", marginBottom: 11 }}>Your revenue cockpit is ready</div>
+        <div style={{ fontSize: 14.5, color: INK4, lineHeight: 1.6, marginBottom: 26, maxWidth: 380, marginLeft: "auto", marginRight: "auto" }}>Book a 20-minute demo call — we&apos;ll connect your Google, Meta &amp; Shopify and unlock live metrics, approvals and the AI ad-ops engine for your store.</div>
+        <a href={book} target="_blank" rel="noopener noreferrer" className="v5-accent" style={{ display: "inline-flex", alignItems: "center", gap: 9, background: ACCENT, color: "#fff", fontWeight: 600, fontSize: 15, padding: "14px 28px", borderRadius: 13, textDecoration: "none" }}>Book a demo call →</a>
+        {onSignOut && <div style={{ marginTop: 20 }}><button onClick={onSignOut} style={{ background: "none", border: "none", color: INK4, fontSize: 13, cursor: "pointer" }}>Sign out</button></div>}
       </div>
     </div>
   );

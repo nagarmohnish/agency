@@ -7,6 +7,7 @@
 // real (non-demo) auth still routes through the admin-token gate ("Operator?").
 
 import { useState } from "react";
+import { getSupabase } from "@/lib/supabase";
 
 const BP = process.env.NEXT_PUBLIC_BASE_PATH || "";
 const GOLD = "#FACC15";   // ROI Labs brand yellow — primary action
@@ -18,7 +19,7 @@ const card: React.CSSProperties = { width: "min(440px, 100%)", background: "#1e1
 const field: React.CSSProperties = { width: "100%", padding: "15px 16px 15px 46px", borderRadius: 13, background: "#19150d", border: "1px solid #34301f", color: "#fff", font: `500 14.5px ${FD}`, outline: "none" };
 const primary = (disabled: boolean): React.CSSProperties => ({ width: "100%", padding: 15, borderRadius: 13, border: "none", cursor: disabled ? "not-allowed" : "pointer", background: disabled ? "#3a3526" : GOLD, color: disabled ? "rgba(255,255,255,.4)" : INK, font: `700 15px ${FD}`, transition: "filter .15s" });
 
-export default function Login({ onEnter, onSubmitToken, demo }: { onEnter: () => void; onSubmitToken?: (t: string) => Promise<void>; demo?: boolean }) {
+export default function Login({ onEnter, onSubmitToken, demo, supabaseAuth }: { onEnter: () => void; onSubmitToken?: (t: string) => Promise<void>; demo?: boolean; supabaseAuth?: boolean }) {
   const [view, setView] = useState<"signin" | "signup" | "token">("signin");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -42,10 +43,35 @@ export default function Login({ onEnter, onSubmitToken, demo }: { onEnter: () =>
       }));
     } catch { /* ignore */ }
   };
-  const google = () => { if (demo) { storeUser("google"); return onEnter(); } toToken("SSO isn’t wired yet — sign in with your admin token."); };
-  const emailSubmit = (e: React.FormEvent) => {
+  const google = async () => {
+    if (supabaseAuth) {
+      try { await getSupabase().auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.origin + window.location.pathname } }); }
+      catch (ex) { setErr(ex instanceof Error ? ex.message : "Google sign-in is unavailable"); }
+      return;
+    }
+    if (demo) { storeUser("google"); return onEnter(); }
+    toToken("SSO isn’t wired yet — sign in with your admin token.");
+  };
+  const emailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (signup && !agree) { setErr("Please accept the Terms to continue."); return; }
+    if (supabaseAuth) {
+      setBusy(true); setErr(""); setNote("");
+      try {
+        const sb = getSupabase();
+        if (signup) {
+          const { data, error } = await sb.auth.signUp({ email: email.trim(), password: pw, options: { data: { name: name.trim() } } });
+          if (error) throw error;
+          if (!data.session) { setNote("Account created — check your email to confirm, then sign in."); setView("signin"); }
+          // if a session is returned (email confirmation off), Shell's auth listener enters the cockpit
+        } else {
+          const { error } = await sb.auth.signInWithPassword({ email: email.trim(), password: pw });
+          if (error) throw error;
+        }
+      } catch (ex) { setErr(ex instanceof Error ? ex.message : "Something went wrong — please try again"); }
+      finally { setBusy(false); }
+      return;
+    }
     if (demo) { storeUser("email"); return onEnter(); }
     toToken("Operator access is token-gated for now — paste your admin token.");
   };
@@ -129,7 +155,7 @@ export default function Login({ onEnter, onSubmitToken, demo }: { onEnter: () =>
             </label>
           )}
 
-          <button type="submit" disabled={signup && !agree} style={{ ...primary(signup && !agree), marginTop: signup ? 0 : 20 }}>{signup ? "Create Account" : "Sign in"}</button>
+          <button type="submit" disabled={(signup && !agree) || busy} style={{ ...primary((signup && !agree) || busy), marginTop: signup ? 0 : 20 }}>{busy ? "Please wait…" : signup ? "Create Account" : "Sign in"}</button>
 
           {err && <div style={{ marginTop: 12, textAlign: "center", font: `500 12.5px ${FD}`, color: "#F08A8A" }}>{err}</div>}
 
