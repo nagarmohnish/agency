@@ -4,6 +4,34 @@ Convert relative dates to absolute. Newest changelog entry on top.
 
 ## Changelog
 
+### 2026-06-17 · Tenant route now shows the FULL v5 cockpit (D31) + per-tenant brand + signed-in user
+Pivot from the lean honest cockpit to the complete demo cockpit on `<slug>.roilabs.in`: real-where-live
+(LIVE) + modeled assumptions (EST) + tickets board + runs UI.
+- **`v5.tsx`**: `EngineV5` gained `brand?: CockpitBrand` + `user?: CockpitUser` props (exported types). The
+  topbar/profile show the **real signed-in member** (name from Supabase metadata / email; role from
+  membership), and the brand (name/logo/mono) is per-tenant — defaults to global `BRAND` for `/engine`. Added
+  `BrandMark` (logo with initial-fallback). Replaced all `BRAND.*` render refs with the `brand` prop.
+- **`/api/engine/tenant-cockpit`**: now returns the FULL `getCockpitData(account.id)` (real + assumptions) +
+  `brand` (from the account), still membership-gated (no `?accountId`). `maxDuration=90`.
+- **`TenantShell.tsx`**: renders `EngineV5` (was the lean `TenantCockpit`), passing cockpit + brand + the
+  user built from the session. Imports `engine.css`.
+- **Also:** Google logo → `google1.webp` (copied into `public/logos`), both cockpits default LIGHT,
+  `/engine/preview` dev route (full cockpit, no gate), `cockpit-astrotime.html` single-file generator.
+- `npm run verify` clean. `/engine/preview` renders 200 with 6 LIVE + 4 EST. **For real numbers on prod the
+  agency Vercel needs connector creds** (`ENGINE_CRED_ENV_FALLBACK=true` + env creds, or the seed); without
+  them the cockpit shows all-EST. Tickets/runs/team = demo content.
+
+### 2026-06-17 · Tenant cockpit polish — fix marketing-nav overlap + default to light mode
+- **Nav/footer overlap:** `Navbar.tsx`/`Footer.tsx` hid the global marketing chrome on `/engine*` but NOT
+  `/t/*`, so the tenant cockpit (and the new dev `/t/preview`) rendered the marketing nav over its top bar.
+  The live `astrotime.roilabs.in` escaped only by luck (proxy keeps the browser path `/`, which was already
+  in the hide list). Added `pathname.startsWith("/t/")` to both hide conditions.
+- **Default light:** `TenantCockpit.tsx` was reading the shared `v5theme` key (so it inherited `/engine`'s
+  dark) and auto-darkening on system preference. Now defaults to **light**, honors an explicit choice only,
+  under its own `tctheme` key. Verified on dev (`data-theme="light"`, no nav markers).
+- **Dev preview:** added `src/app/t/preview/` (dev-only, 404 in prod) rendering `TenantCockpit` with sample
+  data — the finished cockpit populated (Shopify+Google LIVE, Meta/subs awaiting, real ops rows).
+
 ### 2026-06-17 · Credentials cutover (D30) — per-tenant encrypted creds, onboarding = a DB row not a Vercel change
 Wired the connectors to read each company's creds from the encrypted `engine_account_credentials` table
 instead of global env, so adding a client no longer means editing Vercel.

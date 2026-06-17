@@ -16,8 +16,8 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Aurora pages ship their own nav; hide the global one there.
-  if (pathname === "/" || pathname === "/demo" || pathname === "/demos" || pathname === "/stellar" || pathname?.startsWith("/audit") || pathname?.startsWith("/discord") || pathname?.startsWith("/engine") || pathname?.startsWith("/integrations")) return null;
+  // Aurora pages + the cockpits ship their own chrome; hide the global nav there.
+  if (pathname === "/" || pathname === "/demo" || pathname === "/demos" || pathname === "/stellar" || pathname?.startsWith("/audit") || pathname?.startsWith("/discord") || pathname?.startsWith("/engine") || pathname?.startsWith("/t/") || pathname?.startsWith("/integrations")) return null;
 
   const navLinks = [
     { href: "/#process", label: "How it works" },

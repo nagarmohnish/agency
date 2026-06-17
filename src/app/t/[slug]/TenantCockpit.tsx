@@ -68,12 +68,12 @@ function money(cents: number, cur: string): string {
 }
 const num = (n: number) => Math.round(n).toLocaleString("en-IN");
 const merx = (x: number) => (Number.isFinite(x) ? x.toFixed(2) : "0.00") + "×";
-function svgPath(vals: number[], w: number, h: number): { line: string; area: string } {
-  if (vals.length < 2) return { line: "", area: "" };
+function svgPath(vals: number[], w: number, h: number): { line: string; area: string; pts: number[][] } {
+  if (vals.length < 2) return { line: "", area: "", pts: [] };
   const max = Math.max(...vals), min = Math.min(...vals), rng = max - min || 1;
   const pts = vals.map((v, i) => [(i / (vals.length - 1)) * w, h - 8 - ((v - min) / rng) * (h - 16)]);
   const line = pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
-  return { line, area: `${line} L ${w} ${h} L 0 ${h} Z` };
+  return { line, area: `${line} L ${w} ${h} L 0 ${h} Z`, pts };
 }
 function timeAgo(iso: string): string {
   const t = new Date(iso).getTime();
@@ -88,7 +88,7 @@ function timeAgo(iso: string): string {
 }
 
 function SrcLogo({ id, size = 36, radius = 11 }: { id: "google" | "meta" | "shopify"; size?: number; radius?: number }) {
-  const src = id === "google" ? "/logos/google.jpg" : id === "meta" ? "/logos/meta.png" : "/logos/shopify.svg";
+  const src = id === "google" ? "/logos/google1.webp" : id === "meta" ? "/logos/meta.png" : "/logos/shopify.svg";
   return (
     <span style={{ width: size, height: size, borderRadius: radius, background: "var(--card)", border: "1px solid var(--line)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -97,25 +97,57 @@ function SrcLogo({ id, size = 36, radius = 11 }: { id: "google" | "meta" | "shop
   );
 }
 
+// Payment processors behind subscription revenue — shown as LOGOS ONLY (which
+// processors plug in), never with fabricated MRR numbers.
+const PAY = [
+  { id: "razorpay", name: "Razorpay", file: "razorpay.png" },
+  { id: "upi", name: "UPI", file: "upi.webp" },
+  { id: "stripe", name: "Stripe", file: "stripe.png" },
+  { id: "paypal", name: "PayPal", file: "paypal.svg" },
+];
+function PayChip({ id, size = 28 }: { id: string; size?: number }) {
+  const p = PAY.find((x) => x.id === id);
+  if (!p) return null;
+  return (
+    <span style={{ width: size, height: size, borderRadius: 9, background: "var(--card)", border: "1px solid var(--line)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={`${BP}/logos/${p.file}`} alt={p.name} style={{ width: size * 0.72, height: size * 0.72, objectFit: "contain" }} />
+    </span>
+  );
+}
+
+// The company's brand mark: its logo at /logos/<slug>.png, falling back to its
+// initial on a gradient (so any tenant looks right with or without a logo file).
+function BrandAvatar({ slug, name, size = 36, radius = "50%" as number | string }: { slug?: string; name: string; size?: number; radius?: number | string }) {
+  const [err, setErr] = useState(false);
+  const mono = (name || "?").trim().charAt(0).toUpperCase();
+  if (slug && !err) {
+    return (
+      <span style={{ width: size, height: size, borderRadius: radius, overflow: "hidden", flexShrink: 0, display: "flex", border: "1px solid var(--line)" }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={`${BP}/logos/${slug}.png`} alt={name} onError={() => setErr(true)} style={{ width: size, height: size, objectFit: "cover", display: "block" }} />
+      </span>
+    );
+  }
+  return <span style={{ width: size, height: size, borderRadius: radius, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg,#6c5ce7,#4f5bd5)", color: "#fff", fontWeight: 700, fontSize: Math.round(size * 0.42) }}>{mono}</span>;
+}
+
 const LIVE = <span style={{ fontFamily: FM, fontSize: 9, letterSpacing: ".5px", padding: "2px 6px", borderRadius: 5, background: GREEN_SOFT, color: GREEN_TX }}>LIVE</span>;
 
-export default function TenantCockpit({ data, role, onSignOut }: { data: TC; role: string; onSignOut?: () => void }) {
+export default function TenantCockpit({ data, role, slug, onSignOut }: { data: TC; role: string; slug?: string; onSignOut?: () => void }) {
   const [page, setPage] = useState<Page>("overview");
   const [range, setRange] = useState<TenantRangeKey>("28D");
   const [theme, setTheme] = useState<"light" | "dark">("light");
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem("v5theme");
-      if (saved === "dark" || saved === "light") setTheme(saved);
-      else if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) setTheme("dark");
-    } catch { /* ignore */ }
+    // Default to LIGHT. Only honor an explicit prior choice, under a key separate
+    // from the operator cockpit's "v5theme" so it never inherits /engine's dark.
+    try { if (localStorage.getItem("tctheme") === "dark") setTheme("dark"); } catch { /* ignore */ }
   }, []);
-  useEffect(() => { try { localStorage.setItem("v5theme", theme); } catch { /* ignore */ } }, [theme]);
+  useEffect(() => { try { localStorage.setItem("tctheme", theme); } catch { /* ignore */ } }, [theme]);
 
   const D = data.ranges[range];
   const cur = data.currency;
   const conn = data.connections;
-  const mono = (data.accountName || "?").trim().charAt(0).toUpperCase();
   const pendingCount = data.ops.approvals.length;
 
   const railBtn = (id: Page, icon: ReactNode, label: string, badge?: number) => {
@@ -152,12 +184,9 @@ export default function TenantCockpit({ data, role, onSignOut }: { data: TC; rol
     </div>
   );
 
-  const Panel = (
-    <div style={{ width: 296, background: CARD, borderRight: `1px solid ${LINE}`, display: "flex", flexDirection: "column", flexShrink: 0, overflowY: "auto", padding: "26px 20px", zIndex: 2 }}>
-      <div style={{ background: CARD, border: `1px solid ${LINE}`, borderRadius: 14, padding: 12, display: "flex", alignItems: "center", gap: 11 }}>
-        <span style={{ width: 36, height: 36, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg,#6c5ce7,#4f5bd5)", color: "#fff", fontWeight: 700, fontSize: 15 }}>{mono}</span>
-        <div style={{ flex: 1, minWidth: 0 }}><div style={{ color: INK, fontWeight: 600, fontSize: 14, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{data.accountName}</div><div style={{ fontSize: 11, color: INK4 }}>{role}</div></div>
-      </div>
+  // ── side panel — context changes with the active rail item (like v5) ─────────
+  const sourcesPanel = (
+    <>
       <div style={{ ...monoLabel, margin: "26px 0 12px 4px" }}>DATA SOURCES</div>
       <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
         {connRow("shopify", "Shopify", conn.shopify)}
@@ -171,6 +200,63 @@ export default function TenantCockpit({ data, role, onSignOut }: { data: TC; rol
         ))}
       </div>
       <div style={{ marginTop: 22, fontSize: 11, color: INK3, lineHeight: 1.55 }}>Figures are pulled live from your connected accounts. Sources that aren&apos;t connected yet show as &ldquo;awaiting&rdquo; — never estimated.</div>
+    </>
+  );
+  const runsPanel = (
+    <>
+      <div style={{ ...monoLabel, margin: "26px 0 10px 4px" }}>THE LOOP</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+        {([["Audit", "Research & intelligence"], ["Creative", "Creative production"]] as [string, string][]).map(([n, role2]) => (
+          <div key={n} style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 11px", border: `1px solid ${LINE}`, borderRadius: 11 }}>
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: ACCENT }} />
+            <div style={{ flex: 1 }}><div style={{ fontSize: 13, fontWeight: 600 }}>{n}</div><div style={{ fontSize: 10.5, color: INK4 }}>{role2}</div></div>
+          </div>
+        ))}
+      </div>
+      <div style={{ ...monoLabel, margin: "22px 0 10px 4px" }}>RECENT RUNS</div>
+      {data.ops.runs.length ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+          {data.ops.runs.slice(0, 5).map((r) => (
+            <div key={r.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 11px", border: `1px solid ${LINE}`, borderRadius: 11 }}>
+              <span style={{ fontSize: 12.5, fontWeight: 500, textTransform: "capitalize" }}>{r.step}</span>
+              <span style={{ fontFamily: FM, fontSize: 10, color: r.status === "done" ? GREEN_TX : INK4 }}>{timeAgo(r.startedAt)}</span>
+            </div>
+          ))}
+        </div>
+      ) : <div style={{ fontSize: 12, color: INK3, padding: "0 4px" }}>No runs yet.</div>}
+    </>
+  );
+  const activityPanel = (
+    <>
+      <div style={{ ...monoLabel, margin: "26px 0 10px 4px" }}>AGENTS</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+        {([["RI", "Scout", "Research & intel", "#3b5bdb", "var(--blue-soft, var(--accent-soft))"], ["CP", "Forge", "Creative", AMBER, AMBER_SOFT], ["MB", "Pilot", "Media buying", GREEN_TX, GREEN_SOFT], ["MA", "Signal", "Measurement", "#6c5ce7", "var(--violet-soft)"]] as [string, string, string, string, string][]).map(([ini, name, role2, fg, bg]) => (
+          <div key={name} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 11px", border: `1px solid ${LINE}`, borderRadius: 11 }}>
+            <span style={{ width: 26, height: 26, borderRadius: 8, background: bg, color: fg, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 10 }}>{ini}</span>
+            <div style={{ flex: 1 }}><div style={{ fontSize: 13, fontWeight: 600 }}>{name}</div><div style={{ fontSize: 10.5, color: INK4 }}>{role2}</div></div>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+  const approvalsPanel = (
+    <>
+      <div style={{ ...monoLabel, margin: "26px 0 12px 4px" }}>PENDING</div>
+      <div style={{ background: SUBTLE, border: `1px solid ${LINE}`, borderRadius: 14, padding: 16 }}>
+        <div style={{ fontSize: 28, fontWeight: 700, color: pendingCount ? AMBER : INK }}>{pendingCount}</div>
+        <div style={{ fontSize: 12, color: INK4, marginTop: 2 }}>awaiting your sign-off</div>
+      </div>
+      <div style={{ marginTop: 18, fontSize: 11, color: INK3, lineHeight: 1.55 }}>Nothing changes your campaigns until you approve it. Every proposal is checked against your spend cap.</div>
+    </>
+  );
+
+  const Panel = (
+    <div style={{ width: 296, background: CARD, borderRight: `1px solid ${LINE}`, display: "flex", flexDirection: "column", flexShrink: 0, overflowY: "auto", padding: "26px 20px", zIndex: 2 }}>
+      <div style={{ background: CARD, border: `1px solid ${LINE}`, borderRadius: 14, padding: 12, display: "flex", alignItems: "center", gap: 11 }}>
+        <BrandAvatar slug={slug} name={data.accountName} size={36} />
+        <div style={{ flex: 1, minWidth: 0 }}><div style={{ color: INK, fontWeight: 600, fontSize: 14, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{data.accountName}</div><div style={{ fontSize: 11, color: INK4, textTransform: "capitalize" }}>{role}</div></div>
+      </div>
+      {page === "runs" ? runsPanel : page === "activity" ? activityPanel : page === "approvals" ? approvalsPanel : sourcesPanel}
     </div>
   );
 
@@ -205,7 +291,7 @@ export default function TenantCockpit({ data, role, onSignOut }: { data: TC; rol
       <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 0 }}>
         {Topbar}
         <div className="tcsc" style={{ flex: 1, overflowY: "auto", padding: "24px 28px 40px" }}>
-          {page === "overview" && <Overview data={data} D={D} range={range} setRange={setRange} cur={cur} />}
+          {page === "overview" && <Overview data={data} D={D} range={range} setRange={setRange} cur={cur} slug={slug} />}
           {page === "approvals" && <Approvals rows={data.ops.approvals} cur={cur} />}
           {page === "runs" && <Runs rows={data.ops.runs} />}
           {page === "activity" && <Activity rows={data.ops.activity} cur={cur} />}
@@ -216,11 +302,12 @@ export default function TenantCockpit({ data, role, onSignOut }: { data: TC; rol
 }
 
 // ── empty / awaiting states ──────────────────────────────────────────────────
-function Awaiting({ icon, title, body }: { icon: ReactNode; title: string; body: string }) {
+function Awaiting({ icon, title, body, footer }: { icon: ReactNode; title: string; body: string; footer?: ReactNode }) {
   return (
     <div className="tc-card" style={{ ...card, borderRadius: 20, padding: 24, display: "flex", flexDirection: "column", gap: 10, minHeight: 150, justifyContent: "center" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 11 }}>{icon}<div style={{ fontSize: 15.5, fontWeight: 600 }}>{title}</div></div>
       <div style={{ fontSize: 13, color: INK4, lineHeight: 1.55 }}>{body}</div>
+      {footer}
       <div style={{ fontFamily: FM, fontSize: 9.5, letterSpacing: "1px", color: INK3, marginTop: 2 }}>NOT CONNECTED</div>
     </div>
   );
@@ -235,18 +322,24 @@ function EmptyBlock({ title, body }: { title: string; body: string }) {
 }
 
 // ── OVERVIEW ─────────────────────────────────────────────────────────────────
-function Overview({ data, D, range, setRange, cur }: { data: TC; D: TenantRange; range: TenantRangeKey; setRange: (r: TenantRangeKey) => void; cur: string }) {
+function Overview({ data, D, range, setRange, cur, slug }: { data: TC; D: TenantRange; range: TenantRangeKey; setRange: (r: TenantRangeKey) => void; cur: string; slug?: string }) {
   const rw = `Last ${D.days} days`;
   const sp = svgPath((D.store?.daily ?? []).map((d) => d.revenueCents), 760, 200);
   const gp = svgPath((D.google?.daily ?? []).map((d) => d.spendCents), 760, 200);
+  const spts = sp.pts, gpts = gp.pts;
+  const [hi, setHi] = useState<number | null>(null);
+  const gIdx = hi != null && spts.length > 1 ? Math.round((hi / (spts.length - 1)) * (gpts.length - 1)) : null;
   const metaIcon = <SrcLogo id="meta" size={40} radius={11} />;
 
   return (
     <>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 22 }}>
-        <div>
-          <div style={{ fontSize: 25, fontWeight: 700, letterSpacing: "-.4px" }}>{data.accountName}</div>
-          <div style={{ fontSize: 13, color: INK4, marginTop: 3 }}>Revenue &amp; ad performance · {rw}</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <BrandAvatar slug={slug} name={data.accountName} size={46} radius={14} />
+          <div>
+            <div style={{ fontSize: 25, fontWeight: 700, letterSpacing: "-.4px" }}>{data.accountName}</div>
+            <div style={{ fontSize: 13, color: INK4, marginTop: 3 }}>Revenue &amp; ad performance · {rw}</div>
+          </div>
         </div>
         <div style={{ display: "flex", gap: 4, background: "var(--line)", borderRadius: 10, padding: 3 }}>
           {(["7D", "28D"] as TenantRangeKey[]).map((r) => <div key={r} onClick={() => setRange(r)} style={{ padding: "6px 13px", borderRadius: 7, fontSize: 12.5, fontWeight: range === r ? 600 : 500, color: range === r ? ACCENT : INK4, background: range === r ? "var(--card)" : "transparent", cursor: "pointer" }}>{r}</div>)}
@@ -270,12 +363,26 @@ function Overview({ data, D, range, setRange, cur }: { data: TC; D: TenantRange;
               <span style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 12.5, color: INK4, fontWeight: 500 }}><span style={{ width: 11, height: 3, borderRadius: 2, background: ACCENT }} />Store revenue</span>
               {D.google && <span style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 12.5, color: INK4, fontWeight: 500 }}><span style={{ width: 11, height: 3, borderRadius: 2, background: "var(--ink4)" }} />Ad spend</span>}
             </div>
-            <svg viewBox="0 0 760 200" preserveAspectRatio="none" style={{ width: "100%", height: 210, display: "block" }}>
-              <defs><linearGradient id="tcarea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={ACCENT} stopOpacity="0.16" /><stop offset="1" stopColor={ACCENT} stopOpacity="0" /></linearGradient></defs>
-              {sp.area && <path d={sp.area} fill="url(#tcarea)" />}
-              {gp.line && <path d={gp.line} fill="none" stroke="var(--ink4)" strokeWidth={2.2} strokeLinejoin="round" strokeLinecap="round" />}
-              {sp.line && <path d={sp.line} fill="none" stroke={ACCENT} strokeWidth={2.6} strokeLinejoin="round" strokeLinecap="round" />}
-            </svg>
+            <div style={{ position: "relative" }} onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); const f = (e.clientX - r.left) / r.width; if (spts.length > 1) setHi(Math.max(0, Math.min(spts.length - 1, Math.round(f * (spts.length - 1))))); }} onMouseLeave={() => setHi(null)}>
+              <svg viewBox="0 0 760 200" preserveAspectRatio="none" style={{ width: "100%", height: 210, display: "block" }}>
+                <defs><linearGradient id="tcarea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={ACCENT} stopOpacity="0.16" /><stop offset="1" stopColor={ACCENT} stopOpacity="0" /></linearGradient></defs>
+                {sp.area && <path d={sp.area} fill="url(#tcarea)" />}
+                {gp.line && <path d={gp.line} fill="none" stroke="var(--ink4)" strokeWidth={2.2} strokeLinejoin="round" strokeLinecap="round" />}
+                {sp.line && <path d={sp.line} fill="none" stroke={ACCENT} strokeWidth={2.6} strokeLinejoin="round" strokeLinecap="round" />}
+                {hi != null && spts[hi] && (<>
+                  <line x1={spts[hi][0]} y1={0} x2={spts[hi][0]} y2={200} stroke="var(--ink3)" strokeWidth={1.2} strokeDasharray="3 4" />
+                  {gIdx != null && gpts[gIdx] && <circle cx={gpts[gIdx][0]} cy={gpts[gIdx][1]} r={4} fill="var(--card)" stroke="var(--ink3)" strokeWidth={2.5} />}
+                  <circle cx={spts[hi][0]} cy={spts[hi][1]} r={4.5} fill="var(--card)" stroke={ACCENT} strokeWidth={2.5} />
+                </>)}
+              </svg>
+              {hi != null && spts[hi] && D.store.daily[hi] && (
+                <div style={{ position: "absolute", top: 2, left: `${(spts[hi][0] / 760) * 100}%`, transform: spts[hi][0] > 500 ? "translateX(calc(-100% - 12px))" : "translateX(12px)", pointerEvents: "none", background: NAVY, color: "#fff", borderRadius: 11, padding: "10px 13px", boxShadow: "0 12px 28px rgba(27,36,64,.28)", zIndex: 6, whiteSpace: "nowrap" }}>
+                  <div style={{ fontFamily: FM, fontSize: 10, color: "rgba(255,255,255,.55)", marginBottom: 8 }}>{D.store.daily[hi].date || rw}</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5, marginBottom: D.google ? 5 : 0 }}><span style={{ width: 9, height: 9, borderRadius: 3, background: ACCENT }} />Store revenue<b style={{ marginLeft: 18, fontWeight: 700 }}>{money(D.store.daily[hi].revenueCents, cur)}</b></div>
+                  {D.google && <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5 }}><span style={{ width: 9, height: 9, borderRadius: 3, background: "var(--ink3)" }} />Ad spend<b style={{ marginLeft: 18, fontWeight: 700 }}>{gIdx != null && D.google.daily[gIdx] ? money(D.google.daily[gIdx].spendCents, cur) : "—"}</b></div>}
+                </div>
+              )}
+            </div>
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4, fontFamily: FM, fontSize: 10.5, color: INK3 }}>
               {(() => { const xs = (D.store.daily).filter((d) => d.date).map((d) => d.date); return xs.length ? [xs[0], xs[Math.floor(xs.length / 2)], xs[xs.length - 1]].map((d, i) => <span key={i}>{d}</span>) : <span>{rw}</span>; })()}
             </div>
@@ -311,7 +418,7 @@ function Overview({ data, D, range, setRange, cur }: { data: TC; D: TenantRange;
       <div style={{ ...monoLabel, margin: "4px 0 12px 2px" }}>NOT YET CONNECTED</div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
         {!data.connections.meta && <Awaiting icon={metaIcon} title="Meta Ads" body="Connect Meta to see spend, ROAS and purchases attributed to your store." />}
-        {!data.connections.subscriptions && <Awaiting icon={<span style={{ width: 40, height: 40, borderRadius: 11, background: ACCENT_SOFT, color: ACCENT, display: "flex", alignItems: "center", justifyContent: "center" }}>{I.activity}</span>} title="Subscriptions" body="Connect Stripe / Razorpay / UPI / PayPal to track recurring revenue and MRR." />}
+        {!data.connections.subscriptions && <Awaiting icon={<span style={{ width: 40, height: 40, borderRadius: 11, background: ACCENT_SOFT, color: ACCENT, display: "flex", alignItems: "center", justifyContent: "center" }}>{I.activity}</span>} title="Subscriptions" body="Connect your processors to track recurring revenue and MRR." footer={<div style={{ display: "flex", gap: 8, marginTop: 2 }}>{PAY.map((p) => <PayChip key={p.id} id={p.id} size={28} />)}</div>} />}
         <Awaiting icon={<span style={{ width: 40, height: 40, borderRadius: 11, background: AMBER_SOFT, color: AMBER, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: FM, fontWeight: 700, fontSize: 13 }}>GA</span>} title="Web analytics · GA4" body="Connect GA4 to see sessions, audience demographics, channels and devices." />
       </div>
     </>

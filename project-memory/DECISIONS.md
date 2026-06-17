@@ -461,3 +461,21 @@ Verified by a 9-agent security review: secret-leak/isolation/shape/caller all cl
 cutover regression, deferred):** the 7 legacy `/api/engine/*` routes still gate via `authorize()`+`?accountId`
 (operator-only today, so not client-reachable) — close the IDOR with an `isAccountMember`/`authorizeAccount`
 guard **before company #2 or before opening those routes to members**. [[D27]] [[D29]]
+
+### D31 · Tenant surface = the FULL v5 cockpit (real + flagged assumptions), not the lean honest one (2026-06-17)
+User pivoted: `<slug>.roilabs.in` should show the **complete** cockpit — real data where a connector is live
+(LIVE badges) **plus the engine's modeled assumptions** derived from it (Meta/subscriptions/GA4, flagged
+EST) **plus the tickets board + runs UI** — "fine if things aren't functional, but whatever we have access
+to must be correct; the rest assumptions based on them." This **supersedes D29's lean honest TenantCockpit on
+the tenant route** (the honest stance survives as *labeling*: real=LIVE, assumed=EST; nothing unlabeled).
+Implementation: `TenantShell` now renders `EngineV5` (the `/engine` demo cockpit), fed by the membership-gated
+`/api/engine/tenant-cockpit` route which returns the FULL `getCockpitData(account.id)` + a per-tenant
+`brand`. `EngineV5` gained `brand?: CockpitBrand` (name/mono/logoSrc/shopifySlug — defaults to global
+`BRAND`) and `user?: CockpitUser` (signed-in member name/email/role) so the topbar + profile show the **real
+logged-in person** (name from Supabase `user_metadata` or derived from email; role from the membership row)
+instead of the demo viewer. Per-tenant logo = `/logos/<slug>.png` with initial-fallback. **Caveats:** the
+tickets/runs/team-members remain seeded demo content (illustrative, non-functional); and **real numbers need
+connector creds on the agency deploy** (`ENGINE_CRED_ENV_FALLBACK=true` + env creds, or the encrypted seed) —
+without them the cockpit honestly shows all-modeled (EST). `TenantCockpit.tsx` / `getTenantCockpit` (the lean
+honest version) stay in the tree but are off the tenant route. Google logo swapped to `google1.webp`; both
+cockpits default to LIGHT. [[D29]] [[D30]]

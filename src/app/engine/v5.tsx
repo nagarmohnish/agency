@@ -7,7 +7,13 @@
 // demo data for "Northwind Goods". This is the /engine cockpit.
 import { useState, useEffect, type CSSProperties, type ReactNode } from "react";
 import type { CockpitData, RangeData, RangeKey } from "@/lib/engine/cockpit-data";
-import { SEED_TICKETS, MEMBERS, COLUMNS, TYPE_META, PRIORITY_C, BRAND, can, canApprove, memberById, effectivePerms, APPROVE_FOR, type Ticket, type Member, type Status } from "./tickets";
+import { SEED_TICKETS, MEMBERS, COLUMNS, TYPE_META, PRIORITY_C, BRAND, can, canApprove, memberById, effectivePerms, APPROVE_FOR, type Ticket, type Member, type Status, type Role } from "./tickets";
+
+// Per-tenant brand + the signed-in user (multi-tenant). When EngineV5 is rendered
+// for a tenant (TenantShell) these are passed; the operator /engine demo omits
+// them and falls back to the global BRAND + a seeded demo viewer.
+export type CockpitBrand = { name: string; mono: string; logoSrc: string | null; shopifySlug: string };
+export type CockpitUser = { name: string; email: string; role: Role };
 
 const BP = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
@@ -92,7 +98,7 @@ const RAIL = {
 
 // real platform logo in a white rounded chip (README: swap lettermarks for real logos)
 function SrcLogo({ id, size = 36, radius = 11 }: { id: "google" | "meta" | "shopify"; size?: number; radius?: number }) {
-  const src = id === "google" ? "/logos/google.jpg" : id === "meta" ? "/logos/meta.png" : "/logos/shopify.svg";
+  const src = id === "google" ? "/logos/google1.webp" : id === "meta" ? "/logos/meta.png" : "/logos/shopify.svg";
   return (
     <span style={{ width: size, height: size, borderRadius: radius, background: "var(--card)", border: "1px solid var(--line)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -100,6 +106,20 @@ function SrcLogo({ id, size = 36, radius = 11 }: { id: "google" | "meta" | "shop
     </span>
   );
 }
+// Per-tenant brand mark: the company's logo, falling back to its initial on error.
+function BrandMark({ logoSrc, mono, size = 36 }: { logoSrc: string | null; mono: string; size?: number }) {
+  const [err, setErr] = useState(false);
+  if (logoSrc && !err) {
+    return (
+      <span style={{ width: size, height: size, borderRadius: "50%", overflow: "hidden", flexShrink: 0, display: "flex" }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={`${BP}${logoSrc}`} alt="" onError={() => setErr(true)} style={{ width: size, height: size, objectFit: "cover", display: "block" }} />
+      </span>
+    );
+  }
+  return <span style={{ width: size, height: size, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg,#6c5ce7,#4f5bd5)", color: "#fff", fontWeight: 700, fontSize: Math.round(size * 0.42), fontFamily: FD }}>{mono}</span>;
+}
+
 const agentAv = (s: string, bg: string, fg: string, size = 42, radius = 12, fs = 13): ReactNode => (
   <span style={{ width: size, height: size, borderRadius: radius, background: bg, color: fg, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: fs, flexShrink: 0 }}>{s}</span>
 );
@@ -132,7 +152,7 @@ const RUN_HISTORY = [
   { id: "#139", av: "CP", avBg: AMBER_SOFT, avFg: AMBER, t: "Creative — 3 UGC variants generated", s: "Creative production · 1d ago", v: "+₹9K" },
 ];
 
-const DISCLAIMER = `* Modeled — not yet from a live connector. Store conversion rate & sessions come from GA4 (the Shopify Admin API exposes orders, not sessions); Meta figures are projected until the Marketing API connection is approved. Live today for ${BRAND.name}: Google Ads (spend · installs · CPI · campaign types) and Shopify (orders · sales · AOV · products · customers). Other values are realistic placeholders.`;
+const DISCLAIMER = `* Modeled — not yet from a live connector. Store conversion rate & sessions come from GA4 (the Shopify Admin API exposes orders, not sessions); Meta figures are projected until the Marketing API connection is approved. Live today: Google Ads (spend · installs · CPI · campaign types) and Shopify (orders · sales · AOV · products · customers). Other values are realistic placeholders.`;
 
 // mini reusable chart pieces
 function MiniSpark({ d }: { d: string }) {
@@ -206,25 +226,29 @@ function PayChip({ id, size = 30 }: { id: string; size?: number }) {
   );
 }
 
-export default function EngineV5({ onSignOut, cockpit = null, locked = false }: { onSignOut?: () => void; cockpit?: CockpitData | null; locked?: boolean } = {}) {
+export default function EngineV5({ onSignOut, cockpit = null, locked = false, brand: brandProp, user }: { onSignOut?: () => void; cockpit?: CockpitData | null; locked?: boolean; brand?: CockpitBrand; user?: CockpitUser } = {}) {
+  // Brand: per-tenant when provided, else the global demo brand.
+  const brand: CockpitBrand = brandProp ?? { name: BRAND.name, mono: BRAND.mono, logoSrc: BRAND.logo ? "/logos/astrotime.png" : null, shopifySlug: BRAND.slug };
+  // The signed-in member (their real name/role) — used as the viewer when present.
+  const meMember: Member | null = user
+    ? { id: "me", name: user.name, initials: (user.name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase() || "?"), color: "#4F5BD5", org: brand.name, title: user.role[0].toUpperCase() + user.role.slice(1), role: user.role }
+    : null;
   const [page, setPage] = useState<Page>("overview");
   const [range, setRange] = useState<RangeKey>("28D");
   const [panelOpen, setPanelOpen] = useState(true);
   const D = cockpit?.ranges?.[range] ?? FALLBACK[range];
   const live = D.store.flag === "live";
   const [tickets, setTickets] = useState<Ticket[]>(SEED_TICKETS);
-  const [viewer, setViewer] = useState<Member>(MEMBERS[1]); // demo default: client Admin (sees every action)
+  const [viewer, setViewer] = useState<Member>(meMember ?? MEMBERS[1]); // real signed-in member, or demo default
   const [tfilter, setTfilter] = useState<string>("all"); // tickets board filter (all | mine | <type>)
   const pending = tickets.filter((t) => t.status === "awaiting").length;
   const [theme, setTheme] = useState<"light" | "dark">("light");
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem("v5theme");
-      if (saved === "dark" || saved === "light") setTheme(saved);
-      else if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) setTheme("dark");
-    } catch { /* ignore */ }
+    // Default to LIGHT. Only honor an explicit prior choice — no system-preference
+    // auto-dark. Fresh key (v5theme2) so a previously auto-persisted "dark" is ignored.
+    try { if (localStorage.getItem("v5theme2") === "dark") setTheme("dark"); } catch { /* ignore */ }
   }, []);
-  useEffect(() => { try { localStorage.setItem("v5theme", theme); } catch { /* ignore */ } }, [theme]);
+  useEffect(() => { try { localStorage.setItem("v5theme2", theme); } catch { /* ignore */ } }, [theme]);
 
   // ── chrome pieces ──────────────────────────────────────────────────────────
   const railBtn = (id: Page, icon: ReactNode, label: string, active: boolean, badge?: number) => (
@@ -310,10 +334,8 @@ export default function EngineV5({ onSignOut, cockpit = null, locked = false }: 
   const Panel = (
     <div style={{ width: 296, background: CARD, borderRight: `1px solid ${LINE}`, display: "flex", flexDirection: "column", flexShrink: 0, overflowY: "auto", padding: "26px 20px", zIndex: 2 }}>
       <div style={{ background: CARD, border: `1px solid ${LINE}`, borderRadius: 14, padding: 12, display: "flex", alignItems: "center", gap: 11, cursor: "pointer", boxShadow: "0 1px 2px rgba(27,36,64,.04)" }}>
-        {BRAND.logo
-          ? <span style={{ width: 36, height: 36, borderRadius: "50%", overflow: "hidden", flexShrink: 0, display: "flex" }}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={`${BP}/logos/astrotime.png`} alt="" style={{ width: 36, height: 36, objectFit: "cover", display: "block" }} /></span>
-          : <span style={{ width: 36, height: 36, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg,#6c5ce7,#4f5bd5)", color: "#fff", fontWeight: 700, fontSize: 15, fontFamily: FD }}>{BRAND.mono}</span>}
-        <div style={{ flex: 1, minWidth: 0 }}><div style={{ color: INK, fontWeight: 600, fontSize: 14 }}>{BRAND.name}</div></div>
+        <BrandMark logoSrc={brand.logoSrc} mono={brand.mono} size={36} />
+        <div style={{ flex: 1, minWidth: 0 }}><div style={{ color: INK, fontWeight: 600, fontSize: 14 }}>{brand.name}</div></div>
         <span style={{ color: INK3, fontSize: 18, lineHeight: 1 }}>⋮</span>
       </div>
       {page === "approvals" ? ticketsBody : page === "runs" ? runsBody : page === "activity" ? activityBody : sourcesBody}
@@ -321,11 +343,11 @@ export default function EngineV5({ onSignOut, cockpit = null, locked = false }: 
   );
 
   const TITLES: Record<Page, { t: string; tag: string; tagC: string; tagB: string; sub: string }> = {
-    overview: { t: BRAND.name, tag: "BLENDED", tagC: "#3b5bdb", tagB: "var(--blue-soft)", sub: "" },
+    overview: { t: brand.name, tag: "BLENDED", tagC: "#3b5bdb", tagB: "var(--blue-soft)", sub: "" },
     profile: { t: "Profile", tag: "ACCOUNT", tagC: ACCENT, tagB: ACCENT_SOFT, sub: "" },
     google: { t: "Google", tag: "APP · VIDEO", tagC: AMBER, tagB: AMBER_SOFT, sub: "App installs & YouTube · last 28 days" },
     meta: { t: "Meta", tag: "STORE FUNNEL", tagC: "#3b5bdb", tagB: "var(--blue-soft)", sub: "Shopify store purchases · last 28 days" },
-    shopify: { t: "Shopify", tag: "REVENUE TRUTH", tagC: GREEN_TX, tagB: GREEN_SOFT, sub: `${BRAND.slug}.myshopify.com · last 28 days` },
+    shopify: { t: "Shopify", tag: "REVENUE TRUTH", tagC: GREEN_TX, tagB: GREEN_SOFT, sub: `${brand.shopifySlug}.myshopify.com · last 28 days` },
     runs: { t: "Runs", tag: "AGENT LOOP", tagC: "#6c5ce7", tagB: "var(--violet-soft)", sub: "Audit → Creative" },
     activity: { t: "Activity", tag: "AUDIT LOG", tagC: INK6, tagB: "var(--line)", sub: "Every agent decision, logged" },
     approvals: { t: "Tickets", tag: "BOARD", tagC: "#6c5ce7", tagB: "var(--violet-soft)", sub: "Propose → approve → execute · role-gated change control" },
@@ -399,7 +421,7 @@ export default function EngineV5({ onSignOut, cockpit = null, locked = false }: 
             {page === "runs" && <Runs setPage={setPage} setTickets={setTickets} viewer={viewer} />}
             {(page === "google" || page === "meta" || page === "shopify") && <SourcePage page={page} />}
             {page === "activity" && <Activity />}
-            {page === "profile" && <Profile viewer={viewer} setViewer={setViewer} onSignOut={onSignOut} />}
+            {page === "profile" && <Profile viewer={viewer} setViewer={setViewer} onSignOut={onSignOut} brand={brand} realEmail={user?.email} />}
           </div>
           {locked && <LockGate onSignOut={onSignOut} />}
         </div>
@@ -908,9 +930,9 @@ function Activity() {
 function DCFG(i: number) { return i === 0 ? "var(--green-soft)" : "var(--green-tx)"; }
 
 // ── PROFILE ─────────────────────────────────────────────────────────────────────
-function Profile({ viewer, setViewer, onSignOut }: { viewer: Member; setViewer: (m: Member) => void; onSignOut?: () => void }) {
+function Profile({ viewer, setViewer, onSignOut, brand, realEmail }: { viewer: Member; setViewer: (m: Member) => void; onSignOut?: () => void; brand: CockpitBrand; realEmail?: string }) {
   const [prefs, setPrefs] = useState({ email: true, approvals: true, digest: false });
-  const email = `${viewer.name.toLowerCase().replace(/ /g, ".")}@${viewer.org === "ROI Labs" ? "roilabs.in" : BRAND.slug + ".com"}`;
+  const email = viewer.id === "me" && realEmail ? realEmail : `${viewer.name.toLowerCase().replace(/ /g, ".")}@${viewer.org === "ROI Labs" ? "roilabs.in" : brand.shopifySlug + ".com"}`;
   const perms = [...effectivePerms(viewer)];
   const groups: [string, string[]][] = [
     ["Analytics & views", perms.filter((p) => p === "analytics.view" || p === "tickets.view")],
@@ -940,7 +962,7 @@ function Profile({ viewer, setViewer, onSignOut }: { viewer: Member; setViewer: 
 
       <div style={{ ...card, padding: 24, marginBottom: 18 }}>
         <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>Account</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>{field("FULL NAME", viewer.name)}{field("WORK EMAIL", email)}{field("ROLE", viewer.role[0].toUpperCase() + viewer.role.slice(1))}{field("WORKSPACE", BRAND.name)}</div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>{field("FULL NAME", viewer.name)}{field("WORK EMAIL", email)}{field("ROLE", viewer.role[0].toUpperCase() + viewer.role.slice(1))}{field("WORKSPACE", brand.name)}</div>
       </div>
 
       <div style={{ ...card, padding: 24, marginBottom: 18 }}>
@@ -951,7 +973,7 @@ function Profile({ viewer, setViewer, onSignOut }: { viewer: Member; setViewer: 
       </div>
 
       <div style={{ ...card, padding: 24, marginBottom: 18 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}><div style={{ fontSize: 16, fontWeight: 600 }}>Workspace · {BRAND.name}</div><span style={{ fontSize: 12.5, color: INK4 }}>{MEMBERS.length} members</span></div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}><div style={{ fontSize: 16, fontWeight: 600 }}>Workspace · {brand.name}</div><span style={{ fontSize: 12.5, color: INK4 }}>{MEMBERS.length} members</span></div>
         {MEMBERS.map((m, i) => (
           <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 13, padding: "13px 0", borderTop: i ? "1px solid var(--line)" : "none" }}>
             {mav(m, 36)}

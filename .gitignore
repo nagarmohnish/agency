@@ -72,3 +72,7 @@ demo assets/
 design/pages/roi-engine-dashboard.html
 # confidential business/legal material — never commit (note: pre-existing docs/* remain in history)
 /docs/
+
+# generated cockpit snapshots
+cockpit-astrotime.html
+astrotime-real-metrics.html

@@ -1,15 +1,17 @@
-// GET /api/engine/tenant-cockpit?slug= — the client dashboard's data feed.
-// Membership-gated exactly like tenant-access: the bearer (Supabase JWT or admin
-// token) must resolve to a member of <slug>, and we only ever assemble THAT
-// account's data. No ?accountId param → no IDOR; the slug is the trust boundary
-// and resolveTenant enforces membership server-side. Honest data only (D29).
+// GET /api/engine/tenant-cockpit?slug= — the tenant dashboard's data feed.
+// Membership-gated like tenant-access: the bearer (Supabase JWT or admin token)
+// must resolve to a member of <slug>, and we only ever assemble THAT account's
+// data (no ?accountId → no IDOR; the slug is the trust boundary). Returns the
+// FULL cockpit (real Shopify/Google where connected + the engine's modeled
+// assumptions, each flagged) plus the per-tenant brand.
 
 import { NextRequest, NextResponse } from "next/server";
 import { principal } from "@/lib/engine/auth";
 import { resolveTenant, adminResolveTenant } from "@/lib/engine/tenancy";
-import { getTenantCockpit } from "@/lib/engine/tenant-cockpit";
+import { getCockpitData } from "@/lib/engine/cockpit-data";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 90; // real Shopify/Google fetches can take a while
 
 export async function GET(req: NextRequest) {
   const slug = (req.nextUrl.searchParams.get("slug") ?? "").trim().toLowerCase();
@@ -23,10 +25,15 @@ export async function GET(req: NextRequest) {
   if (!t) return NextResponse.json({ error: "no access" }, { status: 403 });
 
   try {
-    const cockpit = await getTenantCockpit(t.account.id);
-    return NextResponse.json({ role: t.role, cockpit });
+    const cockpit = await getCockpitData(t.account.id).catch(() => null);
+    const brand = {
+      name: t.account.name,
+      mono: (t.account.name || "?").trim().charAt(0).toUpperCase(),
+      logoSrc: `/logos/${slug}.png`, // falls back to the initial if the file 404s
+      shopifySlug: slug,
+    };
+    return NextResponse.json({ role: t.role, cockpit, brand });
   } catch (e) {
-    // Log the real error server-side; never hand DB/infra detail to a client.
     console.error("tenant-cockpit failed", e);
     return NextResponse.json({ error: "Failed to load dashboard" }, { status: 500 });
   }

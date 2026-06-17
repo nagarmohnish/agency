@@ -20,6 +20,8 @@ Keep this in sync when files are added/moved/removed.
 - `src/app/api/engine/tenant-cockpit/route.ts` — membership-gated data feed (principal→resolveTenant; no `?accountId`).
 - `scripts/seed-credentials.mjs` — local: encrypt + upsert a company's connector creds into
   `engine_account_credentials` (run `node scripts/seed-credentials.mjs <slug>`). Secrets stay on the machine.
+- `scripts/build-cockpit-html.mjs` — builds `cockpit-astrotime.html` (one self-contained file: the real
+  TenantCockpit + /t/preview sample data + base64 logos, React/Babel via CDN). A shareable demo snapshot.
 - Connectors (`connectors/google.ts`, `connectors/meta.ts`, `shopify.ts`) read per-tenant creds via
   `credentials.ts` (`googleCreds/metaCreds/shopifyCreds(account.id)`), not global env (D30).
 

@@ -1,28 +1,44 @@
 "use client";
 
-// Per-company dashboard gate (D27/D29). Flow on <slug>.roilabs.in:
+// Per-company dashboard gate (D27 / D31). Flow on <slug>.roilabs.in:
 //   no Supabase session   -> the login screen
-//   session, is a member  -> the honest cockpit (TenantCockpit) with REAL data
+//   session, is a member  -> the full cockpit (EngineV5) for this tenant, with the
+//                            tenant's brand + the signed-in user's identity
 //   session, not a member -> a "no access" screen
-// One request does both jobs: /api/engine/tenant-cockpit is membership-gated
-// (principal -> resolveTenant) AND returns the account's honest data, so the
-// browser never sees the membership table or any other account's data.
+// One membership-gated request (/api/engine/tenant-cockpit) returns the account's
+// cockpit + brand; the browser never sees the membership table or another tenant.
 
 import { useEffect, useState } from "react";
 import { getSupabase } from "@/lib/supabase";
 import type { Session } from "@supabase/supabase-js";
 import Login from "@/app/engine/Login";
-import TenantCockpit from "./TenantCockpit";
-import type { TenantCockpit as TC } from "@/lib/engine/tenant-cockpit";
+import EngineV5, { type CockpitBrand, type CockpitUser } from "@/app/engine/v5";
+import type { CockpitData } from "@/lib/engine/cockpit-data";
+import type { Role } from "@/app/engine/tickets";
+import "@/app/engine/engine.css";
+
+type Payload = { role: string; cockpit: CockpitData | null; brand: CockpitBrand };
 
 const SPLASH = { height: "100vh", background: "#0E1422" } as const;
 const SHELL_BG = "radial-gradient(130% 120% at 50% -10%, #241e14 0%, #141009 62%)";
+
+const prettyName = (email: string) => {
+  const local = (email.split("@")[0] || "user").replace(/[._-]+/g, " ").trim();
+  return local.split(/\s+/).filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join(" ") || "User";
+};
+const asRole = (r: string): Role => (r === "admin" || r === "operator" || r === "viewer" ? r : "viewer");
+
+function userFromSession(session: Session, role: string): CockpitUser {
+  const md = (session.user.user_metadata ?? {}) as { full_name?: string; name?: string };
+  const email = session.user.email ?? "";
+  return { name: md.full_name || md.name || prettyName(email), email, role: asRole(role) };
+}
 
 export default function TenantShell({ slug }: { slug: string }) {
   const [ready, setReady] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const [state, setState] = useState<"checking" | "ok" | "denied" | "error">("checking");
-  const [payload, setPayload] = useState<{ role: string; cockpit: TC } | null>(null);
+  const [payload, setPayload] = useState<Payload | null>(null);
 
   useEffect(() => {
     const sb = (() => { try { return getSupabase(); } catch { return null; } })();
@@ -64,7 +80,14 @@ export default function TenantShell({ slug }: { slug: string }) {
   if (state === "checking") return <div style={SPLASH} />;
   if (state === "denied") return <NoAccess onSignOut={signOut} />;
   if (state === "error" || !payload) return <LoadError onSignOut={signOut} />;
-  return <TenantCockpit data={payload.cockpit} role={payload.role} onSignOut={signOut} />;
+  return (
+    <EngineV5
+      cockpit={payload.cockpit}
+      brand={payload.brand}
+      user={userFromSession(session, payload.role)}
+      onSignOut={signOut}
+    />
+  );
 }
 
 function Centered({ title, body, children }: { title: string; body: string; children?: React.ReactNode }) {
