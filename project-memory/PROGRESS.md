@@ -4,6 +4,23 @@ Convert relative dates to absolute. Newest changelog entry on top.
 
 ## Changelog
 
+### 2026-06-17 · Credentials cutover (D30) — per-tenant encrypted creds, onboarding = a DB row not a Vercel change
+Wired the connectors to read each company's creds from the encrypted `engine_account_credentials` table
+instead of global env, so adding a client no longer means editing Vercel.
+- **`connectors/google.ts`, `connectors/meta.ts`** — resolve creds via `googleCreds/metaCreds(account.id)`
+  (memoized per instance); widened the local `Account` interface with `id`. **`shopify.ts`** — `getRevenue`/
+  `shopifyPing` now take `accountId`, resolve via `shopifyCreds`; added `shopifyConfiguredFor(accountId)`.
+- **Callers updated:** `cockpit-data.ts` (getRevenue(account.id,90)), `revenue/route.ts`, `status/route.ts`.
+  `requireGoogle/requireMeta/requireShopify/shopifyConfigured` in config.ts are now dead exports (harmless).
+- **`scripts/seed-credentials.mjs`** (NEW) — local seed: parse `.env.local` → encrypt (AES-256-GCM, proven
+  byte-compatible with crypto.ts) → upsert. Hard-fails before writing if Google creds present but
+  `google_customer_id` is NULL on the row (override `--allow-missing-gcid`).
+- **Vercel split:** shared ONCE = Google OAuth app creds (3) + `ENGINE_CRED_ENC_KEY`. Per client = encrypted
+  DB row via the seed. Missing row → honest "awaiting" (no crash). `npm run verify` clean.
+- **9-agent security review:** secret-leak / cross-tenant-isolation (crypto + per-refresh-token cache) /
+  shape-match / caller-correctness all PASS. Confirmed the legacy-route IDOR is **pre-existing** (operator-
+  only `authorize()`, not client-reachable today) — close it before company #2 (Phase 2 remainder).
+
 ### 2026-06-17 · Phase 2 (real data, honest) — tenant cockpit shows live Shopify+Google, no fabrication
 Replaced the tenant dashboard's modeled demo (`EngineV5 cockpit={null}`) with a **dedicated honest cockpit**
 that renders ONLY data that genuinely exists (D29; user: "don't add data that is not present").

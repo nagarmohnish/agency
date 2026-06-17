@@ -2,14 +2,16 @@
 // cleanly on Vercel's Node runtime. Auth is OAuth2 refresh-token -> short-lived
 // access token, cached in-process until ~60s before expiry.
 //
-// Credentials come exclusively from config.ts (requireGoogle()); this file is
-// importable with no env set and only errors when a method is actually called.
+// Credentials are per-company (D27): the OAuth app creds stay global (config.ts),
+// but the refresh token + login-customer-id come from engine_account_credentials
+// via googleCreds(account.id). Importable with no env; errors only when a method runs.
 //
 // Reads use GAQL via customers/{id}/googleAds:searchStream. Mutations are routed
 // from MutationRequest.kind to the right REST mutate endpoint. We implement the
 // handful the loop needs now; unknown kinds throw clearly so the gate logs them.
 
-import { config, requireGoogle } from "../config";
+import { config } from "../config";
+import { googleCreds, type GoogleCreds } from "../credentials";
 import type { BreakdownRow, CampaignSummary, MetricRow, MutationRequest } from "../types";
 import type { AdConnector } from "./types";
 
@@ -44,6 +46,7 @@ const GENDER_LABEL: Record<string, string> = {
 const OAUTH_URL = "https://oauth2.googleapis.com/token";
 
 interface Account {
+  id: string;
   google_customer_id: string | null;
   google_login_customer_id: string | null;
 }
@@ -92,8 +95,16 @@ export class GoogleConnector implements AdConnector {
     return id;
   }
 
+  // Per-company credentials (D27), resolved once per connector instance. The
+  // OAuth app creds are global; the refresh token + login-customer-id are this
+  // company's, read from engine_account_credentials (env fallback during migration).
+  private credsP?: Promise<GoogleCreds>;
+  private creds(): Promise<GoogleCreds> {
+    return (this.credsP ??= googleCreds(this.account.id));
+  }
+
   private async headers(): Promise<Record<string, string>> {
-    const g = requireGoogle();
+    const g = await this.creds();
     const token = await getAccessToken(g);
     const h: Record<string, string> = {
       Authorization: `Bearer ${token}`,

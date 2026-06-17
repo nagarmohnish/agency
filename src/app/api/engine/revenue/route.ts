@@ -6,8 +6,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authorize } from "@/lib/engine/auth";
 import { getAccount, getDefaultAccount } from "@/lib/engine/db";
-import { getRevenue } from "@/lib/engine/shopify";
-import { shopifyConfigured } from "@/lib/engine/config";
+import { getRevenue, shopifyConfiguredFor } from "@/lib/engine/shopify";
 import { connectorFor } from "@/lib/engine/connectors";
 
 export const dynamic = "force-dynamic";
@@ -22,11 +21,11 @@ export async function GET(req: NextRequest) {
     const days = Math.min(90, Math.max(7, Number(url.searchParams.get("days")) || 30));
     const account = id ? await getAccount(id) : await getDefaultAccount();
 
-    if (!shopifyConfigured()) {
+    if (!(await shopifyConfiguredFor(account.id))) {
       return NextResponse.json({ configured: false, days });
     }
 
-    const shopify = await getRevenue(days);
+    const shopify = await getRevenue(account.id, days);
 
     // Reconcile against Meta's platform-reported purchase value (the Shopify
     // store's ads run on Meta), if Meta is connected.

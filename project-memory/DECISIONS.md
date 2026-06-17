@@ -442,3 +442,22 @@ via a new membership-gated `/api/engine/tenant-cockpit` route (principal → res
 (account.id)`) — IDOR-safe (slug is the trust boundary), so a member only ever sees their own account.
 Tenant range toggle is **7D/28D only** (Google Ads API caps at 30d; 90D would require extrapolation = a
 fabrication). [[D27]] [[D28]]
+
+### D30 · Credentials cutover — connectors read per-tenant ENCRYPTED creds, not global env (2026-06-17)
+So onboarding a client is a **DB row, not a Vercel change** (the user's scalability ask). The connectors
+(`GoogleConnector`, `MetaConnector`, `shopify.ts`) now resolve creds via `googleCreds/metaCreds/shopifyCreds
+(account.id)` from `engine_account_credentials` (AES-256-GCM), memoized per connector instance, instead of
+`requireGoogle/requireMeta/requireShopify` (global env). The split: **global in Vercel (once, shared):**
+Google OAuth *app* creds (client id/secret/dev token — it's your app), `ENGINE_CRED_ENC_KEY`, Supabase,
+Anthropic. **Per client (encrypted DB row, no Vercel):** Google refresh_token + login_customer_id, Shopify
+store_domain + admin_token, Meta system_user_token. `google_customer_id` stays a **non-secret field on the
+`engine_accounts` row** (it's the account you query; a global fallback would be a cross-tenant hazard).
+Seeded by **`scripts/seed-credentials.mjs <slug>`** (local: parses `.env.local`, encrypts, upserts — secrets
+never print/leave the machine; AES round-trip proven byte-compatible with `crypto.ts`). `getRevenue`/
+`shopifyPing` took an `accountId` param; callers (cockpit-data, revenue/status routes) updated. A missing row
+degrades **honestly** to "awaiting" (googleCreds/metaCreds throw→caught; shopifyCreds→null), not a crash.
+Env fallback (`ENGINE_CRED_ENV_FALLBACK=true`) is the migration backstop; off in steady state.
+Verified by a 9-agent security review: secret-leak/isolation/shape/caller all clean. **Known gap (NOT a
+cutover regression, deferred):** the 7 legacy `/api/engine/*` routes still gate via `authorize()`+`?accountId`
+(operator-only today, so not client-reachable) — close the IDOR with an `isAccountMember`/`authorizeAccount`
+guard **before company #2 or before opening those routes to members**. [[D27]] [[D29]]

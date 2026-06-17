@@ -9,7 +9,6 @@
 import { getAccount, getDefaultAccount } from "./db";
 import { getRevenue, type ShopRevenue } from "./shopify";
 import { connectorFor, configuredPlatforms } from "./connectors";
-import { shopifyConfigured } from "./config";
 import type { MetricRow } from "./types";
 
 export type Flag = "live" | "estimated";
@@ -107,7 +106,8 @@ export async function getCockpitData(accountId?: string): Promise<CockpitData> {
   const platforms = configuredPlatforms(account);
 
   const [shop, gRows] = await Promise.all([
-    shopifyConfigured() ? getRevenue(90).catch(() => null) : Promise.resolve(null),
+    // throws if Shopify isn't connected for this account → caught → null → "awaiting"
+    getRevenue(account.id, 90).catch(() => null),
     platforms.includes("google")
       ? connectorFor(account, "google").getMetrics(30).catch(() => [] as MetricRow[])
       : Promise.resolve([] as MetricRow[]),

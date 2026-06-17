@@ -1,13 +1,14 @@
 // Meta Marketing API connector — Graph API over fetch, system-user token.
-// Like the Google connector, importable with no env; only methods that hit the
-// API require the token (requireMeta()).
+// Like the Google connector, importable with no env; the system-user token is
+// per-company (metaCreds(account.id)) and only resolved when a method runs.
 //
 // The account id is stored as "act_1234567890". Reads use /campaigns and
 // /insights; mutations POST to the entity id (status/budget) — Meta returns the
 // updated entity. New entities are created with status=PAUSED unless explicitly
 // (and approvedly) set live, matching the official Meta Ads MCP's safe default.
 
-import { config, requireMeta } from "../config";
+import { config } from "../config";
+import { metaCreds, type MetaCreds } from "../credentials";
 import type { BreakdownDimension, BreakdownRow, CampaignSummary, MetricRow, MutationRequest } from "../types";
 import type { AdConnector } from "./types";
 
@@ -20,12 +21,19 @@ const META_NETWORK_LABEL: Record<string, string> = {
 };
 
 interface Account {
+  id: string;
   meta_ad_account_id: string | null;
 }
 
 export class MetaConnector implements AdConnector {
   readonly platform = "meta" as const;
   constructor(private account: Account) {}
+
+  // Per-company system-user token (D27), resolved once per connector instance.
+  private credsP?: Promise<MetaCreds>;
+  private creds(): Promise<MetaCreds> {
+    return (this.credsP ??= metaCreds(this.account.id));
+  }
 
   private adAccount(): string {
     const id = this.account.meta_ad_account_id?.trim();
@@ -38,7 +46,7 @@ export class MetaConnector implements AdConnector {
   }
 
   private async get(path: string, params: Record<string, string>): Promise<Record<string, unknown>> {
-    const { accessToken } = requireMeta();
+    const { accessToken } = await this.creds();
     const qs = new URLSearchParams({ ...params, access_token: accessToken });
     const res = await fetch(`${this.base()}${path}?${qs}`);
     const json = (await res.json()) as Record<string, unknown>;
@@ -49,7 +57,7 @@ export class MetaConnector implements AdConnector {
   }
 
   private async postForm(path: string, fields: Record<string, string>): Promise<Record<string, unknown>> {
-    const { accessToken } = requireMeta();
+    const { accessToken } = await this.creds();
     const body = new URLSearchParams({ ...fields, access_token: accessToken });
     const res = await fetch(`${this.base()}${path}`, {
       method: "POST",

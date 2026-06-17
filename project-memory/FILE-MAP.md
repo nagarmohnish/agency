@@ -18,6 +18,10 @@ Keep this in sync when files are added/moved/removed.
   ops). Reuses v5 design tokens; NO fabrication code.
 - `src/lib/engine/tenant-cockpit.ts` — `getTenantCockpit(accountId)`: honest, live-only assembler + trimmed ops.
 - `src/app/api/engine/tenant-cockpit/route.ts` — membership-gated data feed (principal→resolveTenant; no `?accountId`).
+- `scripts/seed-credentials.mjs` — local: encrypt + upsert a company's connector creds into
+  `engine_account_credentials` (run `node scripts/seed-credentials.mjs <slug>`). Secrets stay on the machine.
+- Connectors (`connectors/google.ts`, `connectors/meta.ts`, `shopify.ts`) read per-tenant creds via
+  `credentials.ts` (`googleCreds/metaCreds/shopifyCreds(account.id)`), not global env (D30).
 
 ## Engine library — `src/lib/engine/`
 - `config.ts` — single place all credentials + safety rails are read. `requireX()`

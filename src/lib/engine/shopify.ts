@@ -10,7 +10,7 @@
 // Auth: custom-app Admin API access token (shpat_...) via X-Shopify-Access-Token.
 // Scopes: read_orders (required) + read_customers (for new-vs-returning).
 
-import { config, requireShopify } from "./config";
+import { shopifyCreds, type ShopifyCreds } from "./credentials";
 
 /** One order, parsed to the fact shape the dashboard consumes (matches the v2
  *  fact_orders model so live + demo run through the same metrics). */
@@ -42,13 +42,11 @@ export interface ShopRevenue {
   orderList: ShopOrder[]; // order-level facts for attribution / new-returning / products
 }
 
-function base(): string {
-  const s = requireShopify();
+function base(s: ShopifyCreds): string {
   return `https://${s.storeDomain}/admin/api/${s.apiVersion}`;
 }
 
-async function shopFetch(url: string): Promise<{ json: Record<string, unknown>; link: string | null }> {
-  const { adminToken } = requireShopify();
+async function shopFetch(url: string, adminToken: string): Promise<{ json: Record<string, unknown>; link: string | null }> {
   const res = await fetch(url, {
     headers: { "X-Shopify-Access-Token": adminToken, "Content-Type": "application/json" },
   });
@@ -66,12 +64,19 @@ function nextLink(link: string | null): string | null {
   return m ? m[1] : null;
 }
 
-/** Cheap connectivity/credential check. */
-export async function shopifyPing(): Promise<{ ok: boolean; detail: string }> {
+/** Is Shopify connected for this account (DB credential row, or env fallback)? */
+export async function shopifyConfiguredFor(accountId: string): Promise<boolean> {
+  return (await shopifyCreds(accountId)) != null;
+}
+
+/** Cheap connectivity/credential check for one account. */
+export async function shopifyPing(accountId: string): Promise<{ ok: boolean; detail: string }> {
   try {
-    const { json } = await shopFetch(`${base()}/shop.json`);
+    const s = await shopifyCreds(accountId);
+    if (!s) return { ok: false, detail: "Shopify not connected for this account." };
+    const { json } = await shopFetch(`${base(s)}/shop.json`, s.adminToken);
     const shop = (json.shop ?? {}) as { name?: string; currency?: string };
-    return { ok: true, detail: `Connected to ${shop.name ?? config.shopify.storeDomain} (${shop.currency ?? "?"})` };
+    return { ok: true, detail: `Connected to ${shop.name ?? s.storeDomain} (${shop.currency ?? "?"})` };
   } catch (e) {
     return { ok: false, detail: e instanceof Error ? e.message : String(e) };
   }
@@ -127,17 +132,19 @@ function toFact(o: RawOrder): ShopOrder {
 }
 
 /** Real revenue over the last `days` days — order-level facts + daily series. */
-export async function getRevenue(days: number): Promise<ShopRevenue> {
+export async function getRevenue(accountId: string, days: number): Promise<ShopRevenue> {
+  const s = await shopifyCreds(accountId);
+  if (!s) throw new Error("Shopify not connected for this account.");
   const since = new Date(Date.now() - days * 86400000).toISOString();
   const fields = "id,created_at,current_total_price,total_price,total_line_items_price,subtotal_price,total_discounts,currency,cancelled_at,landing_site,customer,discount_codes,refunds,line_items";
-  let url = `${base()}/orders.json?status=any&created_at_min=${encodeURIComponent(since)}&limit=250&fields=${fields}`;
+  let url = `${base(s)}/orders.json?status=any&created_at_min=${encodeURIComponent(since)}&limit=250&fields=${fields}`;
 
   const orderList: ShopOrder[] = [];
   let currency = "";
   let pages = 0;
   while (url && pages < 40) {
     pages++;
-    const { json, link } = await shopFetch(url);
+    const { json, link } = await shopFetch(url, s.adminToken);
     const batch = (json.orders ?? []) as RawOrder[];
     for (const o of batch) {
       if (o.cancelled_at) continue; // exclude cancelled orders
