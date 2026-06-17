@@ -4,6 +4,17 @@ Convert relative dates to absolute. Newest changelog entry on top.
 
 ## Changelog
 
+### 2026-06-17 · Shipped everything to roilabs.in production
+Merged `feat/cockpit-darkmode-login` → **master** (fast-forward) and **deployed the agency project to
+roilabs.in** (`vercel --prod` → `Aliased https://roilabs.in`, READY). Live now: the **Login** nav CTA
+(→ `/engine?login=1`), the **charcoal header bar** (matches the login: `radial-gradient(#241e14→#141009)`),
+the **Payments & subscriptions** integrations (Stripe/Razorpay/PayPal/UPI), the **redesigned login**, and
+the **v5 cockpit w/ dark mode** — which stays **token-gated** on roilabs.in (no `engine.` host / no
+`NEXT_PUBLIC_ENGINE_AUTH`, so the public Supabase teaser + dummy brand only run on engine.roilabs.in;
+roilabs.in's gated cockpit keeps the real "The Astro Time" brand). Verified /, /engine, /integrations,
+/audit all 200; header gradient + Login + payments confirmed live. The locked-teaser charcoal experiment
+was **reverted** first (back to the blurred light card) per user. Active gh account left on **nagarmohnish**.
+
 ### 2026-06-17 · engine.roilabs.in shipped — brand isolation, Calendly, Google OAuth, redeploy (D25)
 Continuation of the engine.roilabs.in build below — got it production-ready end-to-end.
 - **Env-gated brand (`BRAND` in `tickets.ts`)** so a real client name never shows to public sign-ups:
