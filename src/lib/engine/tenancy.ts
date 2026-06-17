@@ -40,6 +40,17 @@ export async function adminResolveTenant(slug: string): Promise<ResolvedTenant |
   return { account: data as unknown as EngineAccount, role: "admin" };
 }
 
+/** The roster for an account (email + role) — for the cockpit team list. */
+export async function listMembers(accountId: string): Promise<{ email: string; role: Role }[]> {
+  const { data, error } = await db()
+    .from("engine_account_users")
+    .select("email, role")
+    .eq("account_id", accountId)
+    .order("created_at", { ascending: true });
+  if (error || !data) return [];
+  return data as { email: string; role: Role }[];
+}
+
 /** Every company this email may access — for the picker / multi-company users. */
 export async function tenantsForUser(email: string): Promise<TenantSummary[]> {
   const { data, error } = await db()

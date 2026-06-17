@@ -226,12 +226,14 @@ function PayChip({ id, size = 30 }: { id: string; size?: number }) {
   );
 }
 
-export default function EngineV5({ onSignOut, cockpit = null, locked = false, brand: brandProp, user }: { onSignOut?: () => void; cockpit?: CockpitData | null; locked?: boolean; brand?: CockpitBrand; user?: CockpitUser } = {}) {
+export default function EngineV5({ onSignOut, cockpit = null, locked = false, brand: brandProp, user, members }: { onSignOut?: () => void; cockpit?: CockpitData | null; locked?: boolean; brand?: CockpitBrand; user?: CockpitUser; members?: Member[] } = {}) {
   // Brand: per-tenant when provided, else the global demo brand.
   const brand: CockpitBrand = brandProp ?? { name: BRAND.name, mono: BRAND.mono, logoSrc: BRAND.logo ? "/logos/astrotime.png" : null, shopifySlug: BRAND.slug };
-  // The signed-in member (their real name/role) — used as the viewer when present.
+  // Team roster: the tenant's real members when provided, else the seeded demo team.
+  const team: Member[] = members && members.length ? members : MEMBERS;
+  // The signed-in member: prefer their real roster entry (so "· you" matches), else build from the session.
   const meMember: Member | null = user
-    ? { id: "me", name: user.name, initials: (user.name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase() || "?"), color: "#4F5BD5", org: brand.name, title: user.role[0].toUpperCase() + user.role.slice(1), role: user.role }
+    ? (team.find((m) => m.id === user.email) ?? { id: user.email, name: user.name, initials: (user.name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase() || "?"), color: "#4F5BD5", org: brand.name, title: user.email, role: user.role })
     : null;
   const [page, setPage] = useState<Page>("overview");
   const [range, setRange] = useState<RangeKey>("28D");
@@ -239,7 +241,7 @@ export default function EngineV5({ onSignOut, cockpit = null, locked = false, br
   const D = cockpit?.ranges?.[range] ?? FALLBACK[range];
   const live = D.store.flag === "live";
   const [tickets, setTickets] = useState<Ticket[]>(SEED_TICKETS);
-  const [viewer, setViewer] = useState<Member>(meMember ?? MEMBERS[1]); // real signed-in member, or demo default
+  const [viewer, setViewer] = useState<Member>(meMember ?? team[0] ?? MEMBERS[1]); // real signed-in member, or demo default
   const [tfilter, setTfilter] = useState<string>("all"); // tickets board filter (all | mine | <type>)
   const pending = tickets.filter((t) => t.status === "awaiting").length;
   const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -314,7 +316,7 @@ export default function EngineV5({ onSignOut, cockpit = null, locked = false, br
       <div style={{ ...monoLabel, margin: "20px 0 6px 4px" }}>BY TYPE</div>
       <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>{pItem("Budget", "budget")}{pItem("Creative", "creative")}{pItem("Campaign", "campaign")}{pItem("Tracking", "tracking")}</div>
       <div style={{ ...monoLabel, margin: "20px 0 10px 4px" }}>TEAM</div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>{MEMBERS.map((m) => <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>{mav(m, 30)}<div style={{ flex: 1, minWidth: 0 }}><div style={{ fontSize: 12.5, fontWeight: 600 }}>{m.name}</div><div style={{ fontSize: 10.5, color: INK4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{m.title}</div></div></div>)}</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>{team.map((m) => <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>{mav(m, 30)}<div style={{ flex: 1, minWidth: 0 }}><div style={{ fontSize: 12.5, fontWeight: 600 }}>{m.name}</div><div style={{ fontSize: 10.5, color: INK4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{m.title}</div></div></div>)}</div>
     </>
   );
   const runsBody = (
@@ -417,11 +419,11 @@ export default function EngineV5({ onSignOut, cockpit = null, locked = false, br
           <div style={locked ? { filter: "blur(7px)", pointerEvents: "none", userSelect: "none" } : undefined} aria-hidden={locked || undefined}>
             {PageHead}
             {page === "overview" && <Overview D={D} range={range} setRange={setRange} live={live} pending={pending} setPage={setPage} />}
-            {page === "approvals" && <TicketsBoard tickets={tickets} setTickets={setTickets} viewer={viewer} setViewer={setViewer} tfilter={tfilter} />}
+            {page === "approvals" && <TicketsBoard tickets={tickets} setTickets={setTickets} viewer={viewer} setViewer={setViewer} tfilter={tfilter} members={team} />}
             {page === "runs" && <Runs setPage={setPage} setTickets={setTickets} viewer={viewer} />}
             {(page === "google" || page === "meta" || page === "shopify") && <SourcePage page={page} />}
             {page === "activity" && <Activity />}
-            {page === "profile" && <Profile viewer={viewer} setViewer={setViewer} onSignOut={onSignOut} brand={brand} realEmail={user?.email} />}
+            {page === "profile" && <Profile viewer={viewer} setViewer={setViewer} onSignOut={onSignOut} brand={brand} realEmail={user?.email} members={team} />}
           </div>
           {locked && <LockGate onSignOut={onSignOut} />}
         </div>
@@ -930,7 +932,7 @@ function Activity() {
 function DCFG(i: number) { return i === 0 ? "var(--green-soft)" : "var(--green-tx)"; }
 
 // ── PROFILE ─────────────────────────────────────────────────────────────────────
-function Profile({ viewer, setViewer, onSignOut, brand, realEmail }: { viewer: Member; setViewer: (m: Member) => void; onSignOut?: () => void; brand: CockpitBrand; realEmail?: string }) {
+function Profile({ viewer, setViewer, onSignOut, brand, realEmail, members }: { viewer: Member; setViewer: (m: Member) => void; onSignOut?: () => void; brand: CockpitBrand; realEmail?: string; members: Member[] }) {
   const [prefs, setPrefs] = useState({ email: true, approvals: true, digest: false });
   const email = viewer.id === "me" && realEmail ? realEmail : `${viewer.name.toLowerCase().replace(/ /g, ".")}@${viewer.org === "ROI Labs" ? "roilabs.in" : brand.shopifySlug + ".com"}`;
   const perms = [...effectivePerms(viewer)];
@@ -973,8 +975,8 @@ function Profile({ viewer, setViewer, onSignOut, brand, realEmail }: { viewer: M
       </div>
 
       <div style={{ ...card, padding: 24, marginBottom: 18 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}><div style={{ fontSize: 16, fontWeight: 600 }}>Workspace · {brand.name}</div><span style={{ fontSize: 12.5, color: INK4 }}>{MEMBERS.length} members</span></div>
-        {MEMBERS.map((m, i) => (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}><div style={{ fontSize: 16, fontWeight: 600 }}>Workspace · {brand.name}</div><span style={{ fontSize: 12.5, color: INK4 }}>{members.length} members</span></div>
+        {members.map((m, i) => (
           <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 13, padding: "13px 0", borderTop: i ? "1px solid var(--line)" : "none" }}>
             {mav(m, 36)}
             <div style={{ flex: 1, minWidth: 0 }}><div style={{ fontSize: 14, fontWeight: 600 }}>{m.name}{m.id === viewer.id && <span style={{ fontSize: 11, color: ACCENT, fontWeight: 600 }}> · you</span>}</div><div style={{ fontSize: 12, color: INK4 }}>{m.title}</div></div>
@@ -1076,7 +1078,7 @@ function TicketDrawer({ t, viewer, onClose, setStatus }: { t: Ticket; viewer: Me
   );
 }
 
-function TicketsBoard({ tickets, setTickets, viewer, setViewer, tfilter }: { tickets: Ticket[]; setTickets: (f: (t: Ticket[]) => Ticket[]) => void; viewer: Member; setViewer: (m: Member) => void; tfilter: string }) {
+function TicketsBoard({ tickets, setTickets, viewer, setViewer, tfilter, members }: { tickets: Ticket[]; setTickets: (f: (t: Ticket[]) => Ticket[]) => void; viewer: Member; setViewer: (m: Member) => void; tfilter: string; members: Member[] }) {
   const matchFilter = (t: Ticket) => tfilter === "all" || (tfilter === "mine" ? t.approverId === viewer.id : t.type === tfilter);
   const [sel, setSel] = useState<string | null>(null);
   const [vaOpen, setVaOpen] = useState(false);
@@ -1104,7 +1106,7 @@ function TicketsBoard({ tickets, setTickets, viewer, setViewer, tfilter }: { tic
             {vaOpen && (<>
               <div onClick={() => setVaOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 40 }} />
               <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, zIndex: 50, background: "var(--card)", border: `1px solid ${LINE}`, borderRadius: 12, boxShadow: "0 16px 40px -10px rgba(27,36,64,.25)", padding: 6, width: 290 }}>
-                {MEMBERS.map((m) => (
+                {members.map((m) => (
                   <button key={m.id} onClick={() => { setViewer(m); setVaOpen(false); }} className="v5-row" style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", border: "none", background: m.id === viewer.id ? "#f5f6fa" : "transparent", borderRadius: 9, padding: "8px 9px", cursor: "pointer", textAlign: "left" }}>
                     {mav(m, 30)}
                     <div style={{ flex: 1, minWidth: 0 }}><div style={{ fontWeight: 600, fontSize: 13 }}>{m.name}</div><div style={{ fontSize: 11, color: INK4 }}>{m.title}</div></div>

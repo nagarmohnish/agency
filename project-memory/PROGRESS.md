@@ -19,7 +19,10 @@ Pivot from the lean honest cockpit to the complete demo cockpit on `<slug>.roila
   `/engine/preview` dev route (full cockpit, no gate), `cockpit-astrotime.html` single-file generator.
 - `npm run verify` clean. `/engine/preview` renders 200 with 6 LIVE + 4 EST. **For real numbers on prod the
   agency Vercel needs connector creds** (`ENGINE_CRED_ENV_FALLBACK=true` + env creds, or the seed); without
-  them the cockpit shows all-EST. Tickets/runs/team = demo content.
+  them the cockpit shows all-EST. Tickets/runs = demo content; the **team list is the real account roster**
+  (`engine_account_users` emails+roles, via `listMembers` → returned by the route → shown in the profile
+  workspace, panel TEAM, and the "viewing as" picker; names derived from email, the signed-in user shows
+  their real name).
 
 ### 2026-06-17 · Tenant cockpit polish — fix marketing-nav overlap + default to light mode
 - **Nav/footer overlap:** `Navbar.tsx`/`Footer.tsx` hid the global marketing chrome on `/engine*` but NOT

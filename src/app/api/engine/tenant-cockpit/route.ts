@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { principal } from "@/lib/engine/auth";
-import { resolveTenant, adminResolveTenant } from "@/lib/engine/tenancy";
+import { resolveTenant, adminResolveTenant, listMembers } from "@/lib/engine/tenancy";
 import { getCockpitData } from "@/lib/engine/cockpit-data";
 
 export const dynamic = "force-dynamic";
@@ -25,14 +25,17 @@ export async function GET(req: NextRequest) {
   if (!t) return NextResponse.json({ error: "no access" }, { status: 403 });
 
   try {
-    const cockpit = await getCockpitData(t.account.id).catch(() => null);
+    const [cockpit, members] = await Promise.all([
+      getCockpitData(t.account.id).catch(() => null),
+      listMembers(t.account.id),
+    ]);
     const brand = {
       name: t.account.name,
       mono: (t.account.name || "?").trim().charAt(0).toUpperCase(),
       logoSrc: `/logos/${slug}.png`, // falls back to the initial if the file 404s
       shopifySlug: slug,
     };
-    return NextResponse.json({ role: t.role, cockpit, brand });
+    return NextResponse.json({ role: t.role, cockpit, brand, members });
   } catch (e) {
     console.error("tenant-cockpit failed", e);
     return NextResponse.json({ error: "Failed to load dashboard" }, { status: 500 });

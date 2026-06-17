@@ -14,10 +14,10 @@ import type { Session } from "@supabase/supabase-js";
 import Login from "@/app/engine/Login";
 import EngineV5, { type CockpitBrand, type CockpitUser } from "@/app/engine/v5";
 import type { CockpitData } from "@/lib/engine/cockpit-data";
-import type { Role } from "@/app/engine/tickets";
+import type { Member, Role } from "@/app/engine/tickets";
 import "@/app/engine/engine.css";
 
-type Payload = { role: string; cockpit: CockpitData | null; brand: CockpitBrand };
+type Payload = { role: string; cockpit: CockpitData | null; brand: CockpitBrand; members: { email: string; role: string }[] };
 
 const SPLASH = { height: "100vh", background: "#0E1422" } as const;
 const SHELL_BG = "radial-gradient(130% 120% at 50% -10%, #241e14 0%, #141009 62%)";
@@ -30,8 +30,22 @@ const asRole = (r: string): Role => (r === "admin" || r === "operator" || r === 
 
 function userFromSession(session: Session, role: string): CockpitUser {
   const md = (session.user.user_metadata ?? {}) as { full_name?: string; name?: string };
-  const email = session.user.email ?? "";
+  const email = (session.user.email ?? "").toLowerCase();
   return { name: md.full_name || md.name || prettyName(email), email, role: asRole(role) };
+}
+
+const PALETTE = ["#4F5BD5", "#e07b6b", "#2bbf7a", "#c08a2e", "#8a92f5", "#6c5ce7"];
+const initialsOf = (name: string) => name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase() || "?";
+
+// The account roster → v5 Member rows for the team list. We don't store names, so
+// they're derived from the email; the signed-in user shows their real name.
+function toTeam(roster: { email: string; role: string }[], session: Session, org: string): Member[] {
+  const myEmail = (session.user.email ?? "").toLowerCase();
+  return roster.map((m, i) => {
+    const isMe = m.email.toLowerCase() === myEmail;
+    const name = isMe ? userFromSession(session, m.role).name : prettyName(m.email);
+    return { id: m.email.toLowerCase(), name, initials: initialsOf(name), color: PALETTE[i % PALETTE.length], org, title: m.email, role: asRole(m.role) };
+  });
 }
 
 export default function TenantShell({ slug }: { slug: string }) {
@@ -85,6 +99,7 @@ export default function TenantShell({ slug }: { slug: string }) {
       cockpit={payload.cockpit}
       brand={payload.brand}
       user={userFromSession(session, payload.role)}
+      members={toTeam(payload.members, session, payload.brand.name)}
       onSignOut={signOut}
     />
   );
