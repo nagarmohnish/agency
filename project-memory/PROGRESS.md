@@ -4,6 +4,20 @@ Convert relative dates to absolute. Newest changelog entry on top.
 
 ## Changelog
 
+### 2026-06-17 · Multi-tenant Phase 1 — tenant-subdomain routing + membership gate (additive)
+Built the `<slug>.roilabs.in` dashboard surface. **Additive** — does NOT touch `/engine` or the apex
+marketing (the funnel-split of `roilabs.in/engine` is a later sub-step).
+- **`src/proxy.ts`** (Next 16 proxy, was middleware): host → slug → rewrite `<slug>.roilabs.in/*` →
+  `/_tenant/<slug>/*`. Apex/`www`/`engine`/reserved + `/api/*` + assets pass through unchanged.
+- **`src/app/_tenant/[slug]/{page,TenantShell}.tsx`**: client gate — no session → `Login`; session +
+  member → `EngineV5` (cockpit=null modeled data for now); session + non-member → "no access" screen.
+- **`src/app/api/engine/tenant-access/route.ts`**: server membership check (`principal` → `resolveTenant`/
+  `adminResolveTenant`); unknown-slug == not-a-member (403). Browser never sees the membership table.
+- **`auth.ts`**: added `principal(req)` (D27) → `{kind:"admin"}` or `{kind:"user", email}` from a verified
+  Supabase JWT (membership checked separately, NOT the operator allowlist).
+`npm run verify` clean. **To go live:** needs the Phase-0 migration + backfill applied (member email) +
+deploy; then `astrotime.roilabs.in` → login → the Astro Time dashboard. Real per-tenant data + brand = Phase 2.
+
 ### 2026-06-17 · Multi-tenant Phase 0 (foundation) built — additive, Astro Time untouched
 Built D27 Phase 0 (all additive — nothing wired into request paths yet, so the live single-account cockpit
 keeps running off env):
