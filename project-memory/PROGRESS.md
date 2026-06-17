@@ -4,12 +4,73 @@ Convert relative dates to absolute. Newest changelog entry on top.
 
 ## Changelog
 
+### 2026-06-17 · Phase 2 (real data, honest) — tenant cockpit shows live Shopify+Google, no fabrication
+Replaced the tenant dashboard's modeled demo (`EngineV5 cockpit={null}`) with a **dedicated honest cockpit**
+that renders ONLY data that genuinely exists (D29; user: "don't add data that is not present").
+- **`src/lib/engine/tenant-cockpit.ts`** (NEW) — `getTenantCockpit(accountId)`: reuses `getCockpitData` but
+  keeps only **live-flagged** store (Shopify) + google fields, drops modeled meta/subscriptions and the
+  extrapolated 90D, recomputes blended MER from live spend only, and trims ops rows (no raw payloads). Range
+  is **7D/28D only** (Google API caps at 30d). Honest types: store/google are `null` until connected.
+- **`src/app/api/engine/tenant-cockpit/route.ts`** (NEW) — membership-gated (principal→resolveTenant), one
+  call that both gates and returns data; no `?accountId` (IDOR-safe). 500s return a generic message (no DB
+  detail to client).
+- **`src/app/t/[slug]/TenantCockpit.tsx`** (NEW) — lean client cockpit, reuses v5 design tokens (dark mode,
+  fonts, cards, 80% zoom). Real revenue + ad-performance + MER; **"awaiting" cards** for Meta/subscriptions/
+  GA4; **real ops** (Runs/Approvals/Activity) with honest empty states. No FALLBACK/modeled code — honest by
+  construction.
+- **`TenantShell.tsx`** now fetches `/api/engine/tenant-cockpit` and renders `TenantCockpit` (was the demo
+  v5). `cockpit-data.ts` `getCockpitData(accountId?)` + `audit-log.ts` `recentRuns()` added.
+- **Connectors read GLOBAL env** (`config.google`/`config.shopify`), not the per-tenant creds table yet — so
+  real numbers appear ONLY if the **agency** Vercel project has the Google + Shopify env vars. The cockpit is
+  self-diagnosing: each source shows real numbers + `LIVE`, or an "awaiting" card if its env is absent.
+- **Verified** by a 10-agent adversarial review: fabrication-leak/IDOR/secret-PII all PASS; the 4 runtime
+  "blockers" were dismissed (NOT-NULL cols + type guards make NaN/null unreachable, `tsc` clean); fixed the
+  one confirmed finding (500 error sanitize) + cheap `timeAgo`/`money` finite-guards. `npm run verify` clean.
+- ⚠️ Still required before company #2: the other 8 `/api/engine/*` routes use `authorize()`+`?accountId`
+  (operator-scoped, IDOR) — Phase 2 remainder. The tenant path is clean; those are not yet.
+
+### 2026-06-17 · Multi-tenant Phase 1 LIVE end-to-end ✅
+`astrotime.roilabs.in` → login → dashboard works in production for an authorized member. Confirmed by the
+user (signed in with one of the four roster emails, reached the cockpit). The full spine is proven: subdomain
+proxy rewrite (`/t/<slug>`), Supabase session from the LEADS project, and the membership gate querying the
+ENGINE project.
+- **Roster set** (engine DB, `engine_account_users` for slug `astrotime`): `mohnish.nagar@roilabs.in`,
+  `aniketnagar2@gmail.com`, `begoofos@gmail.com` = admin; `support@roilabs.in` = viewer. "Only these four"
+  enforced (delete-not-in-list). Role differences are cosmetic in Phase 1 (everyone sees the same modeled
+  cockpit); they diverge in Phase 3.
+- **Prereqs completed by user:** agency Vercel now has `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` =
+  ENGINE project (`xcszgeypiehclulltzoh`), Sensitive, Prod+Preview, redeployed (commit 48cf3a4, the
+  `/t/[slug]` fix). LEADS Auth redirect URL `https://astrotime.roilabs.in/` added for Google sign-in.
+- **What it shows:** MODELED data (`EngineV5 cockpit={null}`, "EST" badges) under the static "Astro Time"
+  brand — NOT real numbers yet. ⚠️ **Security gate before onboarding company #2:** the other 8
+  `/api/engine/*` routes are NOT membership-gated yet (Phase 2). Safe today (one tenant only), but a second
+  tenant MUST NOT be added until Phase 2 closes the `?accountId` IDOR.
+
+### 2026-06-17 · Phase 1 route fix (`_tenant`→`t`, deployed) + verified safe backfill
+- **Bug:** `astrotime.roilabs.in` 404'd because `src/app/_tenant/` uses an `_` prefix → App Router treats
+  it as a PRIVATE folder (not routed). **Fix:** renamed the route to `src/app/t/[slug]/` and repointed the
+  `src/proxy.ts` rewrite to `/t/<slug>`. Deployed to roilabs.in (agency). Verified live: `astrotime.roilabs.in`
+  → 200, "ROI Engine" shell (not the homepage); `tenant-access` API returns 401 on no/bad token.
+- **Backfill hardened** (a 5-agent verification workflow caught 3 blockers in the naive backfill): created
+  **`supabase/backfill_astrotime.sql`** — SELECT-first, target the ONE account by UUID (never
+  `where slug is null` — slug is UNIQUE, a multi-row hit aborts), `lower(trim(email))` (resolveTenant looks
+  up lowercased; column has no `lower()` constraint → mixed-case = silent "No access"), `on conflict … do
+  update` (idempotent). Fixed the misleading backfill comment in the migration to point at this file. See D28.
+- **Confirmed off-path for Phase 1** (don't ask the user for these): `ENGINE_CRED_ENC_KEY`,
+  `ENGINE_CRED_ENV_FALLBACK`, `ENGINE_OPERATOR_EMAILS`, connector tokens, any `engine_account_credentials`
+  rows. Tenant gate uses membership via `principal()`, NOT the operator allowlist. Phase-1 dashboard shows
+  **modeled** numbers (EngineV5 `cockpit=null`, "EST" badges) under the static "Astro Time" brand.
+- **Cross-console prereqs surfaced:** on agency Vercel, `SUPABASE_URL` must be set EXPLICITLY to the ENGINE
+  project (`xcszgeypiehclulltzoh`) — the `NEXT_PUBLIC_SUPABASE_URL` fallback points at LEADS and would make
+  the gate deny everyone. Google sign-in on the subdomain needs `https://astrotime.roilabs.in/` added to the
+  LEADS project's Auth → Redirect URLs (email/password works without it).
+
 ### 2026-06-17 · Multi-tenant Phase 1 — tenant-subdomain routing + membership gate (additive)
 Built the `<slug>.roilabs.in` dashboard surface. **Additive** — does NOT touch `/engine` or the apex
 marketing (the funnel-split of `roilabs.in/engine` is a later sub-step).
 - **`src/proxy.ts`** (Next 16 proxy, was middleware): host → slug → rewrite `<slug>.roilabs.in/*` →
-  `/_tenant/<slug>/*`. Apex/`www`/`engine`/reserved + `/api/*` + assets pass through unchanged.
-- **`src/app/_tenant/[slug]/{page,TenantShell}.tsx`**: client gate — no session → `Login`; session +
+  `/t/<slug>/*`. Apex/`www`/`engine`/reserved + `/api/*` + assets pass through unchanged.
+- **`src/app/t/[slug]/{page,TenantShell}.tsx`**: client gate — no session → `Login`; session +
   member → `EngineV5` (cockpit=null modeled data for now); session + non-member → "no access" screen.
 - **`src/app/api/engine/tenant-access/route.ts`**: server membership check (`principal` → `resolveTenant`/
   `adminResolveTenant`); unknown-slug == not-a-member (403). Browser never sees the membership table.

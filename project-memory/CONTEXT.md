@@ -80,6 +80,17 @@ Shopify orders. The most defensible version of "measured in revenue, not ROAS."
 - ⚠️ **Go-live blocker:** `roi-engine` has Vercel **Deployment Protection** ON (401) — must be disabled in
   the dashboard before engine.roilabs.in is publicly reachable. (Couldn't be toggled via CLI/token.)
 
+### Operator SSO (D26, 2026-06-17)
+- **Reuses the existing leads-project Google/email auth** — the Supabase Google provider + callback were
+  already configured & tested for engine.roilabs.in (see above), so SSO needed **no new provider setup**.
+- **To enable operator access on roilabs.in (the real cockpit):** the user must (1) set
+  `ENGINE_OPERATOR_EMAILS=<comma-separated emails>` on the **agency** Vercel project + `.env.local` (leave it
+  **off** roi-engine so engine.roilabs.in stays a teaser); (2) add `https://roilabs.in/engine` and the local
+  `http://localhost:<port>/engine` to Supabase → Auth → **Redirect URLs** (current list has
+  `engine.roilabs.in/engine` + `localhost:3002/engine` only). Agency already has `NEXT_PUBLIC_SUPABASE_*`.
+- **Local testing:** `.env.local` has no `NEXT_PUBLIC_ENGINE_DEMO`, so local `/engine` is already real-auth —
+  add `ENGINE_OPERATOR_EMAILS` locally + ensure the dev port's `/engine` is in the Supabase redirect list.
+
 ## Credentials checklist (operator-owned; secrets live in `.env.local`)
 
 | Need | Status |
@@ -87,5 +98,6 @@ Shopify orders. The most defensible version of "measured in revenue, not ROAS."
 | `SUPABASE_SERVICE_ROLE_KEY` (Revenue_tech) | operator adding |
 | `ANTHROPIC_API_KEY` | operator adding |
 | `ENGINE_ADMIN_TOKEN` | operator adding |
+| `ENGINE_OPERATOR_EMAILS` (SSO allowlist, D26) | operator adding (agency project + `.env.local`) |
 | `META_SYSTEM_USER_TOKEN` + ad account id | operator adding (Meta first) |
 | Google dev token / OAuth / refresh / MCC id | after Basic token approved |

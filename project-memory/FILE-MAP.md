@@ -5,6 +5,19 @@ Keep this in sync when files are added/moved/removed.
 ## Database
 - `supabase/migrations/20260610130000_create_engine.sql` — the `engine_*` tables,
   RLS-locked to the service role. Applied to the `Revenue_tech` project.
+- `supabase/migrations/20260617120000_engine_multitenant.sql` — D27: `slug` on
+  `engine_accounts` + `engine_account_users` (email↔account↔role) +
+  `engine_account_credentials` (encrypted). Idempotent; service-role only.
+- `supabase/backfill_astrotime.sql` — D28: per-tenant bring-up SQL (SELECT-first,
+  target one account by UUID, lowercase email, idempotent). Run by hand after the
+  multitenant migration. NOT applied automatically.
+
+## Tenant cockpit (client-facing `<slug>.roilabs.in`) — D29
+- `src/app/t/[slug]/page.tsx` + `TenantShell.tsx` — route + session/membership gate (fetches the cockpit).
+- `src/app/t/[slug]/TenantCockpit.tsx` — honest client cockpit (real Shopify+Google, awaiting-cards, real
+  ops). Reuses v5 design tokens; NO fabrication code.
+- `src/lib/engine/tenant-cockpit.ts` — `getTenantCockpit(accountId)`: honest, live-only assembler + trimmed ops.
+- `src/app/api/engine/tenant-cockpit/route.ts` — membership-gated data feed (principal→resolveTenant; no `?accountId`).
 
 ## Engine library — `src/lib/engine/`
 - `config.ts` — single place all credentials + safety rails are read. `requireX()`
@@ -15,7 +28,10 @@ Keep this in sync when files are added/moved/removed.
   run start/finish, `recentActions`. Writes the audit trail.
 - `governance.ts` — the gate: `gatedMutate` (decides execute/approve/skip/simulate,
   enforces autonomy + cap + dry-run) and `executeApproved`.
-- `auth.ts` — `authorize(req)` bearer guard for the ops routes (fail-closed).
+- `auth.ts` — `authorize(req)` **async** bearer guard for the ops routes (fail-closed).
+  Accepts EITHER the static `ENGINE_ADMIN_TOKEN` (constant-time) OR an allowlisted
+  operator's Supabase access token (validated via `getUser` against the leads
+  project; allowlist = `ENGINE_OPERATOR_EMAILS`). All 8 routes `await authorize`. (D26)
 - `runner.ts` — high-level `runAudit(accountId)` + `verifyConnections(account)`.
 - `shopify.ts` — Shopify Admin API (revenue source of truth; NOT an ad connector):
   `shopifyPing` + `getRevenue(days)` (orders pagination, daily series, AOV).
@@ -50,16 +66,22 @@ Keep this in sync when files are added/moved/removed.
 ## Dashboard — `src/app/engine/` (ROI Engine)
 - `page.tsx` — route + metadata (title "ROI Engine", noindex) + `viewport.themeColor
   = #FFFFFF`. **Now renders `Shell`** (was `Dashboard`).
-- **`Shell.tsx`** — route entry; gates on `ready` first (no cockpit flash). **Three modes (D25):**
-  (1) **Supabase** when `engineAuthMode()` (`NEXT_PUBLIC_ENGINE_AUTH=supabase` OR host `engine.*`) →
-  real Supabase session gate → `EngineV5 locked` (the engine.roilabs.in teaser); (2) **demo**
-  (`DEMO=1`) → `roi_user` localStorage gate → full cockpit; (3) **live** → admin-token gate (posts to
-  `/api/engine/status`). Renders `EngineV5` (atlas) or `EngineAurora` (`variant="aurora"`). (D15, D19, D25)
+- **`Shell.tsx`** — route entry; gates on `ready` first (no cockpit flash). **Two modes (D26 rework):**
+  (1) **internal static demo** = `demoOnly()` (`DEMO=1` AND not the `engine.*`/supabase host) →
+  `roi_user` localStorage gate → full cockpit, no login; (2) **real-auth** (everything else — both
+  roilabs.in/engine and engine.roilabs.in) → Supabase login (Google/email) + admin-token fallback.
+  After sign-in it **probes `/api/engine/status`** with the session access token: an allowlisted
+  **operator** (`ENGINE_OPERATOR_EMAILS` on that deployment) → **full** `EngineV5`; anyone else →
+  `EngineV5 locked` teaser. **Real `cockpit` data is fed only to operators** (`locked` ⇒ `cockpit=null`)
+  so real numbers never ship to a non-operator. Atlas (`EngineV5`) or `EngineAurora` (`variant="aurora"`).
+  (D15, D19, D25, **D26**)
 - **`Login.tsx`** — the **sign-in screen** = **centered single card** on landing-header charcoal + gold,
   animated gold-glow backdrop, 90% default zoom (D23 reskin). One card: Continue-with-Google + email/
   password with a **Sign in ⇄ Create account** toggle. Three auth paths via props: **`supabaseAuth`** →
   real Supabase signUp/signInWithPassword/signInWithOAuth(google)/signOut (D25); **`demo`** → persists
   `roi_user` to localStorage; else → admin-token gate (`onSubmitToken`). Poppins + `#4F5BD5`/gold.
+  Since D26 real-auth mode passes **`supabaseAuth` AND `onSubmitToken` together** — Google/email plus the
+  "Operator? admin token" fallback on the same screen.
 - **`v3aurora.tsx`** — **roilabs.in (Aurora) themed** variant of the cockpit at route
   `/engine/aurora`. **Generated** from `v3.tsx` by `scripts/make-aurora-theme.mjs` (palette+font
   remap: gold accent, warm neutrals, Sora/Manrope). Don't hand-edit — edit `v3.tsx` then re-run

@@ -143,6 +143,18 @@ export async function finishRun(
   if (error) throw new Error(`Failed to finish run ${id}: ${error.message}`);
 }
 
+/** Recent runs for an account, newest first. */
+export async function recentRuns(accountId: string, limit = 10): Promise<EngineRun[]> {
+  const { data, error } = await db()
+    .from("engine_runs")
+    .select("*")
+    .eq("account_id", accountId)
+    .order("started_at", { ascending: false })
+    .limit(limit);
+  if (error) throw new Error(`Failed to load runs: ${error.message}`);
+  return (data ?? []) as EngineRun[];
+}
+
 /** Recent actions for an account — the raw material for a case study. */
 export async function recentActions(accountId: string, limit = 200): Promise<EngineAction[]> {
   const { data, error } = await db()

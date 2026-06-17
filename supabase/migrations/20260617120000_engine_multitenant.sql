@@ -41,7 +41,8 @@ drop trigger if exists engine_account_credentials_touch on public.engine_account
 create trigger engine_account_credentials_touch before update on public.engine_account_credentials
   for each row execute function public.engine_touch_updated_at();
 
--- Backfill is data-specific and run separately (see ENGINE.md / the deploy notes):
---   update public.engine_accounts set slug = 'astrotime' where slug is null;   -- the one existing account
---   insert into public.engine_account_users (account_id, email, role)
---     select id, 'you@roilabs.in', 'admin' from public.engine_accounts where slug = 'astrotime';
+-- Backfill is data-specific and run separately: see supabase/backfill_astrotime.sql.
+-- DO NOT `update ... set slug='astrotime' where slug is null` blindly — slug is
+-- UNIQUE, so if >1 account has a null slug that update aborts on a unique_violation.
+-- Target ONE row by its UUID, and store the member email lowercased (resolveTenant
+-- looks it up with trim().toLowerCase(), and this column has no lower() constraint).

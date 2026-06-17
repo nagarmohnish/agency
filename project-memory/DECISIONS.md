@@ -408,3 +408,37 @@ off env (AES-GCM) + a `*.roilabs.in` wildcard + `middleware.ts`. **Option 1** (p
 roilabs.in/engine; Astro Time → `astrotime.roilabs.in`) is **Step 1** of a 9-step migration. Two latent
 cross-tenant bugs flagged to fix (google token-cache singleton; `unstable_cache` key must include
 `accountId`). Design + plan stage — not yet built.
+
+### D28 · Tenant backfill is SELECT-first + target-by-UUID + lowercase email (2026-06-17)
+The canonical per-tenant bring-up SQL lives in **`supabase/backfill_astrotime.sql`** (not a blind snippet in
+the migration comment). A 5-agent verification workflow caught three blockers in the obvious form:
+(1) `update engine_accounts set slug='astrotime' where slug is null` is a blind multi-row write against a
+**UNIQUE** column — if >1 account has a null slug it aborts on `unique_violation`; so we **SELECT first, then
+UPDATE the one row by its full UUID** (`and slug is null` only as a no-clobber guard). (2) The membership
+INSERT must be **idempotent** (`on conflict (account_id, email) do update set role=excluded.role`) — the PK is
+`(account_id, email)`. (3) The stored email **must be lowercased** (`lower(trim(...))`): `resolveTenant`
+looks it up with `trim().toLowerCase()` but the column has no `lower()` constraint, so a mixed-case row
+silently fails the gate ("No access" with nothing to debug). Same verification confirmed Phase-1 needs **no**
+`ENGINE_CRED_ENC_KEY`/connector creds (modeled data, `cockpit=null`), that `ENGINE_OPERATOR_EMAILS` is
+**off-path** for the tenant gate (it uses `principal()` membership, not the operator allowlist), and that
+agency Vercel must set `SUPABASE_URL` **explicitly** to the ENGINE project (the `NEXT_PUBLIC_SUPABASE_URL`
+fallback points at LEADS and would deny everyone). Google sign-in on a subdomain needs
+`https://<slug>.roilabs.in/` in the LEADS project's Auth → Redirect URLs.
+
+### D29 · Tenant cockpit is a dedicated honest component, not the demo v5 with a flag (2026-06-17)
+The client-facing tenant dashboard (`<slug>.roilabs.in`) renders **only data that genuinely exists** — no
+modeled/placeholder numbers (user: "don't add data that is not present"). A 4-agent map found the existing
+`/engine` cockpit (`src/app/engine/v5.tsx`, 1124 lines) is a **self-contained sales demo**: ~20 fabrication
+sites (static KPIS/SIGNALS/APPROVAL_CARDS/RUN_HISTORY arrays, a sin/cos `modeledRange` FALLBACK, an entirely
+modeled GA4 audience, and even the "real" assembler `cockpit-data.ts` invents Meta at 74%/3.22× ROAS,
+subscriptions at 38%, and extrapolates Google 90D). Retrofitting an `honest` prop would touch all ~20 sites,
+risk leaking fabricated data to a client, and could break the demo. **Decision:** build a separate, lean
+`src/app/t/[slug]/TenantCockpit.tsx` that reuses v5's design tokens/chrome but is **honest by construction**
+(it has no fabrication code, so it physically cannot show what isn't there). The demo v5 cockpit stays for
+the internal `/engine` surface. Product choices (locked with the user): unconnected sources (Meta,
+subscriptions, GA4) render **"awaiting-connection" cards**, not hidden; **ops sections included** (Runs,
+Approvals, Activity) wired to **real** `engine_runs`/`engine_actions` with honest empty states. Data flows
+via a new membership-gated `/api/engine/tenant-cockpit` route (principal → resolveTenant → `getTenantCockpit
+(account.id)`) — IDOR-safe (slug is the trust boundary), so a member only ever sees their own account.
+Tenant range toggle is **7D/28D only** (Google Ads API caps at 30d; 90D would require extrapolation = a
+fabrication). [[D27]] [[D28]]

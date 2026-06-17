@@ -6,7 +6,7 @@
 // subscriptions via Stripe/PayPal/Razorpay/UPI) are filled with clearly-flagged
 // **estimations** derived from the real store numbers. Read-only.
 
-import { getDefaultAccount } from "./db";
+import { getAccount, getDefaultAccount } from "./db";
 import { getRevenue, type ShopRevenue } from "./shopify";
 import { connectorFor, configuredPlatforms } from "./connectors";
 import { shopifyConfigured } from "./config";
@@ -102,8 +102,8 @@ function buildRange(key: RangeKey, shop: ShopRevenue | null, gRows: MetricRow[])
 
 /** Fetch real source data once and build all three ranges. Throws on failure so
  *  the caller can fall back to modeled data. */
-export async function getCockpitData(): Promise<CockpitData> {
-  const account = await getDefaultAccount();
+export async function getCockpitData(accountId?: string): Promise<CockpitData> {
+  const account = accountId ? await getAccount(accountId) : await getDefaultAccount();
   const platforms = configuredPlatforms(account);
 
   const [shop, gRows] = await Promise.all([
