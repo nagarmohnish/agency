@@ -44,7 +44,7 @@ function rollup(rows: MetricRow[]): Kpis {
 }
 
 export async function GET(req: NextRequest) {
-  const auth = authorize(req);
+  const auth = await authorize(req);
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
   try {
     const url = new URL(req.url);

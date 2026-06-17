@@ -8,7 +8,7 @@ import { db, getAccount, getDefaultAccount } from "@/lib/engine/db";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  const auth = authorize(req);
+  const auth = await authorize(req);
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
   try {
     const id = new URL(req.url).searchParams.get("accountId");

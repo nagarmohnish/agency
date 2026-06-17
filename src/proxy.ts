@@ -26,7 +26,7 @@ export function proxy(req: NextRequest) {
   if (!slug) return NextResponse.next();
   const url = req.nextUrl.clone();
   const path = req.nextUrl.pathname === "/" ? "" : req.nextUrl.pathname;
-  url.pathname = `/_tenant/${slug}${path}`;
+  url.pathname = `/t/${slug}${path}`;
   return NextResponse.rewrite(url);
 }
 
