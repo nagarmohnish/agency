@@ -4,6 +4,13 @@ Convert relative dates to absolute. Newest changelog entry on top.
 
 ## Changelog
 
+### 2026-06-17 · Landing: Integrations preview section → live on roilabs.in
+Added an **Integrations preview** to the homepage (`AuroraHome.tsx`, between How-it-works and Plans):
+`#integrations-preview` — eyebrow + "Plugged into your **whole stack.**" + **8 logo cards** (Google, Meta,
+Shopify, GA4, Stripe, Razorpay, HubSpot, TikTok) + a **"See all integrations →"** CTA to `/integrations`.
+Aurora Light styling (`.iglogos`/`.iglogo`/`.ig-cta` in `aurora.css`). Built, shown on local for approval,
+then **deployed to roilabs.in** (`vercel --prod`) and verified live (section + 8 cards + CTA present).
+
 ### 2026-06-17 · Shipped everything to roilabs.in production
 Merged `feat/cockpit-darkmode-login` → **master** (fast-forward) and **deployed the agency project to
 roilabs.in** (`vercel --prod` → `Aliased https://roilabs.in`, READY). Live now: the **Login** nav CTA
