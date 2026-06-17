@@ -367,3 +367,44 @@ A public, lead-gen front door for the engine — **isolated from the roilabs.in 
   A separate `roi-engine` project (env `NEXT_PUBLIC_ENGINE_AUTH=supabase`, `…_DEMO=1`, Supabase keys,
   Calendly) with `engine.roilabs.in` attached keeps roilabs.in 100% untouched. DNS is auto (roilabs.in on
   Vercel nameservers). **Go-live still needs the user to disable Deployment Protection on `roi-engine`.**
+
+### D26 · Operator SSO — allowlisted Google/email accounts unlock the cockpit, alongside the admin token (2026-06-17)
+Builds real single-sign-on for operators and **supersedes D25's "roilabs.in stays token-only / 100%
+untouched"** — roilabs.in/engine now also offers Supabase login.
+- **Auth model (server, `auth.ts`):** `authorize()` is now **async** and accepts EITHER the static
+  `ENGINE_ADMIN_TOKEN` (unchanged constant-time compare) **OR** a valid Supabase **access token** whose
+  email is in `ENGINE_OPERATOR_EMAILS`. The JWT is validated with `getUser` against the **leads** project
+  (`NEXT_PUBLIC_SUPABASE_URL/ANON`, the one the browser signs into) — NOT the engine DB project. All 8
+  `/api/engine/*` routes `await authorize`. Still **fail-closed**: neither configured ⇒ 503.
+- **No new endpoint / no token in the browser:** the client uses the operator's own Supabase access token
+  as the bearer; the cockpit gate reuses **`/api/engine/status`** as the probe (200 ⇒ operator, else
+  teaser). The shared admin token is never shipped to a browser.
+- **Access gated by deployment env, not by host branching:** set `ENGINE_OPERATOR_EMAILS` on the **agency**
+  project (roilabs.in) ⇒ the team gets full access there; leave it **off** `roi-engine` ⇒ engine.roilabs.in
+  stays the pure lead-gen teaser (D25 intent preserved). Empty allowlist ⇒ SSO grants no one.
+- **Shell collapsed from 3 modes to 2:** `demoOnly()` (internal static showcase, `DEMO=1` without the
+  `engine.*`/supabase host) keeps the no-login demo; **everything else is "real-auth"** (Supabase login +
+  admin-token fallback). Enabled on roilabs.in via `!DEMO` — **no env change needed** there.
+- **Data-leak guard:** the locked teaser is now fed `cockpit=null` (its safe modeled estimates). Previously
+  the real `cockpit` payload was sent to every `locked` render — fine on engine.roilabs.in (dummy data) but
+  it would have leaked real "The Astro Time" numbers to any signed-in non-operator once login opened up on
+  roilabs.in. Real source data now reaches **operators only**.
+- **Operator setup (user):** add `ENGINE_OPERATOR_EMAILS` (agency Vercel + `.env.local`); add
+  `https://roilabs.in/engine` + the local `localhost:<port>/engine` to Supabase → Auth → Redirect URLs (the
+  Google provider itself was already configured for engine.roilabs.in). See ENGINE.md "Operator sign-in".
+- **Why not enterprise SAML/OIDC:** considered; deferred. Needs Supabase Pro + per-customer IdP metadata —
+  premature for an internal operator tool. Google OAuth via the existing Supabase client covers it today.
+
+### D27 · Multi-tenant per-company dashboards (subdomain, email-membership, per-tenant creds) (2026-06-17)
+Each company gets its own dashboard + access + integrations. Full spec: **`documentation/MULTI-TENANT.md`**.
+Locked choices: **subdomain per company** (`<slug>.roilabs.in`); **both clients + ROI Labs team log in**,
+role-gated (clients=viewer, team=operator/admin); **only ROI Labs invites** (v1). Membership keyed by
+**email** (works before sign-up); identity in the LEADS Supabase project, tenant data + encrypted creds in
+the ENGINE project. Builds on D26's operator-SSO `authorize()` (which it extends from a yes/no gate to a
+principal + per-tenant membership check, retiring `ENGINE_OPERATOR_EMAILS`). Grounded in code: the 7
+`engine_*` tables are already `account_id`-partitioned, so it's 3 new tables (`slug`,
+`engine_account_users`, `engine_account_credentials`) + a `resolveTenant(slug,email)` gate + moving creds
+off env (AES-GCM) + a `*.roilabs.in` wildcard + `middleware.ts`. **Option 1** (public funnel at
+roilabs.in/engine; Astro Time → `astrotime.roilabs.in`) is **Step 1** of a 9-step migration. Two latent
+cross-tenant bugs flagged to fix (google token-cache singleton; `unstable_cache` key must include
+`accountId`). Design + plan stage — not yet built.

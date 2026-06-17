@@ -4,6 +4,36 @@ Convert relative dates to absolute. Newest changelog entry on top.
 
 ## Changelog
 
+### 2026-06-17 · Multi-tenant architecture designed (D27) — subdomain per company
+Ran a design pass (workflow: map existing engine/account model → 2 tenancy approaches → synthesis) and
+locked the architecture for **per-company dashboards** with **per-company access + integrations**. Spec:
+**`documentation/MULTI-TENANT.md`** (D27). Choices: **subdomain per company** (`<slug>.roilabs.in`); **both
+clients + ROI Labs team log in** (role-gated); **only ROI Labs invites** (email-keyed membership). Key
+finding: the engine DB is already `account_id`-partitioned, so it's 3 tables + a `resolveTenant` gate +
+creds-off-env + a `*.roilabs.in` wildcard, not a rewrite. **Option 1** (funnel at roilabs.in/engine, Astro
+Time → `astrotime.roilabs.in`) = Step 1 of a 9-step plan. **Not yet built** — awaiting go-ahead to start
+Phase 0 (migrations + tenancy resolver + the 2 cross-tenant bug fixes).
+
+### 2026-06-17 · Operator SSO — Google/email accounts unlock the cockpit (D26)
+Built real single-sign-on for operators, on **both** surfaces, alongside the admin token. Code only —
+needs the user's env + one Supabase redirect-URL add to go live.
+- **`auth.ts`** `authorize()` is now **async** and accepts EITHER `ENGINE_ADMIN_TOKEN` (unchanged
+  constant-time) **OR** an allowlisted operator's Supabase access token (validated via `getUser` against
+  the leads project; allowlist `ENGINE_OPERATOR_EMAILS`). All 8 `/api/engine/*` routes `await authorize`.
+  Still fail-closed (503 if neither configured). New `config.operator` block in `config.ts`.
+- **`Shell.tsx`** collapsed 3 modes → 2: `demoOnly()` (internal static demo, no login) + **real-auth**
+  (Supabase login + admin-token fallback, on both roilabs.in/engine and engine.roilabs.in). After sign-in
+  it probes `/api/engine/status` with the session access token → allowlisted **operator** = full cockpit,
+  else **locked teaser**. The Google "SSO isn't wired yet" dead-end on roilabs.in is gone.
+- **Data-leak fix:** the locked teaser is now fed `cockpit=null` — real source data reaches **operators
+  only** (previously the real payload shipped to every locked render; would have leaked real numbers once
+  login opened on roilabs.in).
+- **Verified:** `npm run verify` (next build + tsc) green; all 8 routes + Shell typecheck.
+- **Remaining (user):** (1) `ENGINE_OPERATOR_EMAILS=…` on the **agency** Vercel project + `.env.local`
+  (leave OFF roi-engine so engine.roilabs.in stays a teaser); (2) add `https://roilabs.in/engine` +
+  local `localhost:<port>/engine` to Supabase → Auth → Redirect URLs (Google provider already configured);
+  (3) redeploy agency (`vercel --prod`, not auto). See ENGINE.md "Operator sign-in".
+
 ### 2026-06-17 · Landing: Integrations preview section → live on roilabs.in
 Added an **Integrations preview** to the homepage (`AuroraHome.tsx`, between How-it-works and Plans):
 `#integrations-preview` — eyebrow + "Plugged into your **whole stack.**" + **8 logo cards** (Google, Meta,
