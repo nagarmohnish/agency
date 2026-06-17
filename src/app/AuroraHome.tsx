@@ -89,6 +89,29 @@ const HTML = `
   </div>
 </section>
 
+<section id="integrations-preview">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <p class="ey">Integrations</p>
+      <h2>Plugged into your <span class="grad">whole stack.</span></h2>
+      <p>Ads, store revenue, recurring payments and measurement — connected so every campaign is judged on real outcomes, not platform-reported vanity metrics.</p>
+    </div>
+    <div class="iglogos" data-reveal>
+      <div class="iglogo"><img src="${BP}/logos/google.jpg" alt="Google Ads" loading="lazy" /><span>Google Ads</span></div>
+      <div class="iglogo"><img src="${BP}/logos/meta.png" alt="Meta Ads" loading="lazy" /><span>Meta Ads</span></div>
+      <div class="iglogo"><img src="${BP}/logos/shopify.svg" alt="Shopify" loading="lazy" /><span>Shopify</span></div>
+      <div class="iglogo"><img src="${BP}/logos/ga4.png" alt="GA4" loading="lazy" /><span>GA4</span></div>
+      <div class="iglogo"><img src="${BP}/logos/stripe.png" alt="Stripe" loading="lazy" /><span>Stripe</span></div>
+      <div class="iglogo"><img src="${BP}/logos/razorpay.png" alt="Razorpay" loading="lazy" /><span>Razorpay</span></div>
+      <div class="iglogo"><img src="${BP}/logos/hubspot.png" alt="HubSpot" loading="lazy" /><span>HubSpot</span></div>
+      <div class="iglogo"><img src="${BP}/logos/tiktok.png" alt="TikTok Ads" loading="lazy" /><span>TikTok Ads</span></div>
+    </div>
+    <div class="ig-cta" data-reveal>
+      <a href="/integrations" class="btn btn-pri btn-lg">See all integrations →</a>
+    </div>
+  </div>
+</section>
+
 <section id="plans">
   <div class="wrap">
     <div class="sec-head" data-reveal>

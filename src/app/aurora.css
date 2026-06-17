@@ -72,6 +72,15 @@ html:has(.aurora){scroll-behavior:smooth;}
 .aurora h2{font-family:var(--disp);font-weight:700;font-size:clamp(30px,4.2vw,48px);line-height:1.07;letter-spacing:-.03em;margin:14px 0 0;}
 .aurora .sec-head p{font-size:18px;color:var(--muted);margin:16px 0 0;}
 
+/* integrations preview (landing) */
+.aurora .iglogos{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:920px;margin:0 auto 40px;}
+.aurora .iglogo{display:flex;align-items:center;gap:13px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:var(--sh);transition:transform .2s,box-shadow .2s,border-color .2s;}
+.aurora .iglogo:hover{transform:translateY(-3px);box-shadow:var(--sh-lg);border-color:rgba(250,204,21,.6);}
+.aurora .iglogo img{width:30px;height:30px;object-fit:contain;border-radius:7px;flex:none;}
+.aurora .iglogo span{font-weight:600;font-size:14.5px;color:var(--ink);letter-spacing:-.01em;}
+.aurora .ig-cta{text-align:center;}
+@media(max-width:780px){.aurora .iglogos{grid-template-columns:repeat(2,1fr);}}
+
 /* broken card */
 .aurora .broken{border:1px solid var(--line);border-radius:24px;background:var(--surface);box-shadow:var(--sh-lg);padding:54px;text-align:center;position:relative;overflow:hidden;}
 .aurora .broken::before{content:"";position:absolute;top:-40%;left:50%;transform:translateX(-50%);width:620px;height:420px;background:radial-gradient(ellipse,rgba(240,183,58,.18),transparent 62%);}
