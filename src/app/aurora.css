@@ -35,7 +35,7 @@ html:has(.aurora){scroll-behavior:smooth;}
 
 /* nav */
 .aurora nav{position:sticky;top:0;z-index:50;background:transparent;padding:14px 16px 0;}
-.aurora .nv{position:relative;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 14px 12px 24px;background:rgba(26,23,18,.94);backdrop-filter:blur(14px);border:1px solid #2C2820;border-radius:22px;box-shadow:0 14px 34px -16px rgba(20,16,8,.55);transition:box-shadow .25s;}
+.aurora .nv{position:relative;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 14px 12px 24px;background:radial-gradient(130% 120% at 50% -10%,#241e14 0%,#141009 62%);border:1px solid #2C2820;border-radius:22px;box-shadow:0 14px 34px -16px rgba(20,16,8,.55);transition:box-shadow .25s;}
 .aurora .brand{display:flex;align-items:center;gap:10px;font-family:var(--disp);font-weight:700;font-size:19px;letter-spacing:-.02em;}
 .aurora .brand img{height:34px;width:auto;display:block;}
 .aurora .nv-links{position:absolute;left:50%;transform:translateX(-50%);display:flex;gap:30px;font-size:15px;color:#C9BFAC;font-weight:500;}
