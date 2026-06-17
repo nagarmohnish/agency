@@ -71,6 +71,38 @@ export const config = {
   // never public — a missing token blocks all access (fail closed).
   adminToken: env("ENGINE_ADMIN_TOKEN"),
 
+  // --- Operator SSO (Supabase Google/email → email allowlist) ---------
+  // An allowlisted operator who signs in via Supabase (Google or email) gets
+  // full cockpit access — their Supabase *access token* is validated as a
+  // bearer here, as an alternative to the static adminToken. Access is gated by
+  // which deployment carries `ENGINE_OPERATOR_EMAILS`: set it on the agency
+  // project (roilabs.in) so operators get in there; leave it off engine.* so
+  // that surface stays the locked "book a demo" teaser. Empty list = SSO grants
+  // no access (the adminToken path is unaffected). See ENGINE.md.
+  operator: {
+    // The Supabase project that ISSUES the browser session — i.e. the same one
+    // getSupabase()/NEXT_PUBLIC_SUPABASE_* point at (the leads project), NOT the
+    // engine DB project in `supabase` above. Used only to validate the JWT.
+    authUrl: env("NEXT_PUBLIC_SUPABASE_URL"),
+    authAnonKey: env("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
+    emails: env("ENGINE_OPERATOR_EMAILS")
+      .split(",")
+      .map((e) => e.trim().toLowerCase())
+      .filter(Boolean),
+  },
+
+  // --- Per-company integration credentials (D27 multi-tenant) ---------
+  // Each company's Google/Meta/Shopify secrets live encrypted in
+  // engine_account_credentials, not in env. `encKey` decrypts them.
+  creds: {
+    // 32-byte key (base64 or hex) for AES-256-GCM of engine_account_credentials.
+    encKey: env("ENGINE_CRED_ENC_KEY"),
+    // Migration switch: if a company has no credential row yet, fall back to the
+    // global google/meta/shopify env above — so the original single account keeps
+    // running off env until its creds are moved into the DB. Off in steady state.
+    envFallback: env("ENGINE_CRED_ENV_FALLBACK") === "true",
+  },
+
   // --- Engine-wide safety rails ---------------------------------------
   // These are the GLOBAL ceiling. Per-account caps live on the account row
   // and are enforced as min(account cap, global cap).

@@ -4,6 +4,25 @@ Convert relative dates to absolute. Newest changelog entry on top.
 
 ## Changelog
 
+### 2026-06-17 · Multi-tenant Phase 0 (foundation) built — additive, Astro Time untouched
+Built D27 Phase 0 (all additive — nothing wired into request paths yet, so the live single-account cockpit
+keeps running off env):
+- **Migration** `supabase/migrations/20260617120000_engine_multitenant.sql`: `slug` on `engine_accounts` +
+  `engine_account_users` (email↔account↔role, invite-by-email) + `engine_account_credentials` (encrypted
+  per-tenant secrets), RLS-on/no-policies like the rest. **Not applied yet** (user runs it; backfill SQL is
+  in the file's trailing comment).
+- **`src/lib/engine/tenancy.ts`** — `resolveTenant(slug,email)` (membership-join gate; unknown-slug ==
+  not-a-member), `adminResolveTenant`, `tenantsForUser`.
+- **`src/lib/engine/crypto.ts`** — AES-256-GCM via `config.creds.encKey` (`ENGINE_CRED_ENC_KEY`).
+- **`src/lib/engine/credentials.ts`** — `googleCreds/metaCreds/shopifyCreds(accountId)`: read+decrypt the
+  per-tenant row, **env fallback** when `ENGINE_CRED_ENV_FALLBACK=true` + no row (migration safety).
+- **`config.ts`** — added `creds {encKey, envFallback}`.
+- **Cross-tenant bug #1 FIXED:** `connectors/google.ts` token cache singleton → `Map` keyed by refresh
+  token (per company). Bug #2 (`page.tsx` `unstable_cache` key needs `accountId`) lands in Phase 1/6 when
+  `/engine` goes funnel-only + the per-tenant page threads `accountId` (no-op today, one account).
+`npm run verify` clean. **User prereqs before Phase 1:** add `*.roilabs.in` wildcard on Vercel; apply the
+migration + set `ENGINE_CRED_ENC_KEY` (`openssl rand -base64 32`) on the agency project + `.env.local`.
+
 ### 2026-06-17 · Multi-tenant architecture designed (D27) — subdomain per company
 Ran a design pass (workflow: map existing engine/account model → 2 tenancy approaches → synthesis) and
 locked the architecture for **per-company dashboards** with **per-company access + integrations**. Spec:

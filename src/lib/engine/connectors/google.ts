@@ -48,13 +48,14 @@ interface Account {
   google_login_customer_id: string | null;
 }
 
-let accessTokenCache: { token: string; expiresAt: number } | null = null;
+// Cache access tokens PER refresh-token (i.e. per company), not process-wide.
+// A global singleton would hand company B company A's token once creds go
+// per-tenant (D27) — a silent cross-tenant leak. Key = refresh token.
+const accessTokenCache = new Map<string, { token: string; expiresAt: number }>();
 
-async function getAccessToken(): Promise<string> {
-  if (accessTokenCache && Date.now() < accessTokenCache.expiresAt) {
-    return accessTokenCache.token;
-  }
-  const g = requireGoogle();
+async function getAccessToken(g: { clientId: string; clientSecret: string; refreshToken: string }): Promise<string> {
+  const cached = accessTokenCache.get(g.refreshToken);
+  if (cached && Date.now() < cached.expiresAt) return cached.token;
   const body = new URLSearchParams({
     client_id: g.clientId,
     client_secret: g.clientSecret,
@@ -70,10 +71,10 @@ async function getAccessToken(): Promise<string> {
     throw new Error(`Google OAuth failed (${res.status}): ${await res.text()}`);
   }
   const json = (await res.json()) as { access_token: string; expires_in: number };
-  accessTokenCache = {
+  accessTokenCache.set(g.refreshToken, {
     token: json.access_token,
     expiresAt: Date.now() + (json.expires_in - 60) * 1000,
-  };
+  });
   return json.access_token;
 }
 
@@ -93,7 +94,7 @@ export class GoogleConnector implements AdConnector {
 
   private async headers(): Promise<Record<string, string>> {
     const g = requireGoogle();
-    const token = await getAccessToken();
+    const token = await getAccessToken(g);
     const h: Record<string, string> = {
       Authorization: `Bearer ${token}`,
       "developer-token": g.developerToken,
