@@ -1,9 +1,47 @@
+# Build output / VCS / deps (regenerated or installed during the Vercel build)
 .next
 out
 node_modules
 .git
-design/archive/roi-labs-site.zip
-design/pages/roi-labs-home.html
-design/pages/roi-labs-about.html
-scripts/build-standalone.js
-scripts/build-pages.js
+
+# ---------------------------------------------------------------------------
+# Non-runtime project material. None of these are imported by app code or
+# served by any route (verified by grep over src/ — only stray doc-path
+# mentions in comments, no imports / no public/ serving). Excluding them keeps
+# the prod upload small. If you add a route/component that reads one of these,
+# remove its line here.
+# ---------------------------------------------------------------------------
+
+# 151 MB of raw demo media — by far the biggest non-runtime offender.
+demo assets/
+
+# Internal docs / design / specs / memory — never served.
+docs/
+design/
+documentation/
+project-memory/
+vision/
+brand-identity/
+brand-kit/
+engine_design_new/
+data-sources/
+supabase/
+.agents/
+
+# Dev / codegen utilities. The Vercel build only runs `next build`; nothing
+# here is invoked by it.
+scripts/
+
+# Stray non-runtime HTML at the repo root (dashboards / one-off exports).
+# public/ HTML is NOT touched — it is served.
+*.html
+
+# ---------------------------------------------------------------------------
+# public/ exclusion — public/ IS served, so this is scoped to ONE verified dir.
+# public/promo-cinematic/ = 45 MB of promo-render artifacts (mp4, audio, vendor
+# JS, .jsx authoring source). There is NO /promo route and grep over src/ finds
+# zero references to it — it is a standalone dev-only render harness opened via
+# its own index.html during promo production. Everything else under public/
+# (videos/, promo/assets/, logos, icons, og-image) stays — those ARE referenced
+# by AuroraHome.tsx and the app.
+public/promo-cinematic/

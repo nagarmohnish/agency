@@ -1,44 +1,38 @@
 import type { Metadata, Viewport } from "next";
-import { Poppins, DM_Sans, Instrument_Serif, DM_Serif_Display, Montserrat, Sora, Manrope } from "next/font/google";
+import { Fraunces, DM_Serif_Display, Montserrat, Sora, Manrope } from "next/font/google";
 import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-const poppins = Poppins({
-  variable: "--font-poppins",
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800", "900"],
-});
-
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const instrumentSerif = Instrument_Serif({
+// Wide, ball-terminal editorial display serif (Aurora hero + section headlines).
+// Closest free match to Tempo's "Expo": old-style contrast, double-story g, soft
+// bracketed serifs. Variable font — optical sizing + weight are tuned via CSS.
+const fraunces = Fraunces({
   variable: "--font-serif",
   subsets: ["latin"],
-  weight: ["400"],
   style: ["normal", "italic"],
+  display: "swap",
 });
 
 const dmSerifDisplay = DM_Serif_Display({
   variable: "--font-logo-serif",
   subsets: ["latin"],
   weight: ["400"],
+  display: "swap",
 });
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
 });
 
 // Aurora Light homepage display + body fonts.
@@ -46,12 +40,14 @@ const sora = Sora({
   variable: "--font-sora",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
 const manrope = Manrope({
   variable: "--font-manrope",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 const SITE_URL = "https://roilabs.in";
@@ -122,7 +118,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${poppins.variable} ${dmSans.variable} ${geistMono.variable} ${instrumentSerif.variable} ${dmSerifDisplay.variable} ${montserrat.variable} ${sora.variable} ${manrope.variable} antialiased`}
+        className={`${geistMono.variable} ${fraunces.variable} ${dmSerifDisplay.variable} ${montserrat.variable} ${sora.variable} ${manrope.variable} antialiased`}
       >
         <Navbar />
         <main>{children}</main>

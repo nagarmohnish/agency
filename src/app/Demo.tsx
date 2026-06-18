@@ -68,7 +68,7 @@ export default function Demo() {
         <div className="wrap nv">
           <a href="#top" className="brand">{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/roi-logo-dark.png" alt="ROI Labs" /></a>
           <div className="nv-links"><a href="#uses">Product</a><a href="#how">How it works</a><a href="#faq">FAQ</a><a href="/">Live site</a></div>
-          <div className="nv-right"><a href="/#contact" className="link">Sign in</a><a href="/#contact" className="btn btn-pri">Get started</a></div>
+          <div className="nv-right"><a href="https://calendly.com/mohnish-nagar-roilabs/30min" target="_blank" rel="noopener noreferrer" className="link">Sign in</a><a href="https://calendly.com/mohnish-nagar-roilabs/30min" target="_blank" rel="noopener noreferrer" className="btn btn-pri">Get started</a></div>
         </div>
       </nav>
 
@@ -79,7 +79,7 @@ export default function Demo() {
             <h1>A dedicated growth team for <span className="g">every brand</span>.</h1>
             <p className="sub">AI runs your Meta &amp; Google around the clock — senior operators own the strategy, and everything is measured in revenue, not ROAS.</p>
             <div className="cta-row">
-              <a href="/#contact" className="btn btn-pri btn-lg">Book your audit →</a>
+              <a href="https://calendly.com/mohnish-nagar-roilabs/30min" target="_blank" rel="noopener noreferrer" className="btn btn-pri btn-lg">Book your audit →</a>
               <a href="#how" className="btn btn-gh btn-lg">See how it works</a>
             </div>
           </div>
@@ -183,7 +183,7 @@ export default function Demo() {
             <span className="orb a"></span>
             <h2>Give your paid media a dedicated team.</h2>
             <p>Start with a free audit — an honest read on your Meta &amp; Google, your creative, and your tracking.</p>
-            <div className="cta-row"><a href="/#contact" className="btn btn-pri btn-lg">Book your audit →</a><a href="/audit" className="btn btn-gh btn-lg" style={{ background: "transparent", color: "#fff", borderColor: "rgba(255,255,255,.3)" }}>Run a free audit</a></div>
+            <div className="cta-row"><a href="https://calendly.com/mohnish-nagar-roilabs/30min" target="_blank" rel="noopener noreferrer" className="btn btn-pri btn-lg">Book your audit →</a><a href="/audit" className="btn btn-gh btn-lg" style={{ background: "transparent", color: "#fff", borderColor: "rgba(255,255,255,.3)" }}>Run a free audit</a></div>
           </div>
         </div>
       </section>
@@ -193,7 +193,7 @@ export default function Demo() {
           <div className="fgrid">
             <div className="fbr">{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/roi-logo-dark.png" alt="ROI Labs" /><p>AI-native paid media for growth brands on Meta &amp; Google. Measured in revenue.</p></div>
             <div className="fcol"><h5>Product</h5><a href="#uses">Creative</a><a href="#uses">Media</a><a href="#uses">Measurement</a></div>
-            <div className="fcol"><h5>Company</h5><a href="/">Live site</a><a href="/audit">Free audit</a><a href="/#contact">Contact</a></div>
+            <div className="fcol"><h5>Company</h5><a href="/">Live site</a><a href="/audit">Free audit</a><a href="https://calendly.com/mohnish-nagar-roilabs/30min" target="_blank" rel="noopener noreferrer">Contact</a></div>
             <div className="fcol"><h5>Get in touch</h5><a href="mailto:support@roilabs.in">support@roilabs.in</a></div>
           </div>
           <div className="fbar"><span>© 2026 ROI Labs — demo design.</span><span><a href="/" style={{ color: "var(--y-text)", fontWeight: 600 }}>← Back to roilabs.in</a></span></div>

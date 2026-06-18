@@ -35,7 +35,7 @@ export default function Hero() {
           </p>
 
           <div className="flex flex-wrap items-center gap-x-3 gap-y-4">
-            <a href="/#contact" className="btn-primary">
+            <a href="https://calendly.com/mohnish-nagar-roilabs/30min" target="_blank" rel="noopener noreferrer" className="btn-primary">
               Talk to us
             </a>
             <a

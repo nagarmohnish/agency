@@ -255,7 +255,7 @@ export default function DiscordPage() {
           }}
         >
           <a
-            href="/#contact"
+            href="https://calendly.com/mohnish-nagar-roilabs/30min" target="_blank" rel="noopener noreferrer"
             style={{
               display: "flex",
               alignItems: "center",
@@ -488,7 +488,7 @@ function ContactSection() {
               </a>
             </p>
             <a
-              href="/#contact"
+              href="https://calendly.com/mohnish-nagar-roilabs/30min" target="_blank" rel="noopener noreferrer"
               style={{
                 display: "inline-block",
                 padding: "8px 16px",

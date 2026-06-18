@@ -1,6 +1,11 @@
 /* ===== Integrations — scoped under .aurora (reuses aurora.css tokens) ===== */
 
 .aurora .ig-hero{padding:74px 0 36px;text-align:center;position:relative;overflow:hidden;}
+/* This page only: the frosted ROUNDED nav pill (same look as the homepage scrolled nav) so the
+   light logo / links / Login read on the cream hero — inset + rounded, not a full-width bar.
+   Plus extra top space so the headline clears the header. */
+.aurora.ig-page .nv{background:rgba(18,14,8,.92);border-color:rgba(255,255,255,.08);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:var(--sh-lg);}
+.aurora.ig-page .ig-hero{padding-top:120px;}
 .aurora .ig-hero::before{content:"";position:absolute;top:-46%;left:50%;transform:translateX(-50%);
   width:760px;height:520px;background:radial-gradient(ellipse,rgba(250,204,21,.20),transparent 64%);pointer-events:none;}
 .aurora .ig-hero .wrap{position:relative;z-index:2;}
@@ -19,7 +24,7 @@
 /* sections */
 .aurora .ig-sec{padding:34px 0 0;}
 .aurora .ig-sechead{display:flex;align-items:baseline;gap:12px;margin:0 0 20px;}
-.aurora .ig-sechead h2{font-size:clamp(22px,2.6vw,28px);margin:0;}
+.aurora .ig-sechead h2{font-size:clamp(22px,2.6vw,28px);font-weight:700;letter-spacing:-.01em;margin:0;}
 .aurora .ig-sechead .ct{font-size:13px;color:var(--faint);font-weight:600;}
 
 /* grid */

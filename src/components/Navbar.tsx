@@ -17,14 +17,12 @@ export default function Navbar() {
   }, []);
 
   // Aurora pages + the cockpits ship their own chrome; hide the global nav there.
-  if (pathname === "/" || pathname === "/demo" || pathname === "/demos" || pathname === "/stellar" || pathname?.startsWith("/audit") || pathname?.startsWith("/discord") || pathname?.startsWith("/engine") || pathname?.startsWith("/t/") || pathname?.startsWith("/integrations")) return null;
+  if (pathname === "/" || pathname === "/demo" || pathname === "/demos" || pathname === "/stellar" || pathname?.startsWith("/audit") || pathname?.startsWith("/discord") || pathname?.startsWith("/engine") || pathname?.startsWith("/t/") || pathname?.startsWith("/transparent") || pathname?.startsWith("/integrations")) return null;
 
   const navLinks = [
     { href: "/#process", label: "How it works" },
     { href: "/integrations", label: "Integrations" },
-    { href: "/audit", label: "Free audit" },
     { href: "/#plans", label: "Plans" },
-    { href: "/#faq", label: "FAQ" },
   ];
 
   return (
@@ -60,7 +58,7 @@ export default function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center gap-3">
-            <a href="/#contact" className="btn-primary text-sm">
+            <a href="https://calendly.com/mohnish-nagar-roilabs/30min" target="_blank" rel="noopener noreferrer" className="btn-primary text-sm">
               Talk to us
             </a>
           </div>
@@ -91,7 +89,7 @@ export default function Navbar() {
               </a>
             ))}
             <a
-              href="/#contact"
+              href="https://calendly.com/mohnish-nagar-roilabs/30min" target="_blank" rel="noopener noreferrer"
               onClick={() => setIsOpen(false)}
               className="block mt-3 btn-primary text-center"
             >

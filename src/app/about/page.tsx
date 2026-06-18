@@ -197,7 +197,7 @@ export default function AboutPage() {
                   Send your last 90 days of campaigns. We&apos;ll come back with a clear read.
                 </p>
               </div>
-              <Link href="/#contact" className="btn-primary whitespace-nowrap">
+              <Link href="https://calendly.com/mohnish-nagar-roilabs/30min" target="_blank" rel="noopener noreferrer" className="btn-primary whitespace-nowrap">
                 Talk to us
               </Link>
             </div>

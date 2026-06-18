@@ -136,7 +136,7 @@ export default function Integrations() {
   }, [q]);
 
   return (
-    <div className="aurora" id="top" ref={ref}>
+    <div className="aurora ig-page" id="top" ref={ref}>
       <div className="navwrap">
         <nav>
           <div className="nv">
@@ -144,9 +144,7 @@ export default function Integrations() {
             <div className="nv-links">
               <a href="/#process">How it works</a>
               <a href="/integrations">Integrations</a>
-              <a href="/audit">Free audit</a>
               <a href="/#plans">Plans</a>
-              <a href="/#faq">FAQ</a>
             </div>
             <a href="/engine?login=1" className="btn btn-pri">Login</a>
           </div>
@@ -183,7 +181,7 @@ export default function Integrations() {
                 {filtered.map((it) => <Card key={it.name} it={it} />)}
               </div>
             ) : (
-              <p className="ig-empty">No integrations match “{q}”. <a href="/#contact" style={{ color: "var(--gold-text)", fontWeight: 700 }}>Tell us what you need →</a></p>
+              <p className="ig-empty">No integrations match “{q}”. <a href="https://calendly.com/mohnish-nagar-roilabs/30min" target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold-text)", fontWeight: 700 }}>Tell us what you need →</a></p>
             )
           ) : (
             SECTIONS.map((s) => {
@@ -206,7 +204,7 @@ export default function Integrations() {
             <div className="in">
               <h2>Missing an integration?</h2>
               <p>Tell us what you want to connect. The engine is built to expand with your stack — if revenue flows through it, we can measure against it.</p>
-              <a href="/#contact" className="btn btn-pri btn-lg">Request an integration →</a>
+              <a href="https://calendly.com/mohnish-nagar-roilabs/30min" target="_blank" rel="noopener noreferrer" className="btn btn-pri btn-lg">Request an integration →</a>
             </div>
           </div>
         </div>
@@ -239,7 +237,7 @@ export default function Integrations() {
             </div>
             <div className="fcol">
               <h5>Get in touch</h5>
-              <a href="/#contact">Book an audit</a>
+              <a href="https://calendly.com/mohnish-nagar-roilabs/30min" target="_blank" rel="noopener noreferrer">Book an audit</a>
               <a href="mailto:support@roilabs.in">support@roilabs.in</a>
             </div>
           </div>

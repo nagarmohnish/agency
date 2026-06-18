@@ -4,6 +4,164 @@ Convert relative dates to absolute. Newest changelog entry on top.
 
 ## Changelog
 
+### 2026-06-18 · CTAs → Calendly, contact form + lead popup removed, button/header polish (pushed + redeployed)
+Final landing pass; built clean (`npm run verify`, 23/23 routes), pushed to `nagarmohnish/agency`, redeployed to roilabs.in.
+- **Conversion path is now Calendly** ([D32](DECISIONS.md)). The hero "Get Started", both Plans CTAs, and **every** site CTA that pointed at `#contact` — across [AuroraHome](../src/app/AuroraHome.tsx), [Integrations](../src/app/integrations/Integrations.tsx), [AuditPage](../src/app/AuditPage.tsx), [about](../src/app/about/page.tsx), [Demo](../src/app/Demo.tsx), [discord](../src/app/discord/page.tsx), [Navbar](../src/components/Navbar.tsx), [Hero](../src/components/Hero.tsx) — now open `NEXT_PUBLIC_BOOK_CALL_URL` (default `calendly.com/mohnish-nagar-roilabs/30min`) in a new tab. Homepage uses a `BOOK_URL` const; other pages use literal hrefs (swept via sed, `target="_blank" rel="noopener"`).
+- **Removed** the homepage "Ready to grow through Meta & Google?" **contact-form section** (`#contact`/form `#cf`) and the **20s lead popup** (`#popup`/form `#pf`). Their JS is null-guarded so it's inert (left in place, not excised). On-page lead capture is gone; `/api/leads` still serves the `/audit` tool form.
+- **Buttons:** hero "Get Started" + nav "Login" are ghost CTAs (transparent — no fill/border/shadow), dull white `rgba(255,255,255,.72)` → full white on hover. Scoped to `.hero .btn-pri`, `.nv .btn-pri` only (yellow CTAs on white sections untouched).
+- **Integrations header** washed out on the cream hero (light-tan links + white logo). Scoped via an `ig-page` class on the [Integrations](../src/app/integrations/Integrations.tsx) root: `.nv` pill gets the frosted **dark rounded** background (matches the homepage scrolled nav — inset pill, not a full-width bar) + `.ig-hero` top padding 74→120px so the headline clears it.
+- Nav already trimmed to 3 headers (How it works / Integrations / Plans) on all pages in the prior pass.
+
+### 2026-06-18 · Promo #2 "The Intelligence Engine" + human voice swap (both films) — local only
+A second, longer cinematic launch film from the user's script, on the same free /promo pipeline.
+- **New film:** `demo assets/promo-cinematic/roi-labs-intelligence-engine.mp4` (16:9, **~92.5s**, ~16MB).
+  17 scenes: signal genesis → sources → chaos torrent → overwhelm dashboards → "too fast" → hidden
+  opportunity → AI engine **ignites** → **unified intelligence layer** (the original ROI-logo-centre hub)
+  → patterns illuminate → AI surfaces recommendations → **human judgment** (MACHINE vs JUDGMENT) →
+  platform reveal → the **7-stage engine pipeline** (Connect·Analyze·Audit·Plan·Create·Publish·Optimize)
+  → continuous loop → **metrics surge** (Revenue/Leads/Installs) → "Faster/Better/Greater" → logo + text
+  block + "Intelligence at Scale. Decisions that Matter." Source: `public/promo-intelligence/`
+  (`cinematic.jsx` + reused `vendor/`+`assets/`). 3-part music bed (mysterious→powerful→inevitable).
+- **Pipeline scene** chosen via a **Workflow** (4 parallel variants → picked the horizontal 7-card
+  conveyor). Earlier **connect** scene also workflow-explored (orbital ingest) but user asked to revert
+  to the **original ROI-mark-in-centre hub** — done.
+- **Voice = HUMAN female, both films.** Replaced edge-tts (felt robotic) with **Kokoro neural TTS**
+  (`kokoro-onnx`, voice **`af_heart`**) — much more natural. v1 `roi-labs-promo.mp4` re-voiced + re-muxed
+  (no re-render). 6 Kokoro voice samples in `demo assets/promo-cinematic/voice-samples/` for picking.
+- **Two mux gotchas fixed:** (1) `sidechaincompress` ends with the VO sidechain, so `-shortest` was
+  truncating the video to VO length and cutting the outro — fix: `apad` the VO to full length +
+  `asplit` (a filter label can't feed two inputs) + `-t DUR` instead of `-shortest`. (2) C: drive hit
+  **100% full** mid-render → a corrupt frame truncated the encode; freed space + added a `RESUME` mode to
+  `render.mjs`. **Always verify final duration BEFORE deleting the frames dir.**
+- ⚠️ User's **C: drive was critically full** (~5GB free); now ~30GB after cleanup. Render needs ~1GB scratch
+  (frames), reclaimed after encode.
+
+### 2026-06-18 · Mobile hero fix — static poster instead of video on phones (deployed)
+On iOS in **Low Power Mode** the hero `<video>` couldn't autoplay and iOS overlaid a play button (reported on a real phone). Fix: extracted a frame (`ffmpeg -ss 5`) → [`public/videos/hero-poster.jpg`](../public/videos/hero-poster.jpg) (1280×674). [`AuroraHome.tsx`](../src/app/AuroraHome.tsx) hero now has `poster="…/hero-poster.jpg"` on the video **and** a sibling `<div class="hero-poster" style="background-image:…">`. [`aurora.css`](../src/app/aurora.css): `.hero-poster` (cover, same `saturate/contrast/brightness` filter as the video, `display:none` by default) + `@media(max-width:768px){.hero-video{display:none}.hero-poster{display:block}}`. So **phones/≤768px render the static image** (no `<video>` → no play button, and the 2MB clip isn't downloaded); desktop keeps the autoplay video with the poster as its pre-play frame. Built clean + deployed to roilabs.in (verified live 200; poster img serves 200).
+
+### 2026-06-18 · Landing redesign + optimization → DEPLOYED LIVE to roilabs.in
+The landing redesign (see "Landing redesign sprint" entry below) plus a pre-deploy optimization pass shipped to production. `npx vercel@latest --prod --yes` as **nagarmohnish**, aliased to **roilabs.in** (build 32s, prod `dpl_Bdpbcycf7y7…`); verified live (200, "Paid media for the AI era" hero, x-ray section, Fraunces). Production build (`npm run verify` = `next build`) passes; all 23 routes generate.
+- **Nav trimmed to 3 headers** — How it works / Integrations / Plans — on **every** page that carries the nav: [`src/components/Navbar.tsx`](../src/components/Navbar.tsx) (shared, non-aurora routes), [`AuroraHome.tsx`](../src/app/AuroraHome.tsx) (home), [`integrations/Integrations.tsx`](../src/app/integrations/Integrations.tsx), [`AuditPage.tsx`](../src/app/AuditPage.tsx). Removed "Free audit" + "FAQ" links. (The FAQ *section* still exists on the homepage, just not linked in nav.) The `ai-native/Navbar` (Services/How-we-work/About) is in `src/components/`, not a route — left alone. Demo routes (`/demo`,`/demos`,`/stellar`) have their own chrome — left alone.
+- **Build-break fix:** the x-ray mobile render-prop made `_v4xray.tsx` (a server component) pass a *function* child to the client `XrayScaler` → "Functions cannot be passed directly to Client Components." Fixed by adding `"use client"` to [`_v4xray.tsx`](../src/app/transparent/_v4xray.tsx) (it's pure presentational; no server deps).
+- **Optimization pass** (ran as a 5-agent Workflow; details in the 5 entries below): fonts pruned (Poppins + DM_Sans removed, `display:'swap'` on the 6 kept) in [`layout.tsx`](../src/app/layout.tsx); **[`.vercelignore`](../.vercelignore) cuts the deploy upload from ~129MB → 158KB** (excludes `demo assets/` 151MB, `public/promo-cinematic/` 44MB, docs/design/memory/scripts — all verified non-runtime); homepage `@media(max-width:480px)` phone tier in aurora.css; x-ray CLS + phone-only mobile layout; hero `<video>` `preload="metadata"` + lazy/async on below-fold imgs.
+- **Open lows (not blocking):** stale "Instrument Serif" fallback strings in the inactive `/transparent` demo variants (_v1/_v2/_v3/_v3pro); dead `.broken`/`.audit` CSS; font weight-array trimming deferred (ambiguous → kept).
+
+### 2026-06-18 · X-ray section — CLS + mobile-tier rework (perf/responsive sprint, local only)
+Scoped to [`src/app/transparent/_v4xray.tsx`](../src/app/transparent/_v4xray.tsx) + [`src/app/transparent/_xrayScaler.tsx`](../src/app/transparent/_xrayScaler.tsx) (part of the parallel pre-deploy sprint). Desktop ≥1080px is pixel-identical.
+- **CLS / decode:** the ad `<img>` (`public/transparent/ad-creative.jpeg`, 590×1280) now has `width={590} height={1280} loading="lazy" decoding="async"` (kept the `objectFit: cover` + the no-img-element eslint-disable). Intrinsic ratio is declared so the slot reserves space before the JPEG loads.
+- **Mobile tier (<640px):** `XrayScaler` now also tracks a `mobile` flag (clientWidth < `mobileBelow`, default 640) and accepts a **render-prop** child `({ mobile }) => …`. Below 640px it drops the fixed-canvas `scale()` wrapper entirely and `_v4xray` renders a **phone-only layout**: centered device (246px / `maxWidth:78vw`, `aspect-ratio` so no CLS) + scan line + a short centered caption with a "See the full x-ray →" link to `${BP}/transparent/xray`. The 5 side notes, connectors, and anchor dots are not rendered on mobile (they'd scale to unreadable text). Above 640px the original scaled composition is unchanged.
+- **ResizeObserver:** confirmed no thrash — `update()` only reads `clientWidth` and commits React state (never writes the observed element's width), and degrades gracefully (SSR `scale=1`, `mobile=false` → server renders desktop). Type-check + eslint pass clean on both files.
+
+### 2026-06-18 · Homepage mobile responsiveness — phone-tier @media pass (CSS only, local)
+Added a single `@media(max-width:480px)` block to [`src/app/aurora.css`](../src/app/aurora.css) (after the existing 980px block); desktop/tablet untouched, additive only. Part of the parallel pre-deploy sprint. Fixes real phone issues found auditing AuroraHome at 390px: `.wrap` gutters 28px→18px (more readable content width); nav inset trimmed (`nav` 16px→10px, `.nv` left 24px→16px, Login `btn-pri` padding) so logo+Login breathe at 390px; integrations `.iglogos` 2-col→1-col (icon+label was cramped); contact panels `.contact-l/.contact-r` 44px→30px/22px and `.f.row` paired inputs (Name/Email, Company/Budget) unstacked to 1-col (each was ~115px wide, truncating placeholders). Tablet (768px) keeps `.f.row` 2-col — fine once the panel is full-width. Brace-balanced; build risk none (purely additive scoped CSS).
+
+### 2026-06-18 · Homepage media / CLS perf pass (pre-deploy weight reduction) — DEV ONLY
+Conservative media optimizations in [`src/app/AuroraHome.tsx`](../src/app/AuroraHome.tsx) only (part of a parallel pre-deploy perf sprint trimming a 129MB `vercel --prod` upload). No copy/layout/non-media markup changed.
+- **Hero `<video>`:** `preload="auto"` → `preload="metadata"` so the hero video no longer blocks initial load (kept `autoplay muted loop playsinline`). No poster image exists in `public/` (only `public/videos/hero.mp4`), so `poster=` left off.
+- **Below-the-fold `<img>`:** added `decoding="async"` to every below-fold image that already had `loading="lazy"` (8 integration logos, modal dashboard preview `dash-overview.png`, 5 modal stack logos); added BOTH `loading="lazy" decoding="async"` to the footer logo (`roi-logo-light.png`) and the 3 How-it-works `innerHTML`-injected `scale-{1,2,3}.jpg` thumbs, which previously had neither. Above-the-fold nav logo + hero video left eager.
+- **CLS:** no `width`/`height` HTML attrs added — every touched image is already pinned by CSS in `aurora.css` (`.iglogo img` 30×30, `.fbrand img` h:30, `.brand img` h:34, `.thumb img` h:132, `.mR-logos i img` 21×21, `.mR-dash img` w:100%/h:auto inside an off-screen modal), so no layout shift and no risk of conflicting with `object-fit`.
+
+### 2026-06-18 · Landing redesign sprint (Tempo-style hero, type system, Transparent-AI x-ray) — DEV ONLY, not deployed
+Large homepage ([`src/app/AuroraHome.tsx`](../src/app/AuroraHome.tsx) + [`src/app/aurora.css`](../src/app/aurora.css)) redesign pass. **All on local dev; nothing deployed.** Production build (`npm run verify`) passes clean.
+- **Type system.** Display serif swapped **Instrument Serif → Fraunces** (wide, ball-terminal editorial face, closest free match to Tempo's "Expo") in [`layout.tsx`](../src/app/layout.tsx) (`--font-serif`). Rule now: **hero `<h1>` is the ONLY serif**; every section header below it (`.aurora h2`, cascades to `.sec-head`/`.faqhead`/`.contact-l`/`.audit` + the x-ray header) = **Sora 800 grotesque** (`--disp`), matching `.hiw__title`. Buttons → Manrope 600 (was bold 700).
+- **Hero.** Full-bleed background `<video>` (`public/videos/hero.mp4`, compressed) + warm screen-blend glow overlay; transparent **non-sticky** nav (`position:absolute`, scrolls away); single "Get Started" CTA (dark depth shadow, no glow); removed eyebrow, the "Running an agency?" agencyline, and the "Free audit" + "FAQ" nav links. Copy is being iterated (currently "Paid media for the / *AI era*" + "Every campaign is optimized for what matters: revenue, installs, / and qualified leads.").
+- **New "Transparent AI" x-ray section** ([`src/app/transparent/_v4xray.tsx`](../src/app/transparent/_v4xray.tsx)) spliced into the homepage **between How-it-works and Integrations** via a single `<!--XRAY-->` marker (`HTML.split` → `<Variant4Xray/>` injected at the split). Shows a **real AI ad creative full-screen in a phone** (`public/transparent/ad-creative.jpeg` — Adobe "Generative Fill" ad) with 5 animated dissection callouts (persona / AI-generation / angle / performance hypothesis / disclosure), connector beams, scan line. White bg. New client [`_xrayScaler.tsx`](../src/app/transparent/_xrayScaler.tsx) (ResizeObserver) scales the fixed 1080×620 canvas to fit narrow viewports (scale=1 ≥1080px so desktop is untouched) — fixes a mobile-clipping bug the audit flagged.
+- **How-it-works thumbs.** Replaced the VITAGUM banner creatives with the 3 phone ads cropped (ffmpeg) from `demo assets/img/createive at scale.png` → `public/hiw/scale-{1,2,3}.jpg`; thumb slot reshaped landscape (58px) → portrait (132px). Old `public/hiw/creative-{1,2,3}.png` now unused on homepage.
+- **Verification.** Ran a Workflow (build gate + 4 adversarial audits): build PASS; fixed reduced-motion not stopping the ping/CTA loops, and the `/integrations` `.ig-sechead h2` cramped at Sora-800 (→ weight 700, looser tracking). Open lows: stale "Instrument Serif" fallback strings in the inactive `/transparent` demo variants (_v1/_v2/_v3/_v3pro), dead `.broken`/`.audit` CSS.
+
+### 2026-06-18 · Brand identity folder + ROI Labs app-icon logo
+New `brand-identity/` folder (repo root) with the ROI Labs app-icon mark, built to match a reference: dark
+rounded tile, glowing gold border, bold gold **ROI** over letter-spaced off-white **LABS**, gold glow leaking
+from the top. Files: `roi-labs-app-icon.svg` (scalable source; brand `--grad` gold + Sora wordmark with
+system-sans fallback), `roi-labs-app-icon.png` (1024×1024, rendered from the SVG with the real Sora font via
+headless Chrome), and `README.md` documenting palette (ink `#1A1710`, gold `#FACC15`, grad `#FFE05A→#FACC15→
+#F2BE00`) + typography (Sora/Manrope). Colors pulled from `src/app/aurora.css`. No app code touched.
+
+### 2026-06-18 · Cinematic promo — revision pass (voice / font / CTA / connect scene) — local only
+Four requested changes to `demo assets/promo-cinematic/roi-labs-promo.mp4` (now 1920×1080, ~52.4s):
+- **Voiceover → natural human FEMALE voice.** edge-tts `en-US-GuyNeural +6%` (sounded "program-like")
+  → **`en-US-AvaMultilingualNeural` at +0%** (expressive/warm, natural pace). Re-fit timing (all 11
+  lines end before the next starts at the same scene starts; `vo_mix.wav` rebuilt).
+- **Caption ("transcript") font → modern/futuristic.** Added `FX = 'Space Grotesk'`; all `Cap`
+  captions + the closing tagline switched Sora → Space Grotesk (geometric, on-brand with the engine).
+- **Removed the "Book your audit" CTA** from the logo payoff (S_Logo) — now just logo + tagline +
+  centered `roilabs.in`.
+- **Redesigned the sources-connecting scene (S6).** Ran a **Workflow** (4 parallel agents → 4 distinct
+  "advanced connection" implementations: Orbital Ingest / Neural Conduits / Constellation / Data-Stream
+  Funnel), rendered a contact-sheet QA of all four, picked **"Orbital Ingest"** (variant A): logos orbit
+  + feed energy into a glowing ROI core with "3 sources connected" telemetry + depth. Spliced into
+  `cinematic.jsx` (replaced the old dashed-line hub); caption now "Every source, feeding one engine."
+  The 4 candidates kept in `public/promo-cinematic/connect-variants/` for easy swapping.
+- Re-rendered all 1620 frames + reassembled (music sidechain-ducked under the new VO). Local only.
+
+### 2026-06-18 · Cinematic promo video built (free, motion-graphics route) — local only
+Built a ~53.5s cinematic brand film, **16:9 1920×1080**, voiceover + music. User wanted a
+"suspenseful, AI-leverages-scale + humans-make-the-intuitive-call" story → product loop.
+Chose the **free motion-graphics route** (higgsfield AI-video was the first pick but that
+workspace is free-plan/0-credits and only allows plan upgrades, no one-time top-ups — pivoted).
+- **Built on the `/promo` animation engine** (reused `public/promo/animations.jsx` Sprite/Easing
+  API): new self-contained **`public/promo-cinematic/`** — `index.html` (vendored React18 UMD +
+  Babel-standalone in `vendor/`) + **`cinematic.jsx`** (11 scenes, deterministic via
+  `window.__seek(t)`) + `assets/` (real logo + product screenshots + ad creatives) + `audio/`.
+- **11 scenes:** void → data torrent → AI organizes (gold core) → human-vs-machine (INSTINCT vs
+  MACHINE) → the turn ("does both") → Connect (Google/Meta/Shopify → ROI hub) → Audit (scan sweep +
+  HEALTH 52) → Create (creative grid multiplies) → Approve (tickets card → Approved) → Optimize
+  (rising MER) → logo payoff ("Paid media, measured in revenue. Scaled by AI." + roilabs.in + CTA).
+- **Free toolchain:** frame-accurate render via **headless Chrome (puppeteer-core)** seeking per
+  frame → 1620 PNGs; **voiceover = edge-tts** (`en-US-GuyNeural +6%`, 11 placed lines); **music =
+  ffmpeg-synthesized** two-stem pad (dark drone → bright C-major, crossfade at the 18.4s "turn").
+  Build scripts in **`c:/tmp/roi-promo-build/`** (`render.mjs`, `shots.mjs` QA, `vo.py`).
+- **Assembly (ffmpeg):** `frames→video.mp4` (`-framerate 30 -crf 17 -pix_fmt yuv420p`); final mix
+  = music `sidechaincompress`-ducked under the VO + `amix` + `alimiter`, muxed `-c:v copy -c:a aac`.
+- **Deliverable:** **`demo assets/promo-cinematic/roi-labs-promo.mp4`** (11MB). Reproducible source
+  kept; heavy frames/intermediates cleaned. Full script/shot doc: `demo assets/promo-cinematic/SCRIPT.md`.
+  Existing `public/promo/` (the older Pages promo) untouched. Local only — not deployed.
+
+### 2026-06-18 · Landing: hero video background + "transparent AI" x-ray section (Sora) — ON DEV, not deployed
+- **Hero video:** added a background `<video>` (autoplay·muted·loop·playsinline) to `.hero` in `AuroraHome`,
+  under a ~75% white overlay (`.hero-overlay`, aurora.css) so the dark headline/CTA stay legible on the
+  Aurora-Light theme. Source was 60MB/4K → **compressed to 2.0MB 1080p** via ffmpeg (`-an -vf scale=1920:-2
+  -crf 28 -preset medium -movflags +faststart`) at `public/videos/hero.mp4`.
+- **"See why every ad was created" section:** built animated visual variants under `src/app/transparent/`
+  (dev gallery `/transparent`; polished radial `/transparent/pro`; annotated-ad **x-ray** `/transparent/xray`).
+  Picked the **x-ray** (`_v4xray.tsx`) and spliced it into the homepage (between the integrations preview and
+  Plans) via a `<!--XRAY-->` marker split in `AuroraHome`'s HTML string (renders the React component between
+  two `dangerouslySetInnerHTML` halves). Headline uses **Sora** (`var(--font-sora)`) — NOT the serif.
+  Nav/footer hidden on `/transparent*`.
+- On dev only; **not committed or deployed** — commit `public/videos/hero.mp4` (2MB) + the
+  AuroraHome/aurora.css/transparent changes when pushing the landing live.
+
+### 2026-06-17 · Homepage lead popup: right panel redesigned to dashboard preview + integration logos
+Per request, rebuilt the dark right panel of the homepage lead modal (`AuroraHome.tsx` `.mR`). Out went the
+animated bar chart, "Scaling now" / "Join growth brands…" copy, and the audience chips (`DTC`, `B2B SaaS`, …).
+In came: a framed **product dashboard preview** (browser-chrome card around `public/promo/assets/dash-overview.png`)
+and an **integration logo strip** (Google, Meta, Shopify, GA4, Stripe + a `+12` tile) under a "Connects to your
+stack" label, with a "Live engine" badge and "Your whole revenue stack in one dashboard" heading. CSS in
+`aurora.css` (`.mR*` block): removed `.mR-bars`/`.chips`/`mBar` rules, added `.mR-dash`/`.mR-chrome`/`.mR-stack`/
+`.mR-logos` (staggered `mRise` reveal, reduced-motion-safe). Left form panel, open logic (20s timer), and form
+ids untouched. `npm run verify` clean. Mobile still hides `.mR` (single-column form). Preview live: open the
+home page and run `document.getElementById('popup').classList.add('open')` in the console.
+**Shipped to production** (`vercel --prod`, remote build) → live on **roilabs.in** (deploy
+`dpl_J7nhPMoTBaqFtf3LmZTAEs2PjznV`); verified the live HTML serves the new markup (`mR-dash`, "Connects to your
+stack", "Live engine") and the old `mR-bars` are gone. Note: deploy uploaded the working tree; the change is
+**not yet committed to git** (working tree still dirty).
+
+### 2026-06-17 · Brand-isolation leak on roilabs.in/engine + agency Vercel env still pending (user action)
+- **Leak found:** `roilabs.in/engine` (the public "book a demo" funnel / locked teaser for non-operators)
+  showed the **real client "The Astro Time" + its logo**, because `NEXT_PUBLIC_ENGINE_AUTH` is **not set on
+  the agency Vercel project** → `tickets.ts` `BRAND` fell through to the Astro Time default. **Fix:** set
+  `NEXT_PUBLIC_ENGINE_AUTH=supabase` on agency (Production+Preview) + **redeploy with a fresh build** (it's a
+  build-time `NEXT_PUBLIC_` var — uncheck "use existing build cache"). Then `/engine` shows the dummy
+  "Northwind Goods"; `astrotime.roilabs.in` is unaffected (per-tenant brand prop). Offered to also harden in
+  code (public/locked funnel always neutral regardless of env) — **not yet done**.
+- **Still PENDING on the agency Vercel project (user action) for the tenant cockpit to be fully correct:**
+  1. `NEXT_PUBLIC_ENGINE_AUTH=supabase` — brand isolation (above).
+  2. **Real data** — `ENGINE_CRED_ENV_FALLBACK=true` + the connector env creds from `.env.local`
+     (`SHOPIFY_STORE_DOMAIN`, `SHOPIFY_ADMIN_TOKEN`, `GOOGLE_ADS_DEVELOPER_TOKEN`, `GOOGLE_OAUTH_CLIENT_ID`,
+     `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_ADS_REFRESH_TOKEN`; skip the empty `GOOGLE_ADS_LOGIN_CUSTOMER_ID`).
+     Confirmed on dev: env-fallback → **6 LIVE** (real Shopify + Google). Without these the cockpit honestly
+     shows all-modeled (EST). Redeploy after either change.
+
 ### 2026-06-17 · Tenant route now shows the FULL v5 cockpit (D31) + per-tenant brand + signed-in user
 Pivot from the lean honest cockpit to the complete demo cockpit on `<slug>.roilabs.in`: real-where-live
 (LIVE) + modeled assumptions (EST) + tickets board + runs UI.

@@ -179,6 +179,28 @@ Keep this in sync when files are added/moved/removed.
   `src/app/engine/v2/`, no deps, no build). Opens via file://; shareable demo. Not connected
   to the live backend. Regenerate by re-porting from `v2/` if the React app changes.
 
+## Promo videos
+- `public/promo/` — the **older animated promo** (Claude Design `.dc.html` runtime: `support.js`
+  + `animations.jsx` engine + `roi-promo.jsx` scenes); published to GitHub Pages
+  `…/agency/promo/`. The reusable **animation engine** (`Stage`/`Sprite`/`Easing`/`interpolate`)
+  lives here. Untouched by the 2026-06-18 cinematic build.
+- `public/promo-cinematic/` — the **2026-06-18 cinematic brand film** (free motion-graphics route).
+  Self-contained: `index.html` (vendored React18 + Babel in `vendor/`) + **`cinematic.jsx`** (11
+  deterministic scenes driven by `window.__seek(t)`, reuses the `/promo` engine API) + `assets/`
+  (real logo + product screenshots + ad creatives) + `audio/` (edge-tts VO lines + synthesized
+  music bed). Rendered frame-accurate via headless Chrome.
+- `public/promo-intelligence/` — the **2026-06-18 second film, "The Intelligence Engine"** (~92.5s, 17
+  scenes). Same structure as promo-cinematic (`index.html` + `vendor/` + `assets/` + `cinematic.jsx`);
+  reuses v1 scene archetypes + new beats (overwhelm dashboards, AI ignite, original ROI-hub connect,
+  recommendations, 7-stage engine pipeline, metrics surge, outro text block). `connect-variants/` +
+  `pipeline-variants/` hold the workflow-generated alternates.
+- `demo assets/promo-cinematic/` (gitignored scratch) — **`SCRIPT.md`** (storyboard/VO/shot prompts),
+  **`roi-labs-promo.mp4`** (~51s) + **`roi-labs-intelligence-engine.mp4`** (~92.5s) deliverables, and
+  `voice-samples/` (Kokoro voice auditions).
+- `c:/tmp/roi-promo-build/` (outside repo) — build harness: `render.mjs` (per-frame capture, env
+  `PROMO_ROOT`/`PROMO_PORT`/`RESUME`), `shots*.mjs` (QA), `vo_koko_*.py` (Kokoro VO), `assemble-v2.mjs`,
+  `v2-head.jsx`/`v2-tail.jsx`. See PROGRESS 2026-06-18 for re-render/mux steps + gotchas.
+
 ## Marketing pages
 - `src/app/page.tsx` → `AuroraHome.tsx` — the homepage (scoped `.aurora`). The **"How it
   works"** section (`#process`, class `.hiw`) is an **auto-playing process engine** ported from
@@ -186,12 +208,26 @@ Keep this in sync when files are added/moved/removed.
   single `useEffect`; styles under `.aurora .hiw` in `aurora.css`; 3 dummy ad creatives in
   `public/hiw/creative-{1,2,3}.png`. The old five-agent **orbit `#system`** section was removed
   (its CSS is dead-but-harmless in `aurora.css`). See DECISIONS D14.
+- **Landing redesign (2026-06-18, see PROGRESS + D32):** hero is a full-bleed `<video>`
+  (`public/videos/hero.mp4`) with a `poster`/`public/videos/hero-poster.jpg` and a **phones-only
+  static-poster fallback** (`.hero-poster`, ≤768px) so iOS Low-Power-Mode never shows a play button.
+  Display serif → **Fraunces** (`--font-serif`, hero `<h1>` only); every other section header =
+  **Sora 800** (`.aurora h2` → `--disp`). New **Transparent-AI "x-ray" section**
+  [`src/app/transparent/_v4xray.tsx`](../src/app/transparent/_v4xray.tsx) (`Variant4Xray`, a
+  `"use client"` component) spliced into the homepage at a `<!--XRAY-->` split marker (between
+  How-it-works and Integrations): a real AI ad creative (`public/transparent/ad-creative.jpeg`) shown
+  full-screen in a phone with 5 dissection callouts; responsive via client
+  [`_xrayScaler.tsx`](../src/app/transparent/_xrayScaler.tsx) (preview routes `/transparent`,
+  `/transparent/xray`). HIW "Pick the next test" thumbs now `public/hiw/scale-{1,2,3}.jpg` (cropped
+  from the creative-at-scale image; `creative-{1,2,3}.png` now unused). **Contact-form section + lead
+  popup removed; all CTAs → Calendly (D32).** Fonts pruned (Poppins + DM_Sans dropped in
+  `layout.tsx`, `display:'swap'`). `.vercelignore` excludes demo/promo media (deploy ~129MB→158KB).
 - `src/app/integrations/` — the `/integrations` page (Adwize-style "connect your revenue
   stack"). `page.tsx` (metadata + imports `aurora.css` + `integrations.css`),
   `Integrations.tsx` (client: hand-built brand-logo SVGs, 14-connector data, live search
   filter, inline Aurora nav/footer), `integrations.css` (scoped under `.aurora`). Nav:
-  **How it works · Integrations · Free audit · Plans · FAQ** — the unified nav now shared by
-  `Navbar.tsx`, `AuroraHome.tsx`, `AuditPage.tsx`, `Integrations.tsx` (2026-06-15).
+  **How it works · Integrations · Plans** (trimmed 5 → 3 on 2026-06-18; dropped Free audit + FAQ
+  links) — the unified nav shared by `Navbar.tsx`, `AuroraHome.tsx`, `AuditPage.tsx`, `Integrations.tsx`.
 
 ## Touched marketing files
 - `src/components/Navbar.tsx`, `Footer.tsx` — hide marketing chrome on `/engine` **and

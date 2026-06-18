@@ -91,6 +91,23 @@ Shopify orders. The most defensible version of "measured in revenue, not ROAS."
 - **Local testing:** `.env.local` has no `NEXT_PUBLIC_ENGINE_DEMO`, so local `/engine` is already real-auth —
   add `ENGINE_OPERATOR_EMAILS` locally + ensure the dev port's `/engine` is in the Supabase redirect list.
 
+### Tenant dashboards + brand isolation on agency Vercel (D31, 2026-06-17)
+The tenant cockpit (`<slug>.roilabs.in`, e.g. `astrotime.roilabs.in`) is served by the **agency** Vercel
+project (not roi-engine). Beyond the tenant-gate vars already set there (`SUPABASE_URL` +
+`SUPABASE_SERVICE_ROLE_KEY` = ENGINE project; `NEXT_PUBLIC_SUPABASE_URL/ANON` = leads), two env groups are
+**still pending on agency** (user adds them; redeploy after each):
+- **Brand isolation — `NEXT_PUBLIC_ENGINE_AUTH=supabase`.** Without it the public `/engine` funnel + the
+  global `BRAND` (`tickets.ts`) default to the **real client "The Astro Time"** — a leak on the public
+  funnel. Set it → `/engine` shows the dummy "Northwind Goods". It's a build-time `NEXT_PUBLIC_` var, so the
+  redeploy must do a fresh build (no build cache). **Tenant routes pass a per-tenant brand prop, so they're
+  unaffected either way** (astrotime stays "The Astro Time").
+- **Real tenant data — `ENGINE_CRED_ENV_FALLBACK=true` + connector env creds** (Shopify + Google, copied from
+  `.env.local`). Makes `getCockpitData` fetch real Shopify revenue + Google Ads (LIVE badges); else the
+  cockpit shows modeled assumptions (EST). `GOOGLE_ADS_LOGIN_CUSTOMER_ID` is empty (direct access) — skip it;
+  `ANTHROPIC_API_KEY` isn't needed for the read-only cockpit. The astrotime account row already has
+  `google_customer_id` (dev `/engine/preview` rendered 6 LIVE). Scalable alternative = the encrypted seed
+  (`scripts/seed-credentials.mjs`, D30) instead of env-fallback.
+
 ## Credentials checklist (operator-owned; secrets live in `.env.local`)
 
 | Need | Status |

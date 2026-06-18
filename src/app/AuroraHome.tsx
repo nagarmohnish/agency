@@ -10,6 +10,7 @@
 // audit/contact forms (-> /api/leads) all run in one effect.
 
 import { useEffect, useRef } from "react";
+import Variant4Xray from "./transparent/_v4xray";
 
 const CHK = `<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 4.5 6 12l-3.5-3.5"/></svg>`;
 const SVG = (p: string) => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
@@ -20,30 +21,29 @@ const XICON = `<svg width="15" height="15" fill="currentColor" viewBox="0 0 24 2
 // Prefix assets with the deploy base path so raw <img> srcs resolve on
 // subpath hosts like GitHub Pages (/agency). Empty string on Vercel/apex.
 const BP = process.env.NEXT_PUBLIC_BASE_PATH || "";
+// "Get Started" CTAs book a call via Calendly (env-overridable; matches the engine's NEXT_PUBLIC_BOOK_CALL_URL).
+const BOOK_URL = process.env.NEXT_PUBLIC_BOOK_CALL_URL || "https://calendly.com/mohnish-nagar-roilabs/30min";
 
 const HTML = `
 <div class="navwrap">
   <nav>
     <div class="nv">
       <a href="#top" class="brand"><img src="${BP}/roi-logo-dark.png" alt="ROI Labs" /></a>
-      <div class="nv-links"><a href="/#process">How it works</a><a href="/integrations">Integrations</a><a href="/audit">Free audit</a><a href="/#plans">Plans</a><a href="/#faq">FAQ</a></div>
+      <div class="nv-links"><a href="/#process">How it works</a><a href="/integrations">Integrations</a><a href="/#plans">Plans</a></div>
       <a href="/engine?login=1" class="btn btn-pri">Login</a>
     </div>
   </nav>
 </div>
 
 <section class="hero">
+  <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="${BP}/videos/hero-poster.jpg"><source src="${BP}/videos/hero.mp4" type="video/mp4" /></video>
+  <div class="hero-poster" style="background-image:url('${BP}/videos/hero-poster.jpg')"></div>
+  <div class="hero-overlay"></div>
   <div class="wrap">
-    <p class="ey" data-reveal>AI-native paid media agency</p>
-    <h1 data-reveal data-delay="80">Paid media, measured in revenue.<span class="l2"><span class="grad">Scaled by AI.</span></span></h1>
-    <p class="l" data-reveal data-delay="140">ROI Labs runs an AI-native engine that researches, produces, launches, and optimizes — until every campaign tracks to the outcome that matters: revenue for stores, installs for apps, leads for lead-gen.</p>
+    <h1 data-reveal data-delay="80">Paid media for the<span class="l2"><span class="grad">AI era</span></span></h1>
+    <p class="l" data-reveal data-delay="140">Every campaign is optimized for what matters: revenue, installs,<br />and qualified leads.</p>
     <div class="hero-cta" data-reveal data-delay="240">
-      <a href="#contact" class="btn btn-pri btn-lg">Book your audit →</a>
-      <a href="#process" class="btn btn-gh btn-lg">See how it works</a>
-    </div>
-    <div class="agencyline" data-reveal>
-      <p class="q">Running an agency?</p>
-      <p class="a">We white-label the whole engine for your clients. <a href="#plans">See agency plans →</a></p>
+      <a href="${BOOK_URL}" target="_blank" rel="noopener noreferrer" class="btn btn-pri btn-lg">Get Started</a>
     </div>
   </div>
 </section>
@@ -89,6 +89,8 @@ const HTML = `
   </div>
 </section>
 
+<!--XRAY-->
+
 <section id="integrations-preview">
   <div class="wrap">
     <div class="sec-head" data-reveal>
@@ -97,14 +99,14 @@ const HTML = `
       <p>Ads, store revenue, recurring payments and measurement — connected so every campaign is judged on real outcomes, not platform-reported vanity metrics.</p>
     </div>
     <div class="iglogos" data-reveal>
-      <div class="iglogo"><img src="${BP}/logos/google.jpg" alt="Google Ads" loading="lazy" /><span>Google Ads</span></div>
-      <div class="iglogo"><img src="${BP}/logos/meta.png" alt="Meta Ads" loading="lazy" /><span>Meta Ads</span></div>
-      <div class="iglogo"><img src="${BP}/logos/shopify.svg" alt="Shopify" loading="lazy" /><span>Shopify</span></div>
-      <div class="iglogo"><img src="${BP}/logos/ga4.png" alt="GA4" loading="lazy" /><span>GA4</span></div>
-      <div class="iglogo"><img src="${BP}/logos/stripe.png" alt="Stripe" loading="lazy" /><span>Stripe</span></div>
-      <div class="iglogo"><img src="${BP}/logos/razorpay.png" alt="Razorpay" loading="lazy" /><span>Razorpay</span></div>
-      <div class="iglogo"><img src="${BP}/logos/hubspot.png" alt="HubSpot" loading="lazy" /><span>HubSpot</span></div>
-      <div class="iglogo"><img src="${BP}/logos/tiktok.png" alt="TikTok Ads" loading="lazy" /><span>TikTok Ads</span></div>
+      <div class="iglogo"><img src="${BP}/logos/google.jpg" alt="Google Ads" loading="lazy" decoding="async" /><span>Google Ads</span></div>
+      <div class="iglogo"><img src="${BP}/logos/meta.png" alt="Meta Ads" loading="lazy" decoding="async" /><span>Meta Ads</span></div>
+      <div class="iglogo"><img src="${BP}/logos/shopify.svg" alt="Shopify" loading="lazy" decoding="async" /><span>Shopify</span></div>
+      <div class="iglogo"><img src="${BP}/logos/ga4.png" alt="GA4" loading="lazy" decoding="async" /><span>GA4</span></div>
+      <div class="iglogo"><img src="${BP}/logos/stripe.png" alt="Stripe" loading="lazy" decoding="async" /><span>Stripe</span></div>
+      <div class="iglogo"><img src="${BP}/logos/razorpay.png" alt="Razorpay" loading="lazy" decoding="async" /><span>Razorpay</span></div>
+      <div class="iglogo"><img src="${BP}/logos/hubspot.png" alt="HubSpot" loading="lazy" decoding="async" /><span>HubSpot</span></div>
+      <div class="iglogo"><img src="${BP}/logos/tiktok.png" alt="TikTok Ads" loading="lazy" decoding="async" /><span>TikTok Ads</span></div>
     </div>
     <div class="ig-cta" data-reveal>
       <a href="/integrations" class="btn btn-pri btn-lg">See all integrations →</a>
@@ -130,7 +132,7 @@ const HTML = `
           <li><span class="mk">${CHK}</span>Landing pages &amp; CRO included</li>
           <li><span class="mk">${CHK}</span>Revenue &amp; CAC reporting, weekly</li>
         </ul>
-        <a href="#contact" class="btn btn-pri">Book your audit →</a>
+        <a href="${BOOK_URL}" target="_blank" rel="noopener noreferrer" class="btn btn-pri">Get Started</a>
       </div>
       <div class="plan" data-reveal data-delay="80">
         <h3>For Agencies</h3>
@@ -142,10 +144,10 @@ const HTML = `
           <li><span class="mk">${CHK}</span>Recurring revenue, near-zero overhead</li>
           <li><span class="mk">${CHK}</span>Priority support</li>
         </ul>
-        <a href="#contact" class="btn btn-gh">Talk to us →</a>
+        <a href="${BOOK_URL}" target="_blank" rel="noopener noreferrer" class="btn btn-gh">Get Started</a>
       </div>
     </div>
-    <p class="plans-note">Not sure which fits? <a href="#contact">Start with an audit</a> — your fee is credited to the engagement.</p>
+    <p class="plans-note">Not sure which fits? <a href="${BOOK_URL}" target="_blank" rel="noopener noreferrer">Start with an audit</a> — your fee is credited to the engagement.</p>
   </div>
 </section>
 
@@ -167,46 +169,12 @@ const HTML = `
   </div>
 </section>
 
-<section id="contact">
-  <div class="wrap">
-    <div class="sec-head" data-reveal><p class="ey">Get started</p><h2>Ready to grow through <span class="grad">Meta &amp; Google?</span></h2></div>
-    <div class="contact-wrap" data-reveal="scale">
-      <div class="contact-l">
-        <p class="ey o" style="color:var(--gold-text)">What's included</p>
-        <h2>A clear read in 24 hours.</h2>
-        <p>Tell us about your business and goals. You'll get an honest read on your Meta and Google accounts — and a shortlist of the highest-leverage fixes.</p>
-        <ul class="incl">
-          <li><span class="mk">${CHK}</span>AI audit of your current ad accounts</li>
-          <li><span class="mk">${CHK}</span>Competitive ad-library teardown</li>
-          <li><span class="mk">${CHK}</span>A custom creative + media plan</li>
-          <li><span class="mk">${CHK}</span>Transparent pricing — no retainer pitch unless it fits</li>
-        </ul>
-        <p class="email">Or email us directly — <a href="mailto:support@roilabs.in">support@roilabs.in</a></p>
-      </div>
-      <div class="contact-r">
-        <form id="cf" novalidate>
-          <div class="f row">
-            <div><label>Name</label><input id="c-name" type="text" placeholder="Your name" required /><div class="errm">Please enter your name.</div></div>
-            <div><label>Email</label><input id="c-email" type="email" placeholder="you@company.com" required /><div class="errm">Enter a valid email.</div></div>
-          </div>
-          <div class="f row">
-            <div><label>Company / website</label><input id="c-company" type="text" placeholder="company.com" /><div class="errm"></div></div>
-            <div><label>Monthly budget</label><select id="c-budget" required><option value="" selected disabled>Select range</option><option>Under €5,000</option><option>€5,000 – €15,000</option><option>€15,000 – €50,000</option><option>€50,000+</option></select><div class="errm">Please pick a range.</div></div>
-          </div>
-          <div class="f"><label>Message</label><textarea id="c-msg" placeholder="Tell us about your goals…" required></textarea><div class="errm">Tell us a little about your goals.</div></div>
-          <button type="submit" class="btn btn-pri btn-lg fbtn">Book your audit →</button>
-          <div class="sent" id="sent">✓ Sent — we'll be in touch within 24 hours.</div>
-        </form>
-      </div>
-    </div>
-  </div>
-</section>
 
 <footer>
   <div class="wrap">
     <div class="fgrid">
       <div class="fbrand">
-        <img src="${BP}/roi-logo-light.png" alt="ROI Labs" />
+        <img src="${BP}/roi-logo-light.png" alt="ROI Labs" loading="lazy" decoding="async" />
         <p class="ft">AI-native paid media for growth brands on Meta &amp; Google. Measured by the outcome that matters — revenue, installs, or leads.</p>
         <div class="fsoc"><a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">${LINKEDIN}</a><a href="https://x.com" target="_blank" rel="noopener noreferrer" aria-label="X">${XICON}</a></div>
       </div>
@@ -225,7 +193,7 @@ const HTML = `
       </div>
       <div class="fcol">
         <h5>Get in touch</h5>
-        <a href="#contact">Book an audit</a>
+        <a href="${BOOK_URL}" target="_blank" rel="noopener noreferrer">Book an audit</a>
         <a href="mailto:support@roilabs.in">support@roilabs.in</a>
       </div>
     </div>
@@ -233,30 +201,6 @@ const HTML = `
   </div>
 </footer>
 
-<div class="modal-ov" id="popup" role="dialog" aria-modal="true" aria-label="Book your audit">
-  <div class="modal">
-    <div class="mL">
-      <button class="mClose" id="popupClose" type="button" aria-label="Close">${SVG('<path d="M5 5l14 14M19 5 5 19"/>')}</button>
-      <h3>Put AI to work on your paid media.</h3>
-      <p class="ms">Book an audit and see what AI-run paid media could do for your revenue.</p>
-      <form id="pf" novalidate>
-        <div class="mf"><label>First name</label><input id="p-name" type="text" placeholder="John" /></div>
-        <div class="mf"><label>Work email</label><input id="p-email" type="email" placeholder="john@company.com" /></div>
-        <div class="mf"><label>Company website</label><input id="p-site" type="text" placeholder="company.com" /></div>
-        <button type="submit" class="mbtn">Book your audit</button>
-        <div class="merr" id="p-err">Please enter your name and a valid work email.</div>
-        <div class="msent" id="p-sent">✓ Got it — we'll be in touch within 24 hours.</div>
-      </form>
-    </div>
-    <div class="mR">
-      <div class="mR-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-      <span class="mR-live" aria-hidden="true"><b></b>Scaling now</span>
-      <h4>Join growth brands scaling on <span class="hl">Meta &amp; Google</span></h4>
-      <p class="mrp">AI-run paid media, measured by the outcome that matters — not platform-reported vanity metrics.</p>
-      <div class="chips"><span>DTC</span><span>B2B SaaS</span><span>Ecommerce</span><span>Subscription</span><span>Marketplaces</span><span>Lead-gen</span></div>
-    </div>
-  </div>
-</div>
 `;
 
 export default function AuroraHome() {
@@ -372,9 +316,9 @@ export default function AuroraHome() {
           <div class="card card--y">
             <div class="k">Pick the next test</div>
             <div class="thumbs">
-              <div class="thumb thumb--win"><img src="${BP}/hiw/creative-1.png" alt="Scaled creative"><span class="thumb__badge">3.4x</span><div class="thumb__label thumb__label--win">Scaled</div></div>
-              <div class="thumb"><img src="${BP}/hiw/creative-2.png" alt="Testing creative"><div class="thumb__label">Testing</div></div>
-              <div class="thumb"><img src="${BP}/hiw/creative-3.png" alt="Queued creative" style="opacity:.78"><div class="thumb__label">Queued</div></div>
+              <div class="thumb thumb--win"><img src="${BP}/hiw/scale-1.jpg" alt="Scaled creative" loading="lazy" decoding="async"><span class="thumb__badge">3.4x</span><div class="thumb__label thumb__label--win">Scaled</div></div>
+              <div class="thumb"><img src="${BP}/hiw/scale-2.jpg" alt="Testing creative" loading="lazy" decoding="async"><div class="thumb__label">Testing</div></div>
+              <div class="thumb"><img src="${BP}/hiw/scale-3.jpg" alt="Queued creative" style="opacity:.78" loading="lazy" decoding="async"><div class="thumb__label">Queued</div></div>
             </div>
           </div>`,
       },
@@ -626,5 +570,14 @@ export default function AuroraHome() {
     };
   }, []);
 
-  return <div className="aurora" id="top" ref={ref} dangerouslySetInnerHTML={{ __html: HTML }} />;
+  // Splice the animated "transparent AI" section (a React component) into the
+  // HTML at the <!--XRAY--> marker, between the integrations preview and Plans.
+  const [htmlTop, htmlRest] = HTML.split("<!--XRAY-->");
+  return (
+    <div className="aurora" id="top" ref={ref}>
+      <div dangerouslySetInnerHTML={{ __html: htmlTop }} />
+      <Variant4Xray />
+      <div dangerouslySetInnerHTML={{ __html: htmlRest }} />
+    </div>
+  );
 }

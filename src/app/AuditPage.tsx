@@ -77,8 +77,8 @@ export default function AuditPage() {
         <nav>
           <div className="nv">
             <a href="/" className="brand">{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/roi-logo-dark.png" alt="ROI Labs" /></a>
-            <div className="nv-links"><a href="/#process">How it works</a><a href="/integrations">Integrations</a><a href="/audit">Free audit</a><a href="/#plans">Plans</a><a href="/#faq">FAQ</a></div>
-            <a href="/#contact" className="btn btn-pri">Talk to us</a>
+            <div className="nv-links"><a href="/#process">How it works</a><a href="/integrations">Integrations</a><a href="/#plans">Plans</a></div>
+            <a href="https://calendly.com/mohnish-nagar-roilabs/30min" target="_blank" rel="noopener noreferrer" className="btn btn-pri">Talk to us</a>
           </div>
         </nav>
       </div>

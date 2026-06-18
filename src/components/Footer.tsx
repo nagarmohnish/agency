@@ -7,7 +7,7 @@ import Logo from "@/components/Logo";
 export default function Footer() {
   const pathname = usePathname();
   // Aurora pages + the cockpits ship their own chrome; hide the global footer there.
-  if (pathname === "/" || pathname === "/demo" || pathname === "/demos" || pathname === "/stellar" || pathname?.startsWith("/audit") || pathname?.startsWith("/discord") || pathname?.startsWith("/engine") || pathname?.startsWith("/t/") || pathname?.startsWith("/integrations")) return null;
+  if (pathname === "/" || pathname === "/demo" || pathname === "/demos" || pathname === "/stellar" || pathname?.startsWith("/audit") || pathname?.startsWith("/discord") || pathname?.startsWith("/engine") || pathname?.startsWith("/t/") || pathname?.startsWith("/transparent") || pathname?.startsWith("/integrations")) return null;
   return (
     <footer className="py-10 md:py-12 border-t border-[var(--border-subtle)]">
       <div className="max-w-6xl mx-auto px-6 lg:px-8">

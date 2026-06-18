@@ -479,3 +479,15 @@ connector creds on the agency deploy** (`ENGINE_CRED_ENV_FALLBACK=true` + env cr
 without them the cockpit honestly shows all-modeled (EST). `TenantCockpit.tsx` / `getTenantCockpit` (the lean
 honest version) stay in the tree but are off the tenant route. Google logo swapped to `google1.webp`; both
 cockpits default to LIGHT. [[D29]] [[D30]]
+
+### D32 · Calendly is the marketing-site conversion path; on-page lead/contact forms removed (2026-06-18)
+**Decision:** every roilabs.in CTA books a call via **Calendly** (`NEXT_PUBLIC_BOOK_CALL_URL`, default
+`calendly.com/mohnish-nagar-roilabs/30min`, opens in a new tab) instead of an on-page form. Removed the
+homepage contact-form section (`#contact` / form `#cf`, which posted to `/api/leads` source:"contact") and the
+20s lead **popup** (`#popup` / form `#pf`, source:"popup"). All former `#contact` CTAs across the site
+(AuroraHome, Integrations, AuditPage, about, Demo, discord, Navbar, Hero) repointed to Calendly.
+**Why:** the user wants a single, unambiguous "Get Started → book a call" funnel; the lead forms + auto-popup
+were friction/clutter. `/api/leads` still exists — the `/audit` tool form still posts to it (source:"audit").
+**Trade-off:** no on-homepage lead capture; the funnel depends on Calendly. The contact/popup **markup** was
+deleted but their JS handlers stay in `AuroraHome`'s one big `useEffect` (every `querySelector` is
+`if (...)`-guarded so they no-op) rather than being surgically excised — chosen to minimize regression risk.

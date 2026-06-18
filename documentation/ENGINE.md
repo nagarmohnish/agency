@@ -62,6 +62,41 @@ call writes an `engine_actions` row first.
 
 At this point the engine runs in dry-run against an empty account — safe.
 
+### Operator sign-in: Google SSO (vs. the shared admin token)
+
+Operators can reach the cockpit two ways, both ending up as
+`Authorization: Bearer <…>` to `/api/engine/*`:
+
+- **Admin token** — paste `ENGINE_ADMIN_TOKEN` into the "Operator? admin token"
+  gate. Always works; the break-glass path.
+- **Google / email SSO** — sign in with Supabase (the same leads project
+  `gaulosvlnynoxgdjelgm` the public teaser uses). The browser's **access token**
+  is validated server-side (`auth.ts` → `getUser`) and the email is checked
+  against an allowlist. An allowlisted email gets the **full cockpit**; anyone
+  else gets the locked "book a demo" teaser. No shared token ever reaches the
+  browser.
+
+To enable SSO operator access on a deployment:
+
+1. Set the allowlist env on **that** deployment (and `.env.local` for local):
+   ```bash
+   ENGINE_OPERATOR_EMAILS=you@roilabs.in,teammate@roilabs.in   # comma-separated
+   ```
+   Gate it by deployment: set it on the **agency** project (roilabs.in) so the
+   team gets in there; leave it **off** `roi-engine` so `engine.roilabs.in` stays
+   a pure lead-gen teaser. Empty/absent ⇒ SSO grants nobody access (admin token
+   still works).
+2. The Supabase **Google provider is already configured** on the leads project.
+   Just add the deployment's post-login URL to Supabase → Auth → URL
+   Configuration → **Redirect URLs**: `https://roilabs.in/engine` (prod) and your
+   local `http://localhost:<port>/engine`. (`engine.roilabs.in/engine` is already
+   listed.)
+3. `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` must be present on
+   the deployment (they already are on agency — the marketing site uses them).
+
+Auth is **fail-closed**: with neither `ENGINE_ADMIN_TOKEN` nor
+`ENGINE_OPERATOR_EMAILS` set, every `/api/engine/*` call is rejected (503).
+
 ---
 
 ## Connecting the real account (do this LAST)
