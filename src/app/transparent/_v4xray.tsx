@@ -8,7 +8,7 @@
 import XrayScaler from "./_xrayScaler";
 
 const BP = process.env.NEXT_PUBLIC_BASE_PATH || "";
-const AD_IMG = `${BP}/transparent/ad-creative.jpeg`; // real AI ad creative shown in-feed
+const AD_IMG = `${BP}/transparent/ad-creative-02.jpeg`; // real AI ad creative shown in-feed
 
 const GOLD = "#FACC15";        // bright gold accents (badge, dots)
 const LINEGOLD = "#E0A82E";    // connector beams (visible on the cream bg)
