@@ -3,15 +3,15 @@ import "./aurora.css";
 import AuroraHome from "./AuroraHome";
 
 export const metadata: Metadata = {
-  title: "ROI Labs | AI-Native Paid Media Agency",
+  title: "ROI Labs",
   description:
-    "ROI Labs is the AI-native paid media agency. AI drafts and tests creative at a volume no human team can match; senior operators own the strategy and the number that matters for each funnel — revenue, installs, or leads. We run Meta and Google end-to-end.",
+    "ROI Labs helps brands scale customer acquisition and subscription revenue through AI-powered paid media, creative intelligence, and growth strategy.",
   alternates: { canonical: "/" },
   openGraph: {
     url: "/",
-    title: "ROI Labs | AI-Native Paid Media Agency",
+    title: "ROI Labs",
     description:
-      "AI drafts and tests creative at a volume no human team can match; senior operators own the strategy and the number that matters for each funnel — revenue, installs, or leads. We run Meta and Google end-to-end.",
+      "ROI Labs helps brands scale customer acquisition and subscription revenue through AI-powered paid media, creative intelligence, and growth strategy.",
   },
 };
 
